@@ -35,9 +35,9 @@ export class CPU_2A03 implements ICPU {
     // this.regs.PC = this.bus.readWord(InterruptVector.RESET);
     this.regs.PC = 0xC000;
     this.regs.S = 0xFD;
-    this.regs.P = 0x04; // I === 1
+    this.regs.P = 0x24; // I,U === 1
     this.deferCycles = 0;
-    this.clocks = 0;
+    this.clocks = 6;
   }
   public reset(): void {
     this.regs.A = 0; //unchanged
@@ -46,13 +46,14 @@ export class CPU_2A03 implements ICPU {
     // this.regs.PC = this.bus.readWord(InterruptVector.RESET);
     this.regs.PC = 0xC000;
     this.regs.S -= 3;
-    this.regs.P |= 0x04; // I === 1
+    this.regs.P |= 0x24; // I,U === 1
     
     this.deferCycles = 0;
     this.clocks = 0;
   }
 
   public clock(): void {
+    this.clocks++;
     if (this.deferCycles === 0){
       this.step();
     }
@@ -125,6 +126,12 @@ export class CPU_2A03 implements ICPU {
         this.LDX(address);
         this.addCycles(2);
         break;
+      case 0x86:
+        // STX zp 3
+        address = this.zp();
+        this.STX(address);
+        this.addCycles(3);
+        break;
       case 0xA1:
         // LDA izx 6
         address = this.izx();
@@ -164,6 +171,12 @@ export class CPU_2A03 implements ICPU {
     this.regs.PC += 2;
     return address;
   }
+  private zp(): uint16{
+    // Zero Page
+    const address = this.bus.readByte(this.regs.PC) & 0xFF;
+    this.regs.PC += 1;
+    return address;
+  }
 
   // Operations
   private JMP(address: uint16){
@@ -174,4 +187,8 @@ export class CPU_2A03 implements ICPU {
     this.setFlag(Flags.N, (this.regs.X & 0x80) === 0x80);
     this.setFlag(Flags.Z, this.regs.X === 0x00);
   }
+  private STX(address: uint16){
+    this.bus.writeByte(address, this.regs.X);
+  }
+
 }

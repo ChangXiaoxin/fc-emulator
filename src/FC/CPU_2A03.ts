@@ -72,13 +72,13 @@ export class CPU_2A03 implements ICPU {
   }
 
   public pushByte(byte: uint8){
-      this.bus.writeByte(MemAddress.STACK_BASE + this.regs.P, byte & 0xFF);
-      this.regs.P--;
+      this.bus.writeByte(MemAddress.STACK_BASE | this.regs.S, byte & 0xFF);
+      this.regs.S--;
   }
 
   public popByte(): uint8{
-    this.regs.P++;
-    return this.bus.readByte(MemAddress.STACK_BASE + this.regs.P);
+    this.regs.S++;
+    return this.bus.readByte(MemAddress.STACK_BASE | this.regs.S);
   }
 
   public pushWord(word: uint16){

@@ -1,7 +1,9 @@
 // The module 'vscode' contains the VS Code extensibility API
 // Import the module and reference it with the alias vscode in your code below
 import * as vscode from 'vscode';
-
+import * as fs from 'fs';
+import { FC_Emulator } from './FC/fc_emulator';
+import { IOptions } from "./Interface/Emulator";
 // This method is called when your extension is activated
 // Your extension is activated the very first time the command is executed
 export function activate(context: vscode.ExtensionContext) {
@@ -17,6 +19,25 @@ export function activate(context: vscode.ExtensionContext) {
 		// The code you place here will be executed every time your command is executed
 		// Display a message box to the user
 		vscode.window.showInformationMessage('Hello World from FC Simulator!');
+
+		const fc_options: IOptions ={
+		  sampleRate: 0,
+		  onSample: (volume: number) => void{
+
+		  },
+		  onFrame: (frame: Uint8Array) => void{
+
+		  }, // [r,g,b, r,g,b, ...] 256*240*3 = 184320 bytes;
+		};
+		const path = 'C:/Users/Chang/Documents/Code/fc-simulator/src/FC/nestest.nes';
+		let fc_emulator:FC_Emulator;
+        
+		var fc_data = fs.readFileSync(path);
+		fc_emulator = new FC_Emulator(fc_data, fc_options);
+		while(1)
+		{
+		  fc_emulator.clock();
+		}
 	});
 
 	context.subscriptions.push(disposable);

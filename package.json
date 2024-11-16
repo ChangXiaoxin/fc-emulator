@@ -9,7 +9,9 @@
   "categories": [
     "Other"
   ],
-  "activationEvents": [],
+  "activationEvents": [
+    "fc-simulator.helloWorld"
+  ],
   "main": "./dist/extension.js",
   "contributes": {
     "commands": [

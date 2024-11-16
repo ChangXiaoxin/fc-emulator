@@ -15,7 +15,7 @@ export class Cartridge implements ICartridge {
     sram: Uint8Array, // 8K SRAM 
   ){
     // analize FC header to info
-    if (data[0] != 0x4e || data[1] != 0x45 || data[2] != 0x53 || data[3] != 0x1A)
+    if (data[0] !== 0x4e || data[1] !== 0x45 || data[2] !== 0x53 || data[3] !== 0x1A)
     {
       throw new Error(`Unsupported ROM: ` + data.slice(0, 5));
     }

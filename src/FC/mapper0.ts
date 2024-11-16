@@ -10,7 +10,7 @@ export class Mapper0 implements IMapper {
     private readonly prg: Uint8Array, // prg data
     private readonly chr: Uint8Array, // chr data
   ){
-    this.isMirrored = prg.length == 16 * 1024;
+    this.isMirrored = prg.length === 16 * 1024;
 
     if (chr.length === 0){
         this.chr = new Uint8Array(0x2000);

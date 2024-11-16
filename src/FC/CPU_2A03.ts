@@ -109,17 +109,69 @@ export class CPU_2A03 implements ICPU {
     this.deferCycles += 7;
   }
 
-  public step(): void {
+  private step(): void {
     const opcode = this.bus.readByte(this.regs.PC++);
+    let address: uint16 = 0xF0000;
     switch (opcode) {
       case 0x4C:
-        // JMP
-        const address = this.bus.readWord(this.regs.PC);
-        this.regs.PC = address;
-        this.deferCycles += 3;
+        // JMP abs 3
+        address = this.abs();
+        this.JMP(address);
+        this.addCycles(3);
+        break;
+      case 0xA2:
+        // LDX imm 2
+        address = this.imm();
+        this.LDX(address);
+        this.addCycles(2);
+        break;
+      case 0xA1:
+        // LDA izx 6
+        address = this.izx();
+        // TODO: operation LDA
+        this.addCycles(6);
         break;
       default:
         throw new Error(`Invalid opcode: ${opcode}!`);
     }
+  }
+
+  private addCycles(cycle: number){
+    this.deferCycles += cycle;
+  }
+
+  // Addressing Mode
+  private abs(): uint16{
+    // Absolute
+    const address =  this.bus.readWord(this.regs.PC);
+    this.regs.PC += 2;
+    return address;
+  }
+  private imm(): uint16{
+    // Immediate
+    const address = this.regs.PC;
+    this.regs.PC += 1;
+    return address;
+  }
+  private izx(): uint16{
+    // Indexed Indirect X
+    const peeked = this.bus.readWord(this.regs.PC);
+    const address = this.bus.readWord(this.regs.X + peeked);
+    if ((peeked & 0xFF00) !== (address & 0xFF00))
+    {
+      this.addCycles(1);
+    }
+    this.regs.PC += 2;
+    return address;
+  }
+
+  // Operations
+  private JMP(address: uint16){
+    this.regs.PC = address;
+  }
+  private LDX(address: uint16){
+    this.regs.X = this.bus.readByte(address);
+    this.setFlag(Flags.N, (this.regs.X & 0x80) === 0x80);
+    this.setFlag(Flags.Z, this.regs.X === 0x00);
   }
 }

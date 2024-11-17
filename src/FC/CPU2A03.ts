@@ -86,7 +86,7 @@ export class CPU2A03 implements ICPU {
 
   public popByte(): uint8{
     this.regs.S++;
-    return this.bus.readByte(MemAddress.STACK_BASE | this.regs.S);
+    return this.bus.readByte(MemAddress.STACK_BASE | (this.regs.S & 0xFF));
   }
 
   public pushWord(word: uint16){
@@ -208,6 +208,29 @@ export class CPU2A03 implements ICPU {
         this.BIT(address);
         this.addCycles(3);
         break;
+      case 0x70:
+        // BVS rel 2*
+        address = this.rel();
+        this.BVS(address);
+        this.addCycles(2);
+        break;
+      case 0x50:
+        // BVC rel 2*
+        address = this.rel();
+        this.BVC(address);
+        this.addCycles(2);
+        break;
+      case 0x10:
+        // BPL rel 2*
+        address = this.rel();
+        this.BPL(address);
+        this.addCycles(2);
+        break;
+      case 0x60:
+        // RTS 6
+        this.RTS();
+        this.addCycles(6);
+        break;
       case 0xA1:
         // LDA izx 6
         address = this.izx();
@@ -296,12 +319,12 @@ export class CPU2A03 implements ICPU {
     debugCatchOpName("BIT");
     var temp = this.bus.readByte(address);
     this.setFlag(Flags.Z, (this.regs.A & temp) === 0x00);
-    this.regs.P |= (temp & Flags.N);
-    this.regs.P |= (temp & Flags.V);
+    this.setFlag(Flags.N, (temp & Flags.N) === Flags.N);
+    this.setFlag(Flags.V, (temp & Flags.V) === Flags.V);
   }
   private JSR(address: uint16){
     debugCatchOpName("JSR");
-    this.pushWord(this.regs.PC);
+    this.pushWord(this.regs.PC - 1);
     this.regs.PC = address;
   }
   private NOP(){
@@ -330,6 +353,23 @@ export class CPU2A03 implements ICPU {
   private BNE(address: uint8){
     debugCatchOpName("BNE");
     this.branchHelper(!this.isFlagSet(Flags.Z), address);
+  }
+  private BVS(address: uint8){
+    debugCatchOpName("BVS");
+    this.branchHelper(this.isFlagSet(Flags.V), address);
+  }
+  private BVC(address: uint8){
+    debugCatchOpName("BVC");
+    this.branchHelper(!this.isFlagSet(Flags.V), address);
+  }
+  private BPL(address: uint8){
+    debugCatchOpName("BPL");
+    this.branchHelper(!this.isFlagSet(Flags.N), address);
+  }
+  private RTS(){
+    debugCatchOpName("RTS");
+    this.regs.PC = this.popWord();
+    this.regs.PC += 1;
   }
 
   // Internal Helper.

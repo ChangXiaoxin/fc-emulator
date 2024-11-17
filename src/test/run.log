@@ -36,3 +36,33 @@ C77D  EA        NOP                             A:00 X:00 Y:00 P:26 SP:FB PPU:  
 C77E  A9 FF     LDA #$FF                        A:00 X:00 Y:00 P:26 SP:FB PPU:        CYC:93
 C780  85 01     STA $01 = 00                    A:FF X:00 Y:00 P:A4 SP:FB PPU:        CYC:95
 C782  24 01     BIT $01 = FF                    A:FF X:00 Y:00 P:A4 SP:FB PPU:        CYC:98
+C784  70 04     BVS $C78A                       A:FF X:00 Y:00 P:E4 SP:FB PPU:        CYC:101
+C78A  EA        NOP                             A:FF X:00 Y:00 P:E4 SP:FB PPU:        CYC:104
+C78B  24 01     BIT $01 = FF                    A:FF X:00 Y:00 P:E4 SP:FB PPU:        CYC:106
+C78D  50 03     BVC $C792                       A:FF X:00 Y:00 P:E4 SP:FB PPU:        CYC:109
+C78F  4C 96 C7  JMP $C796                       A:FF X:00 Y:00 P:E4 SP:FB PPU:        CYC:111
+C796  EA        NOP                             A:FF X:00 Y:00 P:E4 SP:FB PPU:        CYC:114
+C797  A9 00     LDA #$00                        A:FF X:00 Y:00 P:E4 SP:FB PPU:        CYC:116
+C799  85 01     STA $01 = FF                    A:00 X:00 Y:00 P:66 SP:FB PPU:        CYC:118
+C79B  24 01     BIT $01 = 00                    A:00 X:00 Y:00 P:66 SP:FB PPU:        CYC:121
+C79D  50 04     BVC $C7A3                       A:00 X:00 Y:00 P:26 SP:FB PPU:        CYC:124
+C7A3  EA        NOP                             A:00 X:00 Y:00 P:26 SP:FB PPU:        CYC:127
+C7A4  24 01     BIT $01 = 00                    A:00 X:00 Y:00 P:26 SP:FB PPU:        CYC:129
+C7A6  70 03     BVS $C7AB                       A:00 X:00 Y:00 P:26 SP:FB PPU:        CYC:132
+C7A8  4C AF C7  JMP $C7AF                       A:00 X:00 Y:00 P:26 SP:FB PPU:        CYC:134
+C7AF  EA        NOP                             A:00 X:00 Y:00 P:26 SP:FB PPU:        CYC:137
+C7B0  A9 00     LDA #$00                        A:00 X:00 Y:00 P:26 SP:FB PPU:        CYC:139
+C7B2  10 04     BPL $C7B8                       A:00 X:00 Y:00 P:26 SP:FB PPU:        CYC:141
+C7B8  EA        NOP                             A:00 X:00 Y:00 P:26 SP:FB PPU:        CYC:144
+C7B9  A9 80     LDA #$80                        A:00 X:00 Y:00 P:26 SP:FB PPU:        CYC:146
+C7BB  10 03     BPL $C7C0                       A:80 X:00 Y:00 P:A4 SP:FB PPU:        CYC:148
+C7BD  4C D9 C7  JMP $C7D9                       A:80 X:00 Y:00 P:A4 SP:FB PPU:        CYC:150
+C7D9  EA        NOP                             A:80 X:00 Y:00 P:A4 SP:FB PPU:        CYC:153
+C7DA  60        RTS                             A:80 X:00 Y:00 P:A4 SP:FB PPU:        CYC:155
+C600  20 DB C7  JSR $C7DB                       A:80 X:00 Y:00 P:A4 SP:FD PPU:        CYC:161
+C7DB  EA        NOP                             A:80 X:00 Y:00 P:A4 SP:FB PPU:        CYC:167
+C7DC  A9 FF     LDA #$FF                        A:80 X:00 Y:00 P:A4 SP:FB PPU:        CYC:169
+C7DE  85 01     STA $01 = 00                    A:FF X:00 Y:00 P:A4 SP:FB PPU:        CYC:171
+C7E0  24 01     BIT $01 = FF                    A:FF X:00 Y:00 P:A4 SP:FB PPU:        CYC:174
+C7E2  A9 00     LDA #$00                        A:FF X:00 Y:00 P:E4 SP:FB PPU:        CYC:177
+C7E4  38        SEC                             A:00 X:00 Y:00 P:66 SP:FB PPU:        CYC:179

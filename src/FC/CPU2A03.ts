@@ -284,6 +284,23 @@ export class CPU2A03 implements ICPU {
         this.BMI(address);
         this.addCycles(2);
         break;
+      case 0x09:
+        // ORA imm 2
+        address = this.imm();
+        this.ORA(address);
+        this.addCycles(2);
+        break;
+      case 0xB8:
+        // CLV 2
+        this.CLV();
+        this.addCycles(2);
+        break;
+      case 0x49:
+        // EOR imm 2
+        address = this.imm();
+        this.EOR(address);
+        this.addCycles(2);
+        break;
       case 0xA1:
         // LDA izx 6
         address = this.izx();
@@ -301,7 +318,9 @@ export class CPU2A03 implements ICPU {
     this.deferCycles += cycle;
   }
 
-  // Addressing Mode
+  /************************************************/
+  /* Addressing Mode
+  /************************************************/
   private abs(): uint16{
     // Absolute
     const address =  this.bus.readWord(this.regs.PC);
@@ -343,7 +362,9 @@ export class CPU2A03 implements ICPU {
     return address;
   }
 
-  // Operations
+  /************************************************/
+  /* Operations
+  /************************************************/
   private JMP(address: uint16){
     debugCatchOpName("JMP");
     this.regs.PC = address;
@@ -390,6 +411,10 @@ export class CPU2A03 implements ICPU {
   private CLD(){
     debugCatchOpName("CLD");
     this.setFlag(Flags.D, false);
+  }
+  private CLV(){
+    debugCatchOpName("CLV");
+    this.setFlag(Flags.V, false);
   }
   private SEC(){
     debugCatchOpName("SEC");
@@ -439,6 +464,18 @@ export class CPU2A03 implements ICPU {
     this.setFlag(Flags.Z, (this.regs.A === 0x00));
     this.setFlag(Flags.N, (this.regs.A  & Flags.N) === Flags.N);
   }
+  private ORA(address: uint16){
+    debugCatchOpName("ORA");
+    this.regs.A |= this.bus.readByte(address);
+    this.setFlag(Flags.Z, (this.regs.A === 0x00));
+    this.setFlag(Flags.N, (this.regs.A & Flags.N) === Flags.N);
+  }
+  private EOR(address: uint16){
+    debugCatchOpName("EOR");
+    this.regs.A ^= this.bus.readByte(address);
+    this.setFlag(Flags.Z, (this.regs.A === 0x00));
+    this.setFlag(Flags.N, (this.regs.A & Flags.N) === Flags.N);
+  }
   private CMP(address: uint16){
     debugCatchOpName("CMP");
     this.CMPHelper(this.regs.A, address);
@@ -481,7 +518,9 @@ export class CPU2A03 implements ICPU {
     this.regs.PC += 1;
   }
 
-  // Internal Helper.
+  /************************************************/
+  /* Internal Helper.
+  /************************************************/
   private CMPHelper(reg: uint8, address: uint16){
     let temp = this.bus.readByte(address);
     this.setFlag(Flags.C, (reg >= temp));

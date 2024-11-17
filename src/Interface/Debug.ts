@@ -1,6 +1,5 @@
 import * as fs from 'fs';
-import { CPU2A03, Regs } from "../FC/CPU2A03";
-import { debugHelper } from './DebugHelper';
+import { Regs } from "../FC/CPU2A03";
 export interface LOGS {
   PC: string;
   opCode: string;
@@ -28,29 +27,41 @@ export var logTemplate = (
 export function zeroFill(str: string, num: number): string{
   return str.padStart(num-str.length+1, "0");  
 }
-
-let debughelper = new debugHelper();
+var cpuLog:LOGS = {
+    PC: '',
+    opCode: '',
+    dataCode: '',
+    opName: '',
+    dataContent: '',
+    A: '',
+    X: '',
+    Y: '',
+    P: '',
+    SP: '',
+    PPU: '',
+    CYC: ''
+  };
 export function catchRegs(cpuRegs: Regs)
 {
-  debughelper.cpuLog.PC  = cpuRegs.PC.toString(16).toUpperCase();
-  debughelper.cpuLog.A   = zeroFill(cpuRegs.A.toString(16).toUpperCase(), 2);
-  debughelper.cpuLog.X   = zeroFill(cpuRegs.X.toString(16).toUpperCase(), 2);
-  debughelper.cpuLog.Y   = zeroFill(cpuRegs.Y.toString(16).toUpperCase(), 2);
-  debughelper.cpuLog.P   = zeroFill(cpuRegs.P.toString(16).toUpperCase(), 2);
-  debughelper.cpuLog.SP  = zeroFill(cpuRegs.S.toString(16).toUpperCase(), 2);
+  cpuLog.PC  = cpuRegs.PC.toString(16).toUpperCase();
+  cpuLog.A   = zeroFill(cpuRegs.A.toString(16).toUpperCase(), 2);
+  cpuLog.X   = zeroFill(cpuRegs.X.toString(16).toUpperCase(), 2);
+  cpuLog.Y   = zeroFill(cpuRegs.Y.toString(16).toUpperCase(), 2);
+  cpuLog.P   = zeroFill(cpuRegs.P.toString(16).toUpperCase(), 2);
+  cpuLog.SP  = zeroFill(cpuRegs.S.toString(16).toUpperCase(), 2);
 }
 
 export function catchClocks(cpuClocks: any)
 {
-  debughelper.cpuLog.CYC = cpuClocks.toString();
+  cpuLog.CYC = cpuClocks.toString();
 }
 
 export function catchOpCode(opCode: any)
 {
-  debughelper.cpuLog.opCode = zeroFill(opCode.toString(16).toUpperCase(), 2);
+  cpuLog.opCode = zeroFill(opCode.toString(16).toUpperCase(), 2);
 }
 
 export function writeToLogFlie(path: string){
-  let logContent = logTemplate(debughelper.cpuLog);
+  let logContent = logTemplate(cpuLog);
   fs.appendFileSync(path, logContent);
 }

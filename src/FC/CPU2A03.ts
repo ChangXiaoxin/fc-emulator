@@ -231,6 +231,59 @@ export class CPU2A03 implements ICPU {
         this.RTS();
         this.addCycles(6);
         break;
+      case 0x78:
+        // SEI 2
+        this.SEI();
+        this.addCycles(2);
+        break;
+      case 0xF8:
+        // SED 2
+        this.SED();
+        this.addCycles(2);
+        break;
+      case 0x08:
+        // PHP 3
+        this.PHP();
+        this.addCycles(3);
+        break;
+      case 0x68:
+        // PLA 4
+        this.PLA();
+        this.addCycles(4);
+        break;
+      case 0x29:
+        // AND imm 2
+        address = this.imm();
+        this.AND(address);
+        this.addCycles(2);
+        break;
+      case 0xC9:
+        // CMP imm 2
+        address = this.imm();
+        this.CMP(address);
+        this.addCycles(2);
+        break;
+      case 0xD8:
+        // CLD 2
+        this.CLD();
+        this.addCycles(2);
+        break;
+      case 0x48:
+        // PHA 3
+        this.PHA();
+        this.addCycles(3);
+        break;
+      case 0x28:
+        // PLP 4
+        this.PLP();
+        this.addCycles(4);
+        break;
+      case 0x30:
+        // BMI rel 2*
+        address = this.rel();
+        this.BMI(address);
+        this.addCycles(2);
+        break;
       case 0xA1:
         // LDA izx 6
         address = this.izx();
@@ -334,37 +387,93 @@ export class CPU2A03 implements ICPU {
     debugCatchOpName("CLC");
     this.setFlag(Flags.C, false);
   }
+  private CLD(){
+    debugCatchOpName("CLD");
+    this.setFlag(Flags.D, false);
+  }
   private SEC(){
     debugCatchOpName("SEC");
     this.setFlag(Flags.C, true);
   }
-  private BCS(address: uint8){
+  private SEI(){
+    debugCatchOpName("SEI");
+    /* FIXME: The effect of changing this flag I is delayed 1 instruction.
+     * SEI sets the interrupt disable flag, preventing the CPU from handling hardware IRQs.
+     * The effect of changing this flag is delayed one instruction because the flag is
+     * changed after IRQ is polled, allowing an IRQ to be serviced between this and the
+     * next instruction if the flag was previously 0. */
+    this.setFlag(Flags.I, true);
+  }
+  private SED(){
+    debugCatchOpName("SED");
+    this.setFlag(Flags.D, true);
+  }
+  private PHP(){
+    debugCatchOpName("PHP");
+    this.pushByte(this.regs.P | Flags.B | Flags.U);
+  }
+  private PHA(){
+    debugCatchOpName("PHA");
+    this.pushByte(this.regs.A);
+  }
+  private PLA(){
+    debugCatchOpName("PLA");
+    this.regs.A = this.popByte();
+    this.setFlag(Flags.Z, (this.regs.A === 0x00));
+    this.setFlag(Flags.N, (this.regs.A & Flags.N) === Flags.N);
+  }
+  private PLP(){
+    debugCatchOpName("PLP");
+    let temp = this.popByte();
+    this.setFlag(Flags.C, (temp & Flags.C) === Flags.C);
+    this.setFlag(Flags.Z, (temp & Flags.Z) === Flags.Z);
+    // FIXME: The effect of changing this flag I is delayed 1 instruction.
+    this.setFlag(Flags.I, (temp & Flags.I) === Flags.I);
+    this.setFlag(Flags.D, (temp & Flags.D) === Flags.D);
+    this.setFlag(Flags.V, (temp & Flags.V) === Flags.V);
+    this.setFlag(Flags.N, (temp & Flags.N) === Flags.N);
+  }
+  private AND(address: uint16){
+    debugCatchOpName("AND");
+    this.regs.A = this.regs.A & this.bus.readByte(address);
+    this.setFlag(Flags.Z, (this.regs.A === 0x00));
+    this.setFlag(Flags.N, (this.regs.A  & Flags.N) === Flags.N);
+  }
+  private CMP(address: uint16){
+    debugCatchOpName("CMP");
+    this.CMPHelper(this.regs.A, address);
+  }
+  private BCS(address: uint16){
     debugCatchOpName("BCS");
     this.branchHelper(this.isFlagSet(Flags.C), address);
   }
-  private BCC(address: uint8){
+  private BCC(address: uint16){
     debugCatchOpName("BCC");
     this.branchHelper(!this.isFlagSet(Flags.C), address);
   }
-  private BEQ(address: uint8){
+  private BEQ(address: uint16){
     debugCatchOpName("BEQ");
     this.branchHelper(this.isFlagSet(Flags.Z), address);
   }
-  private BNE(address: uint8){
+  private BNE(address: uint16){
     debugCatchOpName("BNE");
     this.branchHelper(!this.isFlagSet(Flags.Z), address);
   }
-  private BVS(address: uint8){
+  private BVS(address: uint16){
     debugCatchOpName("BVS");
     this.branchHelper(this.isFlagSet(Flags.V), address);
   }
-  private BVC(address: uint8){
+  private BVC(address: uint16){
     debugCatchOpName("BVC");
     this.branchHelper(!this.isFlagSet(Flags.V), address);
   }
-  private BPL(address: uint8){
+  private BPL(address: uint16){
     debugCatchOpName("BPL");
     this.branchHelper(!this.isFlagSet(Flags.N), address);
+  }
+  private BMI(address: uint16){
+    debugCatchOpName("BMI");
+    this.branchHelper(this.isFlagSet(Flags.N), address);
   }
   private RTS(){
     debugCatchOpName("RTS");
@@ -373,6 +482,12 @@ export class CPU2A03 implements ICPU {
   }
 
   // Internal Helper.
+  private CMPHelper(reg: uint8, address: uint16){
+    let temp = this.bus.readByte(address);
+    this.setFlag(Flags.C, (reg >= temp));
+    this.setFlag(Flags.Z, (reg === temp));
+    this.setFlag(Flags.N, ((reg - temp) & Flags.N) === Flags.N);
+  }
   private branchHelper(flag: boolean, offset: uint8){
     if (flag){
       var prevPCHigh = this.regs.PC & 0xFF00;

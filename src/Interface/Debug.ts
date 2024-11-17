@@ -52,7 +52,22 @@ var cpulog:LOGS = {
     CYC: ''
   };
 
-
+function debugRestCUPLog(){
+  cpulog = {
+    PC: '',
+    opCode: '',
+    dataCode: '',
+    opName: '',
+    dataContent: '',
+    A: '',
+    X: '',
+    Y: '',
+    P: '',
+    SP: '',
+    PPU: '',
+    CYC: ''
+  };
+}
 
 var cpubus: IBus;
 export function debugCatchCPUBus(bus: IBus){
@@ -95,7 +110,7 @@ export function debugCatchDataCode(dataCode: any, addrMode: ADDR_MODE)
   else{
     cpulog.dataCode = "";
   }
-  cpulog.dataContent = "";
+
   switch (addrMode){
     case ADDR_MODE.IMM:
       cpulog.dataContent = "#$" + zeroFill((dataCode&0xFF).toString(16).toUpperCase(), 2);
@@ -120,4 +135,5 @@ export function debugCatchOpName(opName: any)
 export function writeToLogFlie(path: string){
   let logContent = logTemplate(cpulog);
   fs.appendFileSync(path, logContent);
+  debugRestCUPLog();
 }

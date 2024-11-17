@@ -120,12 +120,13 @@ export class CPU2A03 implements ICPU {
   }
 
   private step(): void {
+    let address: uint16 = 0xF0000;
     // Debug log
     debugCatchRegs();
     debugCatchClocks(this.clocks);
+
     const opcode = this.bus.readByte(this.regs.PC++);
     debugCatchOpCode(opcode);
-    let address: uint16 = 0xF0000;
     switch (opcode) {
       case 0x4C:
         // JMP abs 3
@@ -145,6 +146,17 @@ export class CPU2A03 implements ICPU {
         this.STX(address);
         this.addCycles(3);
         break;
+      case 0x20:
+        // JSR abs 6
+        address = this.abs();
+        this.JSR(address);
+        this.addCycles(6);
+        break;
+      case 0xEA:
+        // NOP 2
+        this.NOP();
+        this.addCycles(2);
+        break;
       case 0xA1:
         // LDA izx 6
         address = this.izx();
@@ -152,7 +164,7 @@ export class CPU2A03 implements ICPU {
         this.addCycles(6);
         break;
       default:
-        throw new Error(`Invalid opcode: ${opcode}!`);
+        throw new Error(`Invalid opcode: ${opcode.toString(16).toUpperCase()}`);
     }
     // Debug log
     writeToLogFlie(this.userData);
@@ -211,6 +223,14 @@ export class CPU2A03 implements ICPU {
   private STX(address: uint16){
     debugCatchOpName("STX");
     this.bus.writeByte(address, this.regs.X);
+  }
+  private JSR(address: uint16){
+    debugCatchOpName("JSR");
+    this.pushWord(this.regs.PC);
+    this.regs.PC = address;
+  }
+  private NOP(){
+    debugCatchOpName("NOP");
   }
 
 }

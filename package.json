@@ -1,7 +1,7 @@
 {
-  "name": "fc-simulator",
-  "displayName": "FC Simulator",
-  "description": "A FC simulator in VS Code.",
+  "name": "fc-emulator",
+  "displayName": "FC Emulator",
+  "description": "A FC emulator in VS Code.",
   "version": "0.0.1",
   "engines": {
     "vscode": "^1.95.0"
@@ -10,14 +10,14 @@
     "Other"
   ],
   "activationEvents": [
-    "fc-simulator.helloWorld"
+    "fc-emulator.RunFCEmulator"
   ],
   "main": "./dist/extension.js",
   "contributes": {
     "commands": [
       {
-        "command": "fc-simulator.helloWorld",
-        "title": "Hello World"
+        "command": "fc-emulator.RunFCEmulator",
+        "title": "Run FC Emulator"
       }
     ]
   },

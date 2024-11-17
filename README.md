@@ -1,6 +1,6 @@
-# fc-simulator README
+# fc-emulator README
 
-This is the README for your extension "fc-simulator". After writing up a brief description, we recommend including the following sections.
+This is the README for your extension "fc-emulator". After writing up a brief description, we recommend including the following sections.
 
 ## Features
 

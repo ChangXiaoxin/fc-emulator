@@ -10,15 +10,15 @@ export function activate(context: vscode.ExtensionContext) {
 
 	// Use the console to output diagnostic information (console.log) and errors (console.error)
 	// This line of code will only be executed once when your extension is activated
-	console.log('Congratulations, your extension "fc-simulator" is now active!');
+	console.log('FC Emulator is now active!');
 
 	// The command has been defined in the package.json file
 	// Now provide the implementation of the command with registerCommand
 	// The commandId parameter must match the command field in package.json
-	const disposable = vscode.commands.registerCommand('fc-simulator.helloWorld', () => {
+	context.subscriptions.push(vscode.commands.registerCommand('fc-emulator.RunFCEmulator', () => {
 		// The code you place here will be executed every time your command is executed
 		// Display a message box to the user
-		vscode.window.showInformationMessage('Hello World from FC Simulator!');
+		vscode.window.showInformationMessage('Run FC Emulator from FC Emulator!');
 
 		const fc_options: IOptions ={
 		  sampleRate: 0,
@@ -29,18 +29,17 @@ export function activate(context: vscode.ExtensionContext) {
 
 		  }, // [r,g,b, r,g,b, ...] 256*240*3 = 184320 bytes;
 		};
-		const path = 'C:/Users/Chang/Documents/Code/fc-simulator/src/FC/nestest.nes';
-		let fc_emulator:FC_Emulator;
-        
-		var fc_data = fs.readFileSync(path);
-		fc_emulator = new FC_Emulator(fc_data, fc_options);
+		const rom_path = 'C:/Users/Chang/Documents/Code/fc-emulator/src/test/nestest.nes';
+		var fc_data = fs.readFileSync(rom_path);
+		// Debug log
+		const log_path = 'C:/Users/Chang/Documents/Code/fc-emulator/src/test/run.log';
+        fs.writeFileSync(log_path, "");
+		let fc_emulator = new FC_Emulator(fc_data, fc_options, log_path);
 		while(1)
 		{
 		  fc_emulator.clock();
 		}
-	});
-
-	context.subscriptions.push(disposable);
+	}));
 }
 
 // This method is called when your extension is deactivated

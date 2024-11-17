@@ -50,7 +50,7 @@ async function main() {
 	}
 }
 
-main().catch(e => {
+main().debugCatch(e => {
 	console.error(e);
 	process.exit(1);
 });

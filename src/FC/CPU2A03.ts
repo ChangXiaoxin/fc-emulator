@@ -1,4 +1,4 @@
-import { catchClocks, catchOpCode, catchRegs, logTemplate, writeToLogFlie } from '../Interface/Debug';
+import { ADDR_MODE, debugCatchClocks, debugCatchCPUBus, debugCatchCPURegs, debugCatchDataCode, debugCatchOpCode, debugCatchOpName, debugCatchRegs, logTemplate, writeToLogFlie } from '../Interface/Debug';
 import { IBus } from "../Interface/Bus";
 import { Flags, ICPU, IRegs } from "../Interface/CPU";
 import { uint16, uint8 } from "../Interface/typedef";
@@ -32,6 +32,9 @@ export class CPU2A03 implements ICPU {
   private userData?: any;
 
   constructor(userdata?: any){
+    debugCatchCPURegs(this.regs);
+    debugCatchCPUBus(this.bus);
+
     this.userData = userdata;
 
     this.regs.A = 0;
@@ -118,10 +121,10 @@ export class CPU2A03 implements ICPU {
 
   private step(): void {
     // Debug log
-    catchRegs(this.regs);
-    catchClocks(this.clocks);
+    debugCatchRegs();
+    debugCatchClocks(this.clocks);
     const opcode = this.bus.readByte(this.regs.PC++);
-    catchOpCode(opcode);
+    debugCatchOpCode(opcode);
     let address: uint16 = 0xF0000;
     switch (opcode) {
       case 0x4C:
@@ -164,12 +167,14 @@ export class CPU2A03 implements ICPU {
     // Absolute
     const address =  this.bus.readWord(this.regs.PC);
     this.regs.PC += 2;
+    debugCatchDataCode(address, ADDR_MODE.ABS);
     return address;
   }
   private imm(): uint16{
     // Immediate
     const address = this.regs.PC;
     this.regs.PC += 1;
+    debugCatchDataCode(this.bus.readByte(address), ADDR_MODE.IMM);
     return address;
   }
   private izx(): uint16{
@@ -181,25 +186,30 @@ export class CPU2A03 implements ICPU {
       this.addCycles(1);
     }
     this.regs.PC += 2;
+    debugCatchDataCode(address, ADDR_MODE.IZX);
     return address;
   }
   private zp(): uint16{
     // Zero Page
     const address = this.bus.readByte(this.regs.PC) & 0xFF;
     this.regs.PC += 1;
+    debugCatchDataCode(address, ADDR_MODE.ZP);
     return address;
   }
 
   // Operations
   private JMP(address: uint16){
+    debugCatchOpName("JMP");
     this.regs.PC = address;
   }
   private LDX(address: uint16){
+    debugCatchOpName("LDX");
     this.regs.X = this.bus.readByte(address);
     this.setFlag(Flags.N, (this.regs.X & 0x80) === 0x80);
     this.setFlag(Flags.Z, this.regs.X === 0x00);
   }
   private STX(address: uint16){
+    debugCatchOpName("STX");
     this.bus.writeByte(address, this.regs.X);
   }
 

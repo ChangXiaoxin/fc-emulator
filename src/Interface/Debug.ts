@@ -126,9 +126,8 @@ export function debugCatchDataCode(dataCode: any, addrMode: ADDR_MODE)
       break;
     case ADDR_MODE.ZP:
       cpulog.dataContent = "$" + zeroFill((dataCode&0xFF).toString(16).toUpperCase(), 2) + " = "
-                         + zeroFill(cpuregs.X.toString(16).toUpperCase(), 2);
+                         + zeroFill((cpubus.readByte(dataCode)).toString(16).toUpperCase(), 2);
       break;
-
     default:
       break;
   }

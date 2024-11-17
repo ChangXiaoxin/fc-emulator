@@ -1,3 +1,4 @@
+import { debugCatchCPUBus } from "../Interface/Debug";
 import { IEmulator, IOptions } from "../Interface/Emulator";
 import { Cartridge } from "./cartridge";
 import { CPU2A03 } from "./CPU2A03";
@@ -12,6 +13,8 @@ export class FCEmulator implements IEmulator {
     this.cpu = new CPU2A03(userData);
     this.cpuBus.cartridge = cartridge;
     this.cpu.bus = this.cpuBus;
+    
+    debugCatchCPUBus(this.cpuBus);
   }
 
   public clock(): void {

@@ -5,7 +5,7 @@ import { uint16, uint8 } from "../Interface/typedef";
 export class CPUBus implements IBus {
   public cartridge!: ICartridge;
 
-  private readonly ram = new Uint8Array(2 * 1024);
+  private readonly ram = new Uint8Array(2 * 1024).fill(0);
   
   public writeByte(address: uint16, data: uint8): void {
     if (address < 0x2000){
@@ -23,7 +23,7 @@ export class CPUBus implements IBus {
   public readByte(address: uint16): uint8 {
     if (address < 0x2000){
       // RAM
-      return this.ram[address * 0x07FF];
+      return this.ram[address & 0x07FF];
     }
     else if (address < 0x6000){
       // IO Registers

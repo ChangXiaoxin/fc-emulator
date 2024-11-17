@@ -33,7 +33,6 @@ export class CPU2A03 implements ICPU {
 
   constructor(userdata?: any){
     debugCatchCPURegs(this.regs);
-    debugCatchCPUBus(this.bus);
 
     this.userData = userdata;
 
@@ -185,6 +184,30 @@ export class CPU2A03 implements ICPU {
         this.LDA(address);
         this.addCycles(2);
         break;
+      case 0xF0:
+        // BEQ rel 2*
+        address = this.rel();
+        this.BEQ(address);
+        this.addCycles(2);
+        break;
+      case 0xD0:
+        // BNE rel 2*
+        address = this.rel();
+        this.BNE(address);
+        this.addCycles(2);
+        break;
+      case 0x85:
+        // STA zp 3
+        address = this.zp();
+        this.STA(address);
+        this.addCycles(3);
+        break;
+      case 0x24:
+        // BIT zp 3
+        address = this.zp();
+        this.BIT(address);
+        this.addCycles(3);
+        break;
       case 0xA1:
         // LDA izx 6
         address = this.izx();
@@ -255,9 +278,26 @@ export class CPU2A03 implements ICPU {
     this.setFlag(Flags.N, (this.regs.X & 0x80) === 0x80);
     this.setFlag(Flags.Z, this.regs.X === 0x00);
   }
+  private LDA(address: uint16){
+    debugCatchOpName("LDA");
+    this.regs.A = this.bus.readByte(address);
+    this.setFlag(Flags.N, (this.regs.A & 0x80) === 0x80);
+    this.setFlag(Flags.Z, this.regs.A === 0x00);
+  }
   private STX(address: uint16){
     debugCatchOpName("STX");
     this.bus.writeByte(address, this.regs.X);
+  }
+  private STA(address: uint16){
+    debugCatchOpName("STA");
+    this.bus.writeByte(address, this.regs.A);
+  }
+  private BIT(address: uint16){
+    debugCatchOpName("BIT");
+    var temp = this.bus.readByte(address);
+    this.setFlag(Flags.Z, (this.regs.A & temp) === 0x00);
+    this.regs.P |= (temp & Flags.N);
+    this.regs.P |= (temp & Flags.V);
   }
   private JSR(address: uint16){
     debugCatchOpName("JSR");
@@ -283,11 +323,13 @@ export class CPU2A03 implements ICPU {
     debugCatchOpName("BCC");
     this.branchHelper(!this.isFlagSet(Flags.C), address);
   }
-  private LDA(address: uint16){
-    debugCatchOpName("LDA");
-    this.regs.A = this.bus.readByte(address);
-    this.setFlag(Flags.N, (this.regs.A & 0x80) === 0x80);
-    this.setFlag(Flags.Z, this.regs.A === 0x00);
+  private BEQ(address: uint8){
+    debugCatchOpName("BEQ");
+    this.branchHelper(this.isFlagSet(Flags.Z), address);
+  }
+  private BNE(address: uint8){
+    debugCatchOpName("BNE");
+    this.branchHelper(!this.isFlagSet(Flags.Z), address);
   }
 
   // Internal Helper.

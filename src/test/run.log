@@ -1,5 +1,5 @@
-C000                                       A:00 X:00 Y:00 P:24 SP:FD PPU: CYC:7
-C5F5                                       A:00 X:00 Y:00 P:24 SP:FD PPU: CYC:10
-C5F7                                       A:00 X:00 Y:00 P:26 SP:FD PPU: CYC:12
-C5F9                                       A:00 X:00 Y:00 P:26 SP:FD PPU: CYC:15
-C5FB                                       A:00 X:00 Y:00 P:26 SP:FD PPU: CYC:18
+C000  4C                                     A:00 X:00 Y:00 P:24 SP:FD PPU: CYC:7
+C5F5  A2                                     A:00 X:00 Y:00 P:24 SP:FD PPU: CYC:10
+C5F7  86                                     A:00 X:00 Y:00 P:26 SP:FD PPU: CYC:12
+C5F9  86                                     A:00 X:00 Y:00 P:26 SP:FD PPU: CYC:15
+C5FB  86                                     A:00 X:00 Y:00 P:26 SP:FD PPU: CYC:18

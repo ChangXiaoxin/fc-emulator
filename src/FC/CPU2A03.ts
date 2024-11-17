@@ -1,5 +1,4 @@
-import * as fs from 'fs';
-import { LOGS, logTemplate } from '../Interface/Debug';
+import { catchClocks, catchOpCode, catchRegs, logTemplate, writeToLogFlie } from '../Interface/Debug';
 import { IBus } from "../Interface/Bus";
 import { Flags, ICPU, IRegs } from "../Interface/CPU";
 import { uint16, uint8 } from "../Interface/typedef";
@@ -31,6 +30,7 @@ export class CPU2A03 implements ICPU {
   private readonly regs = new Regs();
   // Debug log
   private userData?: any;
+
   constructor(userdata?: any){
     this.userData = userdata;
 
@@ -44,10 +44,7 @@ export class CPU2A03 implements ICPU {
     this.deferCycles = 0;
     this.clocks = 6;
   }
-  private zeroFill(str: string, num: number): string{
-    return str.padStart(num-str.length+1, "0");
-  
-  }
+
   public reset(): void {
     this.regs.A = 0; //unchanged
     this.regs.X = 0; //unchanged
@@ -121,29 +118,10 @@ export class CPU2A03 implements ICPU {
 
   private step(): void {
     // Debug log
-    let cpuLog:LOGS = {
-      PC: '',
-      opCode: '',
-      dataCode: '',
-      opName: '',
-      dataContent: '',
-      A: '',
-      X: '',
-      Y: '',
-      P: '',
-      SP: '',
-      PPU: '',
-      CYC: ''
-    };
-    cpuLog.PC  = this.regs.PC.toString(16).toUpperCase();
-    cpuLog.A   = this.zeroFill(this.regs.A.toString(16).toUpperCase(), 2);
-    cpuLog.X   = this.zeroFill(this.regs.X.toString(16).toUpperCase(), 2);
-    cpuLog.Y   = this.zeroFill(this.regs.Y.toString(16).toUpperCase(), 2);
-    cpuLog.P   = this.zeroFill(this.regs.P.toString(16).toUpperCase(), 2);
-    cpuLog.SP  = this.zeroFill(this.regs.S.toString(16).toUpperCase(), 2);
-    cpuLog.CYC = this.clocks.toString();
-
+    catchRegs(this.regs);
+    catchClocks(this.clocks);
     const opcode = this.bus.readByte(this.regs.PC++);
+    catchOpCode(opcode);
     let address: uint16 = 0xF0000;
     switch (opcode) {
       case 0x4C:
@@ -174,8 +152,7 @@ export class CPU2A03 implements ICPU {
         throw new Error(`Invalid opcode: ${opcode}!`);
     }
     // Debug log
-    let logContent = logTemplate(cpuLog);
-    fs.appendFileSync(this.userData, logContent);
+    writeToLogFlie(this.userData);
   }
 
   private addCycles(cycle: number){

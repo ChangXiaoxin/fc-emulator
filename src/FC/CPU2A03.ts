@@ -157,10 +157,38 @@ export class CPU2A03 implements ICPU {
         this.NOP();
         this.addCycles(2);
         break;
+      case 0x38:
+        // SEC 2
+        this.SEC();
+        this.addCycles(2);
+        break;
+      case 0x18:
+        // CLC 2
+        this.CLC();
+        this.addCycles(2);
+        break;
+      case 0xB0:
+        // BCS rel 2*
+        address = this.rel();
+        this.BCS(address);
+        this.addCycles(2);
+        break;
+      case 0x90:
+        // BCC rel 2*
+        address = this.rel();
+        this.BCC(address);
+        this.addCycles(2);
+        break;
+      case 0xA9:
+        // LDA imm 2
+        address = this.imm();
+        this.LDA(address);
+        this.addCycles(2);
+        break;
       case 0xA1:
         // LDA izx 6
         address = this.izx();
-        // TODO: operation LDA
+        this.LDA(address);
         this.addCycles(6);
         break;
       default:
@@ -208,6 +236,13 @@ export class CPU2A03 implements ICPU {
     debugCatchDataCode(address, ADDR_MODE.ZP);
     return address;
   }
+  private rel(): uint8{
+    // Relative
+    const address = this.bus.readByte(this.regs.PC) & 0xFF;
+    this.regs.PC += 1;
+    debugCatchDataCode(address, ADDR_MODE.REL);
+    return address;
+  }
 
   // Operations
   private JMP(address: uint16){
@@ -231,6 +266,48 @@ export class CPU2A03 implements ICPU {
   }
   private NOP(){
     debugCatchOpName("NOP");
+  }
+  private CLC(){
+    debugCatchOpName("CLC");
+    this.setFlag(Flags.C, false);
+  }
+  private SEC(){
+    debugCatchOpName("SEC");
+    this.setFlag(Flags.C, true);
+  }
+  private BCS(address: uint8){
+    debugCatchOpName("BCS");
+    this.branchHelper(this.isFlagSet(Flags.C), address);
+  }
+  private BCC(address: uint8){
+    debugCatchOpName("BCC");
+    this.branchHelper(!this.isFlagSet(Flags.C), address);
+  }
+  private LDA(address: uint16){
+    debugCatchOpName("LDA");
+    this.regs.A = this.bus.readByte(address);
+    this.setFlag(Flags.N, (this.regs.A & 0x80) === 0x80);
+    this.setFlag(Flags.Z, this.regs.A === 0x00);
+  }
+
+  // Internal Helper.
+  private branchHelper(flag: boolean, offset: uint8){
+    if (flag){
+      var prevPCHigh = this.regs.PC & 0xFF00;
+      this.addCycles(1);
+      if (offset & 0x80){
+        offset = -this.complement(offset);
+      }
+      this.regs.PC += offset;
+      var curPCHigh = this.regs.PC & 0xFF00;
+      if (prevPCHigh !== curPCHigh){
+        // Crossing page boundary, cost a cycle.
+        this.addCycles(1);
+      }
+    }
+  }
+  private complement(value: uint8){
+    return (~value & 0xFF) + 1;
   }
 
 }

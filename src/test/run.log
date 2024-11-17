@@ -5,3 +5,18 @@ C5F9  86 10     STX $10 = 00                    A:00 X:00 Y:00 P:26 SP:FD PPU:  
 C5FB  86 11     STX $11 = 00                    A:00 X:00 Y:00 P:26 SP:FD PPU:        CYC:18
 C5FD  20 2D C7  JSR $C72D                       A:00 X:00 Y:00 P:26 SP:FD PPU:        CYC:21
 C72D  EA        NOP                             A:00 X:00 Y:00 P:26 SP:FB PPU:        CYC:27
+C72E  38        SEC                             A:00 X:00 Y:00 P:26 SP:FB PPU:        CYC:29
+C72F  B0 04     BCS $C735                       A:00 X:00 Y:00 P:27 SP:FB PPU:        CYC:31
+C735  EA        NOP                             A:00 X:00 Y:00 P:27 SP:FB PPU:        CYC:34
+C736  18        CLC                             A:00 X:00 Y:00 P:27 SP:FB PPU:        CYC:36
+C737  B0 03     BCS $C73C                       A:00 X:00 Y:00 P:26 SP:FB PPU:        CYC:38
+C739  4C 40 C7  JMP $C740                       A:00 X:00 Y:00 P:26 SP:FB PPU:        CYC:40
+C740  EA        NOP                             A:00 X:00 Y:00 P:26 SP:FB PPU:        CYC:43
+C741  38        SEC                             A:00 X:00 Y:00 P:26 SP:FB PPU:        CYC:45
+C742  90 03     BCC $C747                       A:00 X:00 Y:00 P:27 SP:FB PPU:        CYC:47
+C744  4C 4B C7  JMP $C74B                       A:00 X:00 Y:00 P:27 SP:FB PPU:        CYC:49
+C74B  EA        NOP                             A:00 X:00 Y:00 P:27 SP:FB PPU:        CYC:52
+C74C  18        CLC                             A:00 X:00 Y:00 P:27 SP:FB PPU:        CYC:54
+C74D  90 04     BCC $C753                       A:00 X:00 Y:00 P:26 SP:FB PPU:        CYC:56
+C753  EA        NOP                             A:00 X:00 Y:00 P:26 SP:FB PPU:        CYC:59
+C754  A9 00     LDA #$00                        A:00 X:00 Y:00 P:26 SP:FB PPU:        CYC:61

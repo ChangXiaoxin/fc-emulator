@@ -1,5 +1,4 @@
 import * as fs from 'fs';
-import { Regs } from "../FC/CPU2A03";
 import { IBus } from './Bus';
 import { IRegs } from './CPU';
 export interface LOGS {
@@ -22,6 +21,7 @@ export enum ADDR_MODE {
   ABS,
   ZP,
   IZX,
+  REL,
 };
 
 // Debug log
@@ -119,9 +119,16 @@ export function debugCatchDataCode(dataCode: any, addrMode: ADDR_MODE)
       cpulog.dataContent = "$" + zeroFill(((dataCode>>8)&0xFF).toString(16).toUpperCase(), 2)
                                + zeroFill((dataCode&0xFF).toString(16).toUpperCase(), 2);
       break;
+    case ADDR_MODE.REL:
+      dataCode += cpuregs.PC;
+      cpulog.dataContent = "$" + zeroFill(((dataCode>>8)&0xFF).toString(16).toUpperCase(), 2)
+                               + zeroFill((dataCode&0xFF).toString(16).toUpperCase(), 2);
+      break;
     case ADDR_MODE.ZP:
       cpulog.dataContent = "$" + zeroFill((dataCode&0xFF).toString(16).toUpperCase(), 2) + " = "
                          + zeroFill(cpuregs.X.toString(16).toUpperCase(), 2);
+      break;
+
     default:
       break;
   }

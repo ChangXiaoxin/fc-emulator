@@ -14,7 +14,7 @@ enum MemAddress {
   STACK_BASE = 0x100,
 }
 
-export class CPU_Regs implements IRegs{
+export class Regs implements IRegs{
   A = 0;
   X = 0;
   Y = 0;
@@ -23,12 +23,12 @@ export class CPU_Regs implements IRegs{
   P = 0;
 }
 
-export class CPU_2A03 implements ICPU {
+export class CPU2A03 implements ICPU {
   public bus!: IBus;
 
   private deferCycles = 0;
   private clocks = 0;
-  private readonly regs = new CPU_Regs();
+  private readonly regs = new Regs();
   // Debug log
   private userData?: any;
   constructor(userdata?: any){

@@ -2,7 +2,7 @@
 // Import the module and reference it with the alias vscode in your code below
 import * as vscode from 'vscode';
 import * as fs from 'fs';
-import { FC_Emulator } from './FC/fc_emulator';
+import { FCEmulator } from './FC/FCEmulator';
 import { IOptions } from "./Interface/Emulator";
 // This method is called when your extension is activated
 // Your extension is activated the very first time the command is executed
@@ -34,10 +34,10 @@ export function activate(context: vscode.ExtensionContext) {
 		// Debug log
 		const log_path = 'C:/Users/Chang/Documents/Code/fc-emulator/src/test/run.log';
         fs.writeFileSync(log_path, "");
-		let fc_emulator = new FC_Emulator(fc_data, fc_options, log_path);
+		let fcEmulator = new FCEmulator(fc_data, fc_options, log_path);
 		while(1)
 		{
-		  fc_emulator.clock();
+		  fcEmulator.clock();
 		}
 	}));
 }

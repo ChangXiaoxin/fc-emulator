@@ -38,19 +38,19 @@ export function zeroFill(str: string, num: number): string{
   return str.padStart(num-str.length+1, "0");  
 }
 var cpulog:LOGS = {
-    PC: '',
-    opCode: '',
-    dataCode: '',
-    opName: '',
-    dataContent: '',
-    A: '',
-    X: '',
-    Y: '',
-    P: '',
-    SP: '',
-    PPU: '',
-    CYC: ''
-  };
+  PC: '',
+  opCode: '',
+  dataCode: '',
+  opName: '',
+  dataContent: '',
+  A: '',
+  X: '',
+  Y: '',
+  P: '',
+  SP: '',
+  PPU: '',
+  CYC: ''
+};
 
 function debugRestCUPLog(){
   cpulog = {

@@ -301,6 +301,12 @@ export class CPU2A03 implements ICPU {
         this.EOR(address);
         this.addCycles(2);
         break;
+      case 0x69:
+        // ADC imm 2
+        address = this.imm();
+        this.ADC(address);
+        this.addCycles(2);
+        break;
       case 0xA1:
         // LDA izx 6
         address = this.izx();
@@ -391,10 +397,10 @@ export class CPU2A03 implements ICPU {
   }
   private BIT(address: uint16){
     debugCatchOpName("BIT");
-    var temp = this.bus.readByte(address);
-    this.setFlag(Flags.Z, (this.regs.A & temp) === 0x00);
-    this.setFlag(Flags.N, (temp & Flags.N) === Flags.N);
-    this.setFlag(Flags.V, (temp & Flags.V) === Flags.V);
+    var memory = this.bus.readByte(address);
+    this.setFlag(Flags.Z, (this.regs.A & memory) === 0x00);
+    this.setFlag(Flags.N, (memory & Flags.N) === Flags.N);
+    this.setFlag(Flags.V, (memory & Flags.V) === Flags.V);
   }
   private JSR(address: uint16){
     debugCatchOpName("JSR");
@@ -449,20 +455,31 @@ export class CPU2A03 implements ICPU {
   }
   private PLP(){
     debugCatchOpName("PLP");
-    let temp = this.popByte();
-    this.setFlag(Flags.C, (temp & Flags.C) === Flags.C);
-    this.setFlag(Flags.Z, (temp & Flags.Z) === Flags.Z);
+    let popedP = this.popByte();
+    this.setFlag(Flags.C, (popedP & Flags.C) === Flags.C);
+    this.setFlag(Flags.Z, (popedP & Flags.Z) === Flags.Z);
     // FIXME: The effect of changing this flag I is delayed 1 instruction.
-    this.setFlag(Flags.I, (temp & Flags.I) === Flags.I);
-    this.setFlag(Flags.D, (temp & Flags.D) === Flags.D);
-    this.setFlag(Flags.V, (temp & Flags.V) === Flags.V);
-    this.setFlag(Flags.N, (temp & Flags.N) === Flags.N);
+    this.setFlag(Flags.I, (popedP & Flags.I) === Flags.I);
+    this.setFlag(Flags.D, (popedP & Flags.D) === Flags.D);
+    this.setFlag(Flags.V, (popedP & Flags.V) === Flags.V);
+    this.setFlag(Flags.N, (popedP & Flags.N) === Flags.N);
   }
   private AND(address: uint16){
     debugCatchOpName("AND");
     this.regs.A = this.regs.A & this.bus.readByte(address);
     this.setFlag(Flags.Z, (this.regs.A === 0x00));
     this.setFlag(Flags.N, (this.regs.A  & Flags.N) === Flags.N);
+  }
+  private ADC(address: uint16){
+    debugCatchOpName("ADC");
+    var flagC = this.isFlagSet(Flags.C) ? 1 : 0;
+    var memory = this.bus.readByte(address);
+    var result = this.regs.A + memory + flagC;
+    this.setFlag(Flags.C, (result > 0xFF));
+    this.setFlag(Flags.V, (((result ^ this.regs.A) & (result ^ memory)) === 0x80));
+    this.regs.A = result & 0xFF;
+    this.setFlag(Flags.Z, (this.regs.A === 0x00));
+    this.setFlag(Flags.N, (this.regs.A & Flags.N) === Flags.N);
   }
   private ORA(address: uint16){
     debugCatchOpName("ORA");
@@ -522,10 +539,10 @@ export class CPU2A03 implements ICPU {
   /* Internal Helper.
   /************************************************/
   private CMPHelper(reg: uint8, address: uint16){
-    let temp = this.bus.readByte(address);
-    this.setFlag(Flags.C, (reg >= temp));
-    this.setFlag(Flags.Z, (reg === temp));
-    this.setFlag(Flags.N, ((reg - temp) & Flags.N) === Flags.N);
+    let memory = this.bus.readByte(address);
+    this.setFlag(Flags.C, (reg >= memory));
+    this.setFlag(Flags.Z, (reg === memory));
+    this.setFlag(Flags.N, ((reg - memory) & Flags.N) === Flags.N);
   }
   private branchHelper(flag: boolean, offset: uint8){
     if (flag){

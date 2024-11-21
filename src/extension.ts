@@ -30,8 +30,7 @@ export function activate(context: vscode.ExtensionContext) {
 		const realJsPath = panel.webview.asWebviewUri(
 			vscode.Uri.joinPath(context.extensionUri, 'src', 'webView', 'index.js')
 		);
-        // TODO: fix the problem report about the vscode.Uri, but looks doesn't matter.
-		panel.webview.html = fs.readFileSync(realPath).toString().replace('SOURCE_PATH_PLACEHOLDER', realJsPath);
+		panel.webview.html = fs.readFileSync(realPath).toString().replace('SOURCE_PATH_PLACEHOLDER', realJsPath as any);
 		// Display a message box to the user
 		vscode.window.showInformationMessage('Run FC Emulator from FC Emulator!');
 

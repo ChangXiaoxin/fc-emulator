@@ -35,7 +35,7 @@ export var logTemplate = (
 `;
 
 export function zeroFill(str: string, num: number): string{
-  return str.padStart(num-str.length+1, "0");  
+  return str.padStart(num, "0");  
 }
 var cpulog:LOGS = {
   PC: '',

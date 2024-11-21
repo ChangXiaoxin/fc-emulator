@@ -46,7 +46,7 @@ export function activate(context: vscode.ExtensionContext) {
 		const rom_path = path.join(context.extensionPath, 'src', 'test', 'nestest.nes');
 		var fc_data = fs.readFileSync(rom_path);
 		// Debug log
-		const log_path = path.join(context.extensionPath, 'src', 'test', 'nestest.log');
+		const log_path = path.join(context.extensionPath, 'src', 'test', 'run.log');
         fs.writeFileSync(log_path, "");
 		let fcEmulator = new FCEmulator(fc_data, fc_options, log_path);
 		while(1)

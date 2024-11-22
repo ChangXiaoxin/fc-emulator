@@ -393,6 +393,61 @@ export class CPU2A03 implements ICPU {
         this.LDA(address);
         this.addCycles(6);
         break;
+      case 0xAE:
+        // LDX abs 4
+        address = this.abs();
+        this.LDX(address);
+        this.addCycles(4);
+        break;
+      case 0xAD:
+        // LDA abs 4
+        address = this.abs();
+        this.LDA(address);
+        this.addCycles(4);
+        break;
+      case 0x40:
+        // RTI 6
+        this.RTI();
+        this.addCycles(6);
+        break;
+      case 0x4A:
+        // LSR 2
+        this.LSR();
+        this.addCycles(2);
+        break;
+      case 0x0A:
+        // ASL 2
+        this.ASL();
+        this.addCycles(2);
+        break;
+      case 0x6A:
+        // ROR 2
+        this.ROR();
+        this.addCycles(2);
+        break;
+      case 0x2A:
+        // ROL 2
+        this.ROL();
+        this.addCycles(2);
+        break;
+      case 0xA5:
+        // LDA zp 3
+        address = this.zp();
+        this.LDA(address);
+        this.addCycles(3);
+        break;
+      case 0x8D:
+        // STA abs 4
+        address = this.abs();
+        this.STA(address);
+        this.addCycles(4);
+        break;
+      case 0xC9:
+        // CMP imm 2
+        address = this.imm();
+        this.CMP(address);
+        this.addCycles(2);
+        break;
       default:
         throw new Error(`Invalid opcode: ${opcode.toString(16).toUpperCase()}`);
     }
@@ -423,13 +478,11 @@ export class CPU2A03 implements ICPU {
   }
   private izx(): uint16{
     // Indexed Indirect X
-    const peeked = this.bus.readWord(this.regs.PC);
-    const address = this.bus.readWord(this.regs.X + peeked);
-    if ((peeked & 0xFF00) !== (address & 0xFF00))
-    {
-      this.addCycles(1);
-    }
-    this.regs.PC += 2;
+    const peeked1 = this.bus.readByte(this.regs.PC);
+    const peeked2 = this.bus.readByte((this.regs.X + peeked1) & 0xFF);
+    const peeked3 = this.bus.readByte((this.regs.X + peeked1 + 1) & 0xFF) << 8;
+    const address = peeked3 | peeked2;
+    this.regs.PC += 1;
     debugCatchDataCode(address, ADDR_MODE.IZX);
     return address;
   }
@@ -549,6 +602,43 @@ export class CPU2A03 implements ICPU {
     this.setFlag(Flags.D, (popedP & Flags.D) === Flags.D);
     this.setFlag(Flags.V, (popedP & Flags.V) === Flags.V);
     this.setFlag(Flags.N, (popedP & Flags.N) === Flags.N);
+  }
+  private RTI(){
+    debugCatchOpName("RTI");
+    this.regs.P = (this.regs.P & 0x30) | (this.popByte() & 0xCF);
+    this.regs.PC = this.popWord();
+  }
+  private LSR(){
+    debugCatchOpName("LSR");
+    this.setFlag(Flags.C, ((this.regs.A & 0x01) === 0x01));
+    this.regs.A = 0xFF & (this.regs.A >> 1);
+    this.checkZNForReg(this.regs.A);
+  }
+  private ASL(){
+    debugCatchOpName("ASL");
+    this.setFlag(Flags.C, ((this.regs.A & 0x80) === 0x80));
+    this.regs.A = 0xFF & (this.regs.A << 1);
+    this.checkZNForReg(this.regs.A);
+  }
+  private ROR(){
+    debugCatchOpName("ROR");
+    let flagC = this.isFlagSet(Flags.C);
+    this.setFlag(Flags.C, ((this.regs.A & 0x01) === 0x01));
+    this.regs.A = 0xFF & (this.regs.A >> 1);
+    if (flagC){
+      this.regs.A |= 0x80;
+    }
+    this.checkZNForReg(this.regs.A);
+  }
+  private ROL(){
+    debugCatchOpName("ROL");
+    let flagC = this.isFlagSet(Flags.C);
+    this.setFlag(Flags.C, ((this.regs.A & 0x80) === 0x80));
+    this.regs.A = 0xFF & (this.regs.A << 1);
+    if (flagC){
+      this.regs.A |= 0x01;
+    }
+    this.checkZNForReg(this.regs.A);
   }
   private AND(address: uint16){
     debugCatchOpName("AND");

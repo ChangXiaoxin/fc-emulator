@@ -106,12 +106,16 @@ export function debugCatchOpCode(opCode: any)
   cpulog.opCode = zeroFill(opCode.toString(16).toUpperCase(), 2);
 }
 export function debugCatchExtendedDataContent(){
-  if ((cpulog.opName === "STX" ||
-       cpulog.opName === "STY" ||
-       cpulog.opName === "STA" 
+  if ((cpulog.opName === "LDX" || cpulog.opName === "LDY" || cpulog.opName === "LDA" ||
+       cpulog.opName === "STX" || cpulog.opName === "STY" || cpulog.opName === "STA" 
       )
       && (cpulog.addrMode === ADDR_MODE.ABS)){
     cpulog.dataContent += " = " + zeroFill((cpubus.readByte(cpulog.address)).toString(16).toUpperCase(), 2);
+  }
+  else if ((cpulog.opName === "LSR" || cpulog.opName === "ASL" ||
+            cpulog.opName === "ROR" || cpulog.opName === "ROL")
+           && (cpulog.addrMode === ADDR_MODE.IMP)){
+    cpulog.dataContent += "A";
   }
 }
 export function debugCatchDataCode(address: uint16, addrMode: ADDR_MODE)
@@ -141,6 +145,15 @@ export function debugCatchDataCode(address: uint16, addrMode: ADDR_MODE)
       break;
     case ADDR_MODE.ZP:
       cpulog.dataContent = "$" + zeroFill((address&0xFF).toString(16).toUpperCase(), 2) + " = "
+                         + zeroFill((cpubus.readByte(address)).toString(16).toUpperCase(), 2);
+      break;
+    case ADDR_MODE.IZX:
+      let peeked = cpubus.readByte(cpuregs.PC-1);
+      let peekedStr = zeroFill((peeked).toString(16).toUpperCase(), 2);
+      cpulog.dataCode = peekedStr;
+      cpulog.dataContent = "($" + peekedStr + ",X) @ "
+                         + zeroFill(((peeked + cpuregs.X) & 0xFF).toString(16).toUpperCase(), 2) + " = "
+                         + zeroFill((address).toString(16).toUpperCase(), 4) + " = "
                          + zeroFill((cpubus.readByte(address)).toString(16).toUpperCase(), 2);
       break;
     default:

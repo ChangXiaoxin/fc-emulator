@@ -169,7 +169,7 @@ export function debugCatchOpName(opName: any)
   debugCatchExtendedDataContent();
 }
 
-export function debugWriteToLogFlie(path: string){
+export function debugCatchToLogFlie(path: string){
   let logContent = logTemplate(cpulog);
   fs.appendFileSync(path, logContent);
   debugRestCUPLog();

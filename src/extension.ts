@@ -18,19 +18,19 @@ export function activate(context: vscode.ExtensionContext) {
 	// The commandId parameter must match the command field in package.json
 	context.subscriptions.push(vscode.commands.registerCommand('fc-emulator.RunFCEmulator', () => {
 		// The code you place here will be executed every time your command is executed
-		const panel = vscode.window.createWebviewPanel(
-			'FCEmulator',
-			'FC Emulator',
-			vscode.ViewColumn.One,
-			{
-				enableScripts: true
-			}
-		  );
-		const realPath = path.join(context.extensionPath, 'src', 'webView', 'index.html');
-		const realJsPath = panel.webview.asWebviewUri(
-			vscode.Uri.joinPath(context.extensionUri, 'src', 'webView', 'index.js')
-		);
-		panel.webview.html = fs.readFileSync(realPath).toString().replace('SOURCE_PATH_PLACEHOLDER', realJsPath as any);
+		// const panel = vscode.window.createWebviewPanel(
+		// 	'FCEmulator',
+		// 	'FC Emulator',
+		// 	vscode.ViewColumn.One,
+		// 	{
+		// 		enableScripts: true
+		// 	}
+		//   );
+		// const realPath = path.join(context.extensionPath, 'src', 'webView', 'index.html');
+		// const realJsPath = panel.webview.asWebviewUri(
+		// 	vscode.Uri.joinPath(context.extensionUri, 'src', 'webView', 'index.js')
+		// );
+		// panel.webview.html = fs.readFileSync(realPath).toString().replace('SOURCE_PATH_PLACEHOLDER', realJsPath as any);
 		// Display a message box to the user
 		vscode.window.showInformationMessage('Run FC Emulator from FC Emulator!');
 

@@ -307,6 +307,35 @@ export class CPU2A03 implements ICPU {
         this.ADC(address);
         this.addCycles(2);
         break;
+      case 0xA0:
+        // LDY imm 2
+        address = this.imm();
+        this.LDY(address);
+        this.addCycles(2);
+        break;
+      case 0xC0:
+        // CPY imm 2
+        address = this.imm();
+        this.CPY(address);
+        this.addCycles(2);
+        break;
+      case 0xE0:
+        // CPX imm 2
+        address = this.imm();
+        this.CPX(address);
+        this.addCycles(2);
+        break;
+      case 0xE9:
+        // SBC imm 2
+        address = this.imm();
+        this.SBC(address);
+        this.addCycles(2);
+        break;
+      case 0xC8:
+        // INY 2
+        this.INY();
+        this.addCycles(2);
+        break;
       case 0xA1:
         // LDA izx 6
         address = this.izx();
@@ -378,14 +407,17 @@ export class CPU2A03 implements ICPU {
   private LDX(address: uint16){
     debugCatchOpName("LDX");
     this.regs.X = this.bus.readByte(address);
-    this.setFlag(Flags.N, (this.regs.X & 0x80) === 0x80);
-    this.setFlag(Flags.Z, this.regs.X === 0x00);
+    this.checkZNForReg(this.regs.X);
   }
   private LDA(address: uint16){
     debugCatchOpName("LDA");
     this.regs.A = this.bus.readByte(address);
-    this.setFlag(Flags.N, (this.regs.A & 0x80) === 0x80);
-    this.setFlag(Flags.Z, this.regs.A === 0x00);
+    this.checkZNForReg(this.regs.A);
+  }
+  private LDY(address: uint16){
+    debugCatchOpName("LDY");
+    this.regs.Y = this.bus.readByte(address);
+    this.checkZNForReg(this.regs.Y);
   }
   private STX(address: uint16){
     debugCatchOpName("STX");
@@ -450,8 +482,7 @@ export class CPU2A03 implements ICPU {
   private PLA(){
     debugCatchOpName("PLA");
     this.regs.A = this.popByte();
-    this.setFlag(Flags.Z, (this.regs.A === 0x00));
-    this.setFlag(Flags.N, (this.regs.A & Flags.N) === Flags.N);
+    this.checkZNForReg(this.regs.A);
   }
   private PLP(){
     debugCatchOpName("PLP");
@@ -467,8 +498,7 @@ export class CPU2A03 implements ICPU {
   private AND(address: uint16){
     debugCatchOpName("AND");
     this.regs.A = this.regs.A & this.bus.readByte(address);
-    this.setFlag(Flags.Z, (this.regs.A === 0x00));
-    this.setFlag(Flags.N, (this.regs.A  & Flags.N) === Flags.N);
+    this.checkZNForReg(this.regs.A);
   }
   private ADC(address: uint16){
     debugCatchOpName("ADC");
@@ -476,26 +506,46 @@ export class CPU2A03 implements ICPU {
     var memory = this.bus.readByte(address);
     var result = this.regs.A + memory + flagC;
     this.setFlag(Flags.C, (result > 0xFF));
-    this.setFlag(Flags.V, (((result ^ this.regs.A) & (result ^ memory)) === 0x80));
+    this.setFlag(Flags.V, (((result ^ this.regs.A) & (result ^ memory) & 0x80) === 0x80));
     this.regs.A = result & 0xFF;
-    this.setFlag(Flags.Z, (this.regs.A === 0x00));
-    this.setFlag(Flags.N, (this.regs.A & Flags.N) === Flags.N);
+    this.checkZNForReg(this.regs.A);
+  }
+  private SBC(address: uint16){
+    debugCatchOpName("SBC");
+    var flagC = this.isFlagSet(Flags.C) ? 1 : 0;
+    var memory = this.bus.readByte(address);
+    var result = this.regs.A + (~memory) + flagC;
+    this.setFlag(Flags.C, !(result < 0x00));
+    this.setFlag(Flags.V, (((result ^ this.regs.A) & (result ^ (~memory)) & 0x80) === 0x80));
+    this.regs.A = result & 0xFF;
+    this.checkZNForReg(this.regs.A);
   }
   private ORA(address: uint16){
     debugCatchOpName("ORA");
     this.regs.A |= this.bus.readByte(address);
-    this.setFlag(Flags.Z, (this.regs.A === 0x00));
-    this.setFlag(Flags.N, (this.regs.A & Flags.N) === Flags.N);
+    this.checkZNForReg(this.regs.A);
   }
   private EOR(address: uint16){
     debugCatchOpName("EOR");
     this.regs.A ^= this.bus.readByte(address);
-    this.setFlag(Flags.Z, (this.regs.A === 0x00));
-    this.setFlag(Flags.N, (this.regs.A & Flags.N) === Flags.N);
+    this.checkZNForReg(this.regs.A);
   }
   private CMP(address: uint16){
     debugCatchOpName("CMP");
     this.CMPHelper(this.regs.A, address);
+  }
+  private CPY(address: uint16){
+    debugCatchOpName("CPY");
+    this.CMPHelper(this.regs.Y, address);
+  }
+  private CPX(address: uint16){
+    debugCatchOpName("CPX");
+    this.CMPHelper(this.regs.X, address);
+  }
+  private INY(){
+    debugCatchOpName("INY");
+    this.regs.Y++;
+    this.checkZNForReg(this.regs.Y);
   }
   private BCS(address: uint16){
     debugCatchOpName("BCS");
@@ -538,6 +588,10 @@ export class CPU2A03 implements ICPU {
   /************************************************/
   /* Internal Helper.
   /************************************************/
+  private checkZNForReg(reg: uint8){
+    this.setFlag(Flags.Z, (reg === 0x00));
+    this.setFlag(Flags.N, (reg & Flags.N) === Flags.N);
+  }
   private CMPHelper(reg: uint8, address: uint16){
     let memory = this.bus.readByte(address);
     this.setFlag(Flags.C, (reg >= memory));

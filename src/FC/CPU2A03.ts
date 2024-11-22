@@ -1,7 +1,7 @@
-import { ADDR_MODE, debugCatchClocks, debugCatchCPUBus, debugCatchCPURegs, debugCatchDataCode, debugCatchOpCode, debugCatchOpName, debugCatchRegs, logTemplate, writeToLogFlie } from '../Interface/Debug';
 import { IBus } from "../Interface/Bus";
 import { Flags, ICPU, IRegs } from "../Interface/CPU";
 import { uint16, uint8 } from "../Interface/typedef";
+import { ADDR_MODE, debugCatchClocks, debugCatchCPURegs, debugCatchDataCode, debugCatchDataContent, debugCatchExtendedDataContent, debugCatchOpCode, debugCatchOpName, debugCatchRegs, debugWriteToLogFlie } from '../Interface/Debug';
 
 enum InterruptVector {
   NMI = 0xFFFA,
@@ -336,6 +336,52 @@ export class CPU2A03 implements ICPU {
         this.INY();
         this.addCycles(2);
         break;
+      case 0xE8:
+        // INX 2
+        this.INX();
+        this.addCycles(2);
+        break;
+      case 0x88:
+        // DEY 2
+        this.DEY();
+        this.addCycles(2);
+        break;
+      case 0xCA:
+        // DEX 2
+        this.DEX();
+        this.addCycles(2);
+        break;
+      case 0xA8:
+        // TAY 2
+        this.TAY();
+        this.addCycles(2);
+        break;
+      case 0xAA:
+        // TAX 2
+        this.TAX();
+        this.addCycles(2);
+        break;
+      case 0x98:
+        // TYA 2
+        this.TYA();
+        this.addCycles(2);
+        break;
+      case 0x8A:
+        // TXA 2
+        this.TXA();
+        this.addCycles(2);
+        break;
+      case 0xBA:
+        // TSX 2
+        this.TSX();
+        this.addCycles(2);
+        break;
+      case 0x8E:
+        // STX abs 4
+        address = this.abs();
+        this.STX(address);
+        this.addCycles(4);
+        break;
       case 0xA1:
         // LDA izx 6
         address = this.izx();
@@ -346,7 +392,7 @@ export class CPU2A03 implements ICPU {
         throw new Error(`Invalid opcode: ${opcode.toString(16).toUpperCase()}`);
     }
     // Debug log
-    writeToLogFlie(this.userData);
+    debugWriteToLogFlie(this.userData);
   }
 
   private addCycles(cycle: number){
@@ -422,6 +468,10 @@ export class CPU2A03 implements ICPU {
   private STX(address: uint16){
     debugCatchOpName("STX");
     this.bus.writeByte(address, this.regs.X);
+  }
+  private STY(address: uint16){
+    debugCatchOpName("STY");
+    this.bus.writeByte(address, this.regs.Y);
   }
   private STA(address: uint16){
     debugCatchOpName("STA");
@@ -544,8 +594,53 @@ export class CPU2A03 implements ICPU {
   }
   private INY(){
     debugCatchOpName("INY");
-    this.regs.Y++;
+    this.regs.Y = 0xFF & (this.regs.Y + 1);
     this.checkZNForReg(this.regs.Y);
+  }
+  private INX(){
+    debugCatchOpName("INX");
+    this.regs.X = 0xFF & (this.regs.X + 1);
+    this.checkZNForReg(this.regs.X);
+  }
+  private DEY(){
+    debugCatchOpName("DEY");
+    this.regs.Y = 0xFF & (this.regs.Y - 1);
+    this.checkZNForReg(this.regs.Y);
+  }
+  private DEX(){
+    debugCatchOpName("DEX");
+    this.regs.X = 0xFF & (this.regs.X - 1);
+    this.checkZNForReg(this.regs.X);
+  }
+  private TAY(){
+    debugCatchOpName("TAY");
+    this.regs.Y = this.regs.A;
+    this.checkZNForReg(this.regs.Y);
+  }
+  private TAX(){
+    debugCatchOpName("TAX");
+    this.regs.X = this.regs.A;
+    this.checkZNForReg(this.regs.X);
+  }
+  private TXA(){
+    debugCatchOpName("TXA");
+    this.regs.A = this.regs.X;
+    this.checkZNForReg(this.regs.A);
+  }
+  private TYA(){
+    debugCatchOpName("TYA");
+    this.regs.A = this.regs.Y;
+    this.checkZNForReg(this.regs.A);
+  }
+  private TSX(){
+    debugCatchOpName("TSX");
+    this.regs.X = this.regs.S;
+    this.checkZNForReg(this.regs.X);
+  }
+  private TXS(){
+    debugCatchOpName("TXS");
+    this.regs.S = this.regs.X;
+    this.checkZNForReg(this.regs.S);
   }
   private BCS(address: uint16){
     debugCatchOpName("BCS");

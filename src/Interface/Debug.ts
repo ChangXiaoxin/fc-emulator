@@ -1,11 +1,14 @@
 import * as fs from 'fs';
 import { IBus } from './Bus';
 import { IRegs } from './CPU';
+import { uint16 } from './typedef';
 export interface LOGS {
   PC: string;
   opCode: string;
-  dataCode: string;
   opName: string;
+  dataCode: string;
+  addrMode: ADDR_MODE;
+  address: uint16;
   dataContent: string;
   A: string;
   X: string;
@@ -17,6 +20,7 @@ export interface LOGS {
 };
 
 export enum ADDR_MODE {
+  IMP,
   IMM,
   ABS,
   ZP,
@@ -40,9 +44,11 @@ export function zeroFill(str: string, num: number): string{
 var cpulog:LOGS = {
   PC: '',
   opCode: '',
-  dataCode: '',
   opName: '',
+  dataCode: '',
   dataContent: '',
+  address: 0x00,
+  addrMode: ADDR_MODE.IMP,
   A: '',
   X: '',
   Y: '',
@@ -56,9 +62,11 @@ function debugRestCUPLog(){
   cpulog = {
     PC: '',
     opCode: '',
-    dataCode: '',
     opName: '',
+    dataCode: '',
     dataContent: '',
+    address: 0x00,
+    addrMode: ADDR_MODE.IMP,
     A: '',
     X: '',
     Y: '',
@@ -97,48 +105,58 @@ export function debugCatchOpCode(opCode: any)
 {
   cpulog.opCode = zeroFill(opCode.toString(16).toUpperCase(), 2);
 }
-
-export function debugCatchDataCode(dataCode: any, addrMode: ADDR_MODE)
-{
-  if (dataCode > 0xFF){
-    cpulog.dataCode = zeroFill((dataCode&0xFF).toString(16).toUpperCase(), 2) + " "
-                    + zeroFill(((dataCode>>8)&0xFF).toString(16).toUpperCase(), 2);
+export function debugCatchExtendedDataContent(){
+  if ((cpulog.opName === "STX" ||
+       cpulog.opName === "STY" ||
+       cpulog.opName === "STA" 
+      )
+      && (cpulog.addrMode === ADDR_MODE.ABS)){
+    cpulog.dataContent += " = " + zeroFill((cpubus.readByte(cpulog.address)).toString(16).toUpperCase(), 2);
   }
-  else if (dataCode >= 0x00){
-    cpulog.dataCode = zeroFill(dataCode.toString(16).toUpperCase(), 2);
+}
+export function debugCatchDataCode(address: uint16, addrMode: ADDR_MODE)
+{
+  if (address > 0xFF){
+    cpulog.dataCode = zeroFill((address&0xFF).toString(16).toUpperCase(), 2) + " "
+                    + zeroFill(((address>>8)&0xFF).toString(16).toUpperCase(), 2);
+  }
+  else if (address >= 0x00){
+    cpulog.dataCode = zeroFill(address.toString(16).toUpperCase(), 2);
   }
   else{
     cpulog.dataCode = "";
   }
-
   switch (addrMode){
     case ADDR_MODE.IMM:
-      cpulog.dataContent = "#$" + zeroFill((dataCode&0xFF).toString(16).toUpperCase(), 2);
+      cpulog.dataContent = "#$" + zeroFill((address&0xFF).toString(16).toUpperCase(), 2);
       break;
     case ADDR_MODE.ABS:
-      cpulog.dataContent = "$" + zeroFill(((dataCode>>8)&0xFF).toString(16).toUpperCase(), 2)
-                               + zeroFill((dataCode&0xFF).toString(16).toUpperCase(), 2);
+      cpulog.dataContent = "$" + zeroFill(((address>>8)&0xFF).toString(16).toUpperCase(), 2)
+                               + zeroFill((address&0xFF).toString(16).toUpperCase(), 2);
       break;
     case ADDR_MODE.REL:
-      dataCode += cpuregs.PC;
-      cpulog.dataContent = "$" + zeroFill(((dataCode>>8)&0xFF).toString(16).toUpperCase(), 2)
-                               + zeroFill((dataCode&0xFF).toString(16).toUpperCase(), 2);
+      address += cpuregs.PC;
+      cpulog.dataContent = "$" + zeroFill(((address>>8)&0xFF).toString(16).toUpperCase(), 2)
+                               + zeroFill((address&0xFF).toString(16).toUpperCase(), 2);
       break;
     case ADDR_MODE.ZP:
-      cpulog.dataContent = "$" + zeroFill((dataCode&0xFF).toString(16).toUpperCase(), 2) + " = "
-                         + zeroFill((cpubus.readByte(dataCode)).toString(16).toUpperCase(), 2);
+      cpulog.dataContent = "$" + zeroFill((address&0xFF).toString(16).toUpperCase(), 2) + " = "
+                         + zeroFill((cpubus.readByte(address)).toString(16).toUpperCase(), 2);
       break;
     default:
       break;
   }
+  cpulog.addrMode = addrMode;
+  cpulog.address = address;
 }
 
 export function debugCatchOpName(opName: any)
 {
   cpulog.opName = opName;
+  debugCatchExtendedDataContent();
 }
 
-export function writeToLogFlie(path: string){
+export function debugWriteToLogFlie(path: string){
   let logContent = logTemplate(cpulog);
   fs.appendFileSync(path, logContent);
   debugRestCUPLog();

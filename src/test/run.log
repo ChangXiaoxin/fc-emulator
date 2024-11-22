@@ -805,3 +805,31 @@ CDB3  A2 69     LDX #$69                        A:00 X:FB Y:33 P:25 SP:FB PPU:  
 CDB5  A9 84     LDA #$84                        A:00 X:69 Y:33 P:25 SP:FB PPU:        CYC:1855
 CDB7  18        CLC                             A:84 X:69 Y:33 P:A5 SP:FB PPU:        CYC:1857
 CDB8  24 01     BIT $01 = FF                    A:84 X:69 Y:33 P:A4 SP:FB PPU:        CYC:1859
+CDBA  9A        TXS                             A:84 X:69 Y:33 P:E4 SP:FB PPU:        CYC:1862
+CDBB  F0 32     BEQ $CDEF                       A:84 X:69 Y:33 P:E4 SP:69 PPU:        CYC:1864
+CDBD  10 30     BPL $CDEF                       A:84 X:69 Y:33 P:E4 SP:69 PPU:        CYC:1866
+CDBF  B0 2E     BCS $CDEF                       A:84 X:69 Y:33 P:E4 SP:69 PPU:        CYC:1868
+CDC1  50 2C     BVC $CDEF                       A:84 X:69 Y:33 P:E4 SP:69 PPU:        CYC:1870
+CDC3  C9 84     CMP #$84                        A:84 X:69 Y:33 P:E4 SP:69 PPU:        CYC:1872
+CDC5  D0 28     BNE $CDEF                       A:84 X:69 Y:33 P:67 SP:69 PPU:        CYC:1874
+CDC7  E0 69     CPX #$69                        A:84 X:69 Y:33 P:67 SP:69 PPU:        CYC:1876
+CDC9  D0 24     BNE $CDEF                       A:84 X:69 Y:33 P:67 SP:69 PPU:        CYC:1878
+CDCB  C0 33     CPY #$33                        A:84 X:69 Y:33 P:67 SP:69 PPU:        CYC:1880
+CDCD  D0 20     BNE $CDEF                       A:84 X:69 Y:33 P:67 SP:69 PPU:        CYC:1882
+CDCF  A0 01     LDY #$01                        A:84 X:69 Y:33 P:67 SP:69 PPU:        CYC:1884
+CDD1  A9 04     LDA #$04                        A:84 X:69 Y:01 P:65 SP:69 PPU:        CYC:1886
+CDD3  38        SEC                             A:04 X:69 Y:01 P:65 SP:69 PPU:        CYC:1888
+CDD4  B8        CLV                             A:04 X:69 Y:01 P:65 SP:69 PPU:        CYC:1890
+CDD5  A2 00     LDX #$00                        A:04 X:69 Y:01 P:25 SP:69 PPU:        CYC:1892
+CDD7  BA        TSX                             A:04 X:00 Y:01 P:27 SP:69 PPU:        CYC:1894
+CDD8  F0 15     BEQ $CDEF                       A:04 X:69 Y:01 P:25 SP:69 PPU:        CYC:1896
+CDDA  30 13     BMI $CDEF                       A:04 X:69 Y:01 P:25 SP:69 PPU:        CYC:1898
+CDDC  90 11     BCC $CDEF                       A:04 X:69 Y:01 P:25 SP:69 PPU:        CYC:1900
+CDDE  70 0F     BVS $CDEF                       A:04 X:69 Y:01 P:25 SP:69 PPU:        CYC:1902
+CDE0  E0 69     CPX #$69                        A:04 X:69 Y:01 P:25 SP:69 PPU:        CYC:1904
+CDE2  D0 0B     BNE $CDEF                       A:04 X:69 Y:01 P:27 SP:69 PPU:        CYC:1906
+CDE4  C9 04     CMP #$04                        A:04 X:69 Y:01 P:27 SP:69 PPU:        CYC:1908
+CDE6  D0 07     BNE $CDEF                       A:04 X:69 Y:01 P:27 SP:69 PPU:        CYC:1910
+CDE8  C0 01     CPY #$01                        A:04 X:69 Y:01 P:27 SP:69 PPU:        CYC:1912
+CDEA  D0 03     BNE $CDEF                       A:04 X:69 Y:01 P:27 SP:69 PPU:        CYC:1914
+CDEC  4C F3 CD  JMP $CDF3                       A:04 X:69 Y:01 P:27 SP:69 PPU:        CYC:1916

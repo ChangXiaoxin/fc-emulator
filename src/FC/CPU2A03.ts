@@ -382,6 +382,11 @@ export class CPU2A03 implements ICPU {
         this.STX(address);
         this.addCycles(4);
         break;
+      case 0x9A:
+        // TXS 2
+        this.TXS();
+        this.addCycles(2);
+        break;
       case 0xA1:
         // LDA izx 6
         address = this.izx();
@@ -640,7 +645,6 @@ export class CPU2A03 implements ICPU {
   private TXS(){
     debugCatchOpName("TXS");
     this.regs.S = this.regs.X;
-    this.checkZNForReg(this.regs.S);
   }
   private BCS(address: uint16){
     debugCatchOpName("BCS");

@@ -106,14 +106,12 @@ export function debugCatchOpCode(opCode: any)
   cpulog.opCode = zeroFill(opCode.toString(16).toUpperCase(), 2);
 }
 export function debugCatchExtendedDataContent(){
-  if ((cpulog.addrMode === ADDR_MODE.ABS) &&
-      (cpulog.opName === "LDX" || cpulog.opName === "LDY" || cpulog.opName === "LDA" ||
-       cpulog.opName === "STX" || cpulog.opName === "STY" || cpulog.opName === "STA" ||
-       cpulog.opName === "BIT" || cpulog.opName === "ORA" || cpulog.opName === "AND" ||
-       cpulog.opName === "EOR" || cpulog.opName === "ADC" || cpulog.opName === "CMP" ||
-       cpulog.opName === "SBC" || cpulog.opName === "CPX" || cpulog.opName === "CPY"
-      )){
-    cpulog.dataContent += " = " + zeroFill((cpubus.readByte(cpulog.address)).toString(16).toUpperCase(), 2);
+  if (cpulog.addrMode === ADDR_MODE.ABS) {
+    if (cpulog.opName === "JMP" || cpulog.opName === "JSR"){
+    }
+    else{
+      cpulog.dataContent += " = " + zeroFill((cpubus.readByte(cpulog.address)).toString(16).toUpperCase(), 2);
+    }
   }
   else if ((cpulog.addrMode === ADDR_MODE.IMP) &&
            (cpulog.opName === "LSR" || cpulog.opName === "ASL" ||

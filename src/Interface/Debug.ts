@@ -38,7 +38,7 @@ export enum ADDR_MODE {
 export var logTemplate = (
   logs:LOGS
 ) =>
-`${logs.PC}  ${logs.opCode} ${logs.dataCode}` + " ".padStart(7-logs.dataCode.length) +
+`${logs.PC}  ${logs.opCode} ${logs.dataCode}` + " ".padStart(10-logs.dataCode.length-logs.opName.length) +
 `${logs.opName} ${logs.dataContent}` + " ".padStart(28-logs.dataContent.length) +
 `A:${logs.A} X:${logs.X} Y:${logs.Y} P:${logs.P} SP:${logs.SP} PPU:${logs.PPU}` +
 " ".padStart(8-logs.PPU.length) + `CYC:${logs.CYC}
@@ -112,18 +112,18 @@ export function debugCatchOpCode(opCode: any)
   cpulog.opCode = zeroFill(opCode.toString(16).toUpperCase(), 2);
 }
 export function debugCatchExtendedDataContent(){
-  if (cpulog.addrMode === ADDR_MODE.ABS) {
+  if ((cpulog.addrMode === ADDR_MODE.IMP) &&
+           (cpulog.opName === "LSR" || cpulog.opName === "ASL" ||
+            cpulog.opName === "ROR" || cpulog.opName === "ROL"
+           )){
+    cpulog.dataContent += "A";
+  }
+  else if (cpulog.addrMode === ADDR_MODE.ABS) {
     if (cpulog.opName === "JMP" || cpulog.opName === "JSR"){
     }
     else{
       cpulog.dataContent += " = " + zeroFill((cpubus.readByte(cpulog.address)).toString(16).toUpperCase(), 2);
     }
-  }
-  else if ((cpulog.addrMode === ADDR_MODE.IMP) &&
-           (cpulog.opName === "LSR" || cpulog.opName === "ASL" ||
-            cpulog.opName === "ROR" || cpulog.opName === "ROL"
-           )){
-    cpulog.dataContent += "A";
   }
 }
 export function debugCatchDataCode(address: uint16, addrMode: ADDR_MODE)
@@ -163,9 +163,12 @@ export function debugCatchDataCode(address: uint16, addrMode: ADDR_MODE)
                          + zeroFill((cpubus.readByte(address)).toString(16).toUpperCase(), 2);
       break;
     case ADDR_MODE.REL:
-      address += cpuregs.PC;
-      cpulog.dataContent = "$" + zeroFill(((address>>8)&0xFF).toString(16).toUpperCase(), 2)
-                               + zeroFill((address&0xFF).toString(16).toUpperCase(), 2);
+      if (address & 0x80){
+        address = -complement(address);
+      }
+      const branch = cpuregs.PC + address;
+      cpulog.dataContent = "$" + zeroFill(((branch>>8)&0xFF).toString(16).toUpperCase(), 2)
+                               + zeroFill((branch&0xFF).toString(16).toUpperCase(), 2);
       break;
     case ADDR_MODE.ZP:
       cpulog.dataContent = "$" + zeroFill((address&0xFF).toString(16).toUpperCase(), 2) + " = "
@@ -219,6 +222,9 @@ export function debugCatchDataCode(address: uint16, addrMode: ADDR_MODE)
   cpulog.address = address;
 }
 
+function complement(value: any){
+  return (~value & 0xFF) + 1;
+}
 export function debugCatchOpName(opName: any)
 {
   cpulog.opName = opName;

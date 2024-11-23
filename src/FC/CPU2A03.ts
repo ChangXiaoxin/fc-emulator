@@ -957,6 +957,187 @@ export class CPU2A03 implements ICPU {
         this.STA(address);
         this.addCycles(4);
         break;
+      case 0x5E:
+        // LSR abx 7
+        address = this.abx(true);
+        this.LSR(address);
+        this.addCycles(6);
+        break;
+      case 0x1E:
+        // ASL abx 7
+        address = this.abx(true);
+        this.ASL(address);
+        this.addCycles(6);
+        break;
+      case 0x3E:
+        // ROL abx 7
+        address = this.abx(true);
+        this.ROL(address);
+        this.addCycles(6);
+        break;
+      case 0x7E:
+        // ROR abx 7
+        address = this.abx(true);
+        this.ROR(address);
+        this.addCycles(6);
+        break;
+      case 0xDE:
+        // DEC abx 7
+        address = this.abx(true);
+        this.DEC(address);
+        this.addCycles(6);
+        break;
+      case 0xFE:
+        // INC abx 7
+        address = this.abx(true);
+        this.INC(address);
+        this.addCycles(6);
+        break;
+      case 0xBE:
+        // LDX aby 4*
+        address = this.aby();
+        this.LDX(address);
+        this.addCycles(4);
+        break;
+      // Unoffical opCode:
+      case 0x04:
+        // NOP zp 3
+        address = this.zp();
+        this.NOP(true);
+        this.addCycles(3);
+        break;
+      case 0x44:
+        // NOP zp 3
+        address = this.zp();
+        this.NOP(true);
+        this.addCycles(3);
+        break;
+      case 0x64:
+        // NOP zp 3
+        address = this.zp();
+        this.NOP(true);
+        this.addCycles(3);
+        break;
+      case 0x0C:
+        // NOP abs 4
+        address = this.abs();
+        this.NOP(true);
+        this.addCycles(4);
+        break;
+      case 0x14:
+        // NOP zpx 4
+        address = this.zpx();
+        this.NOP(true);
+        this.addCycles(4);
+        break;
+      case 0x34:
+        // NOP zpx 4
+        address = this.zpx();
+        this.NOP(true);
+        this.addCycles(4);
+        break;
+      case 0x54:
+        // NOP zpx 4
+        address = this.zpx();
+        this.NOP(true);
+        this.addCycles(4);
+        break;
+      case 0x74:
+        // NOP zpx 4
+        address = this.zpx();
+        this.NOP(true);
+        this.addCycles(4);
+        break;
+      case 0xD4:
+        // NOP zpx 4
+        address = this.zpx();
+        this.NOP(true);
+        this.addCycles(4);
+        break;
+      case 0xF4:
+        // NOP zpx 4
+        address = this.zpx();
+        this.NOP(true);
+        this.addCycles(4);
+        break;
+      case 0x1A:
+        // NOP 2
+        this.NOP(true);
+        this.addCycles(2);
+        break;
+      case 0x3A:
+        // NOP 2
+        this.NOP(true);
+        this.addCycles(2);
+        break;
+      case 0x5A:
+        // NOP 2
+        this.NOP(true);
+        this.addCycles(2);
+        break;
+      case 0x7A:
+        // NOP 2
+        this.NOP(true);
+        this.addCycles(2);
+        break;
+      case 0xDA:
+        // NOP 2
+        this.NOP(true);
+        this.addCycles(2);
+        break;
+      case 0xFA:
+        // NOP 2
+        this.NOP(true);
+        this.addCycles(2);
+        break;
+      case 0x80:
+        // NOP imm 2
+        address = this.imm();
+        this.NOP(true);
+        this.addCycles(2);
+        break;
+      case 0x1C:
+        // NOP abx 4*
+        address = this.abx();
+        this.NOP(true);
+        this.addCycles(4);
+        break;
+      case 0x3C:
+        // NOP abx 4*
+        address = this.abx();
+        this.NOP(true);
+        this.addCycles(4);
+        break;
+      case 0x5C:
+        // NOP abx 4*
+        address = this.abx();
+        this.NOP(true);
+        this.addCycles(4);
+        break;
+      case 0x7C:
+        // NOP abx 4*
+        address = this.abx();
+        this.NOP(true);
+        this.addCycles(4);
+        break;
+      case 0xDC:
+        // NOP abx 4*
+        address = this.abx();
+        this.NOP(true);
+        this.addCycles(4);
+        break;
+      case 0xFC:
+        // NOP abx 4*
+        address = this.abx();
+        this.NOP(true);
+        this.addCycles(4);
+        break;
+      case 0xA3:
+        // LAX izx 6
+        address = this.izx();
+        this.LAX(address);
+        this.addCycles(6);
+        break;
       default:
         throw new Error(`Invalid opcode: ${opcode.toString(16).toUpperCase()}`);
     }
@@ -1133,8 +1314,9 @@ export class CPU2A03 implements ICPU {
     this.pushWord(this.regs.PC - 1);
     this.regs.PC = address;
   }
-  private NOP(){
-    debugCatchOpName("NOP");
+  private NOP(unoffical:boolean = false){
+    // *NOP for unoffical opCode.
+    debugCatchOpName(unoffical? "*NOP" : "NOP");
   }
   private CLC(){
     debugCatchOpName("CLC");
@@ -1416,6 +1598,14 @@ export class CPU2A03 implements ICPU {
     debugCatchOpName("RTS");
     this.regs.PC = this.popWord();
     this.regs.PC += 1;
+  }
+
+  /************************************************/
+  /* Unoffical Operations.
+  /************************************************/
+  private LAX(addCycles: uint16){
+    debugCatchOpName("*LAX");
+    
   }
 
   /************************************************/

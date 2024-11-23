@@ -695,59 +695,268 @@ export class CPU2A03 implements ICPU {
         this.addCycles(6);
         break;
       case 0xB1:
-        // LDA izy 5
+        // LDA izy 5*
         address = this.izy();
         this.LDA(address);
         this.addCycles(5);
         break;
       case 0x11:
-        // ORA izy 5
+        // ORA izy 5*
         address = this.izy();
         this.ORA(address);
         this.addCycles(5);
         break;
       case 0x31:
-        // AND izy 5
+        // AND izy 5*
         address = this.izy();
         this.AND(address);
         this.addCycles(5);
         break;
       case 0x51:
-        // EOR izy 5
+        // EOR izy 5*
         address = this.izy();
         this.EOR(address);
         this.addCycles(5);
         break;
       case 0x71:
-        // ADC izy 5
+        // ADC izy 5*
         address = this.izy();
         this.ADC(address);
         this.addCycles(5);
         break;
       case 0xD1:
-        // CMP izy 5
+        // CMP izy 5*
         address = this.izy();
         this.CMP(address);
         this.addCycles(5);
         break;
       case 0xF1:
-        // SBC izy 5
+        // SBC izy 5*
         address = this.izy();
         this.SBC(address);
         this.addCycles(5);
         break;
       case 0x91:
-        // STA izy 6 // TODO: why izy 6 here?
-        address = this.izy();
+        // STA izy 6
+        address = this.izy(true);
         this.STA(address);
-        this.addCycles(6);
+        this.addCycles(5);
         break;
       case 0x6C:
         // JMP ind 5
         this.JMPind();
         this.addCycles(5);
         break;
-      
+      case 0xB9:
+        // LDA aby 4*
+        address = this.aby();
+        this.LDA(address);
+        this.addCycles(4);
+        break;
+      case 0x19:
+        // ORA aby 4*
+        address = this.aby();
+        this.ORA(address);
+        this.addCycles(4);
+        break;
+      case 0x39:
+        // AND aby 4*
+        address = this.aby();
+        this.AND(address);
+        this.addCycles(4);
+        break;
+      case 0x59:
+        // EOR aby 4*
+        address = this.aby();
+        this.EOR(address);
+        this.addCycles(4);
+        break;
+      case 0x79:
+        // ADC aby 4*
+        address = this.aby();
+        this.ADC(address);
+        this.addCycles(4);
+        break;
+      case 0x99:
+        // STA aby 5
+        address = this.aby();
+        this.STA(address);
+        this.addCycles(5);
+        break;
+      case 0xD9:
+        // CMP aby 4*
+        address = this.aby();
+        this.CMP(address);
+        this.addCycles(4);
+        break;
+      case 0xF9:
+        // SBC aby 4*
+        address = this.aby();
+        this.SBC(address);
+        this.addCycles(4);
+        break;
+      case 0xB4:
+        // LDY zpx 4
+        address = this.zpx();
+        this.LDY(address);
+        this.addCycles(4);
+        break;
+      case 0x94:
+        // STY zpx 4
+        address = this.zpx();
+        this.STY(address);
+        this.addCycles(4);
+        break;
+      case 0x15:
+        // ORA zpx 4
+        address = this.zpx();
+        this.ORA(address);
+        this.addCycles(4);
+        break;
+      case 0x35:
+        // AND zpx 4
+        address = this.zpx();
+        this.AND(address);
+        this.addCycles(4);
+        break;
+      case 0x55:
+        // EOR zpx 4
+        address = this.zpx();
+        this.EOR(address);
+        this.addCycles(4);
+        break;
+      case 0x75:
+        // ADC zpx 4
+        address = this.zpx();
+        this.ADC(address);
+        this.addCycles(4);
+        break;
+      case 0x95:
+        // STA zpx 4
+        address = this.zpx();
+        this.STA(address);
+        this.addCycles(4);
+        break;
+      case 0xB5:
+        // LDA zpx 4
+        address = this.zpx();
+        this.LDA(address);
+        this.addCycles(4);
+        break;
+      case 0xD5:
+        // CMP zpx 4
+        address = this.zpx();
+        this.CMP(address);
+        this.addCycles(4);
+        break;
+      case 0xF5:
+        // SBC zpx 4
+        address = this.zpx();
+        this.SBC(address);
+        this.addCycles(4);
+        break;
+      case 0x56:
+        // LSR zpx 6
+        address = this.zpx();
+        this.LSR(address);
+        this.addCycles(6);
+        break;
+      case 0x16:
+        // ASL zpx 6
+        address = this.zpx();
+        this.ASL(address);
+        this.addCycles(6);
+        break;
+      case 0x36:
+        // ROL zpx 6
+        address = this.zpx();
+        this.ROL(address);
+        this.addCycles(6);
+        break;
+      case 0x76:
+        // ROR zpx 6
+        address = this.zpx();
+        this.ROR(address);
+        this.addCycles(6);
+        break;
+      case 0xD6:
+        // DEC zpx 6
+        address = this.zpx();
+        this.DEC(address);
+        this.addCycles(6);
+        break;
+      case 0xF6:
+        // INC zpx 6
+        address = this.zpx();
+        this.INC(address);
+        this.addCycles(6);
+        break;
+      case 0xB6:
+        // LDX zpy 4
+        address = this.zpy();
+        this.LDX(address);
+        this.addCycles(4);
+        break;
+      case 0x96:
+        // STX zpy 4
+        address = this.zpy();
+        this.STX(address);
+        this.addCycles(4);
+        break;
+      case 0xBC:
+        // LDY abx 4*
+        address = this.abx();
+        this.LDY(address);
+        this.addCycles(4);
+        break;
+      case 0x1D:
+        // ORA abx 4*
+        address = this.abx();
+        this.ORA(address);
+        this.addCycles(4);
+        break;
+      case 0x3D:
+        // AND abx 4*
+        address = this.abx();
+        this.AND(address);
+        this.addCycles(4);
+        break;
+      case 0x5D:
+        // EOR abx 4*
+        address = this.abx();
+        this.EOR(address);
+        this.addCycles(4);
+        break;
+      case 0x7D:
+        // ADC abx 4*
+        address = this.abx();
+        this.ADC(address);
+        this.addCycles(4);
+        break;
+      case 0xBD:
+        // LDA abx 4*
+        address = this.abx();
+        this.LDA(address);
+        this.addCycles(4);
+        break;
+      case 0xDD:
+        // CMP abx 4*
+        address = this.abx();
+        this.CMP(address);
+        this.addCycles(4);
+        break;
+      case 0xFD:
+        // SBC abx 4*
+        address = this.abx();
+        this.SBC(address);
+        this.addCycles(4);
+        break;
+      case 0x9D:
+        // STA abx 5
+        address = this.abx(true);
+        this.STA(address);
+        this.addCycles(4);
+        break;
       default:
         throw new Error(`Invalid opcode: ${opcode.toString(16).toUpperCase()}`);
     }
@@ -769,6 +978,32 @@ export class CPU2A03 implements ICPU {
     debugCatchDataCode(address, ADDR_MODE.ABS);
     return address;
   }
+  private aby(oops:boolean = false): uint16{
+    // Absolute indexed
+    const memory = this.bus.readWord(this.regs.PC);
+    const address = 0xFFFF & (memory + this.regs.Y);
+    // oops cycle for different page
+    if ((memory & 0xFF00) !== (address & 0xFF00) || oops)
+    {
+      this.addCycles(1);
+    }
+    this.regs.PC += 2;
+    debugCatchDataCode(address, ADDR_MODE.ABY);
+    return address;
+  }
+  private abx(oops:boolean = false): uint16{
+    // Absolute indexed
+    const memory = this.bus.readWord(this.regs.PC);
+    const address = 0xFFFF & (memory + this.regs.X);
+    // oops cycle for different page
+    if ((memory & 0xFF00) !== (address & 0xFF00) || oops)
+    {
+      this.addCycles(1);
+    }
+    this.regs.PC += 2;
+    debugCatchDataCode(address, ADDR_MODE.ABX);
+    return address;
+  }
   private imm(): uint16{
     // Immediate
     const address = this.regs.PC;
@@ -786,14 +1021,14 @@ export class CPU2A03 implements ICPU {
     debugCatchDataCode(address, ADDR_MODE.IZX);
     return address;
   }
-  private izy(): uint16{
+  private izy(oops:boolean = false): uint16{
     // Indirect indexed Y
     const peeked1 = this.bus.readByte(this.regs.PC);
     const peeked2 = this.bus.readByte(peeked1);
     const peeked3 = this.bus.readByte((peeked1 + 1) & 0xFF) << 8;
     const address = 0xFFFF & ((peeked3 | peeked2) + this.regs.Y);
     // oops cycle for different page
-    if (((peeked3 | peeked2) & 0xFF00) !== (address & 0xFF00))
+    if (((peeked3 | peeked2) & 0xFF00) !== (address & 0xFF00) || oops)
     {
       this.addCycles(1);
     }
@@ -814,6 +1049,20 @@ export class CPU2A03 implements ICPU {
     const address = this.bus.readByte(this.regs.PC) & 0xFF;
     this.regs.PC += 1;
     debugCatchDataCode(address, ADDR_MODE.ZP);
+    return address;
+  }
+  private zpx(): uint16{
+    // Zero page indexed
+    const address = (this.bus.readByte(this.regs.PC) + this.regs.X) & 0xFF;
+    this.regs.PC += 1;
+    debugCatchDataCode(address, ADDR_MODE.ZPX);
+    return address;
+  }
+  private zpy(): uint16{
+    // Zero page indexed
+    const address = (this.bus.readByte(this.regs.PC) + this.regs.Y) & 0xFF;
+    this.regs.PC += 1;
+    debugCatchDataCode(address, ADDR_MODE.ZPY);
     return address;
   }
   private rel(): uint8{

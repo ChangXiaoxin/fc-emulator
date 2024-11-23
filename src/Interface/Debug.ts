@@ -23,7 +23,11 @@ export enum ADDR_MODE {
   IMP,
   IMM,
   ABS,
+  ABY,
+  ABX,
   ZP,
+  ZPX,
+  ZPY,
   IZX,
   IZY,
   IND,
@@ -142,6 +146,22 @@ export function debugCatchDataCode(address: uint16, addrMode: ADDR_MODE)
       cpulog.dataContent = "$" + zeroFill(((address>>8)&0xFF).toString(16).toUpperCase(), 2)
                                + zeroFill((address&0xFF).toString(16).toUpperCase(), 2);
       break;
+    case ADDR_MODE.ABY:
+      const peekedaby = cpubus.readWord(cpuregs.PC-2);
+      cpulog.dataCode = zeroFill((peekedaby&0xFF).toString(16).toUpperCase(), 2) + " "
+                      + zeroFill(((peekedaby>>8)&0xFF).toString(16).toUpperCase(), 2);;
+      cpulog.dataContent = "$" + zeroFill((peekedaby).toString(16).toUpperCase(), 4) + ",Y @ "
+                         + zeroFill((address).toString(16).toUpperCase(), 4) + " = "
+                         + zeroFill((cpubus.readByte(address)).toString(16).toUpperCase(), 2);
+      break;
+    case ADDR_MODE.ABX:
+      const peekedabx = cpubus.readWord(cpuregs.PC-2);
+      cpulog.dataCode = zeroFill((peekedabx&0xFF).toString(16).toUpperCase(), 2) + " "
+                      + zeroFill(((peekedabx>>8)&0xFF).toString(16).toUpperCase(), 2);;
+      cpulog.dataContent = "$" + zeroFill((peekedabx).toString(16).toUpperCase(), 4) + ",X @ "
+                         + zeroFill((address).toString(16).toUpperCase(), 4) + " = "
+                         + zeroFill((cpubus.readByte(address)).toString(16).toUpperCase(), 2);
+      break;
     case ADDR_MODE.REL:
       address += cpuregs.PC;
       cpulog.dataContent = "$" + zeroFill(((address>>8)&0xFF).toString(16).toUpperCase(), 2)
@@ -149,6 +169,20 @@ export function debugCatchDataCode(address: uint16, addrMode: ADDR_MODE)
       break;
     case ADDR_MODE.ZP:
       cpulog.dataContent = "$" + zeroFill((address&0xFF).toString(16).toUpperCase(), 2) + " = "
+                         + zeroFill((cpubus.readByte(address)).toString(16).toUpperCase(), 2);
+      break;
+    case ADDR_MODE.ZPX:
+      const peekedzpx = cpubus.readByte(cpuregs.PC-1);
+      cpulog.dataCode = zeroFill(peekedzpx.toString(16).toUpperCase(), 2);
+      cpulog.dataContent = "$" + zeroFill(peekedzpx.toString(16).toUpperCase(), 2) + ",X @ "
+                         + zeroFill((address).toString(16).toUpperCase(), 2) + " = "
+                         + zeroFill((cpubus.readByte(address)).toString(16).toUpperCase(), 2);
+      break;
+    case ADDR_MODE.ZPY:
+      const peekedzpy = cpubus.readByte(cpuregs.PC-1);
+      cpulog.dataCode = zeroFill(peekedzpy.toString(16).toUpperCase(), 2);
+      cpulog.dataContent = "$" + zeroFill(peekedzpy.toString(16).toUpperCase(), 2) + ",Y @ "
+                         + zeroFill((address).toString(16).toUpperCase(), 2) + " = "
                          + zeroFill((cpubus.readByte(address)).toString(16).toUpperCase(), 2);
       break;
     case ADDR_MODE.IZX:

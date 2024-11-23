@@ -658,6 +658,42 @@ export class CPU2A03 implements ICPU {
         this.CPY(address);
         this.addCycles(4);
         break;
+      case 0x4E:
+        // LSR abs 6
+        address = this.abs();
+        this.LSR(address);
+        this.addCycles(6);
+        break;
+      case 0x0E:
+        // ASL abs 6
+        address = this.abs();
+        this.ASL(address);
+        this.addCycles(6);
+        break;
+      case 0x6E:
+        // ROR abs 6
+        address = this.abs();
+        this.ROR(address);
+        this.addCycles(6);
+        break;
+      case 0x2E:
+        // ROL abs 6
+        address = this.abs();
+        this.ROL(address);
+        this.addCycles(6);
+        break;
+      case 0xEE:
+        // INC abs 6
+        address = this.abs();
+        this.INC(address);
+        this.addCycles(6);
+        break;
+      case 0xCE:
+        // DEC abs 6
+        address = this.abs();
+        this.DEC(address);
+        this.addCycles(6);
+        break;
       default:
         throw new Error(`Invalid opcode: ${opcode.toString(16).toUpperCase()}`);
     }

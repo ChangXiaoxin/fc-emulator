@@ -448,6 +448,216 @@ export class CPU2A03 implements ICPU {
         this.CMP(address);
         this.addCycles(2);
         break;
+      case 0x81:
+        // STA izx 6
+        address = this.izx();
+        this.STA(address);
+        this.addCycles(6);
+        break;
+      case 0x01:
+        // ORA izx 6
+        address = this.izx();
+        this.ORA(address);
+        this.addCycles(6);
+        break;
+      case 0x21:
+        // AND izx 6
+        address = this.izx();
+        this.AND(address);
+        this.addCycles(6);
+        break;
+      case 0x41:
+        // EOR izx 6
+        address = this.izx();
+        this.EOR(address);
+        this.addCycles(6);
+        break;
+      case 0x61:
+        // ADC izx 6
+        address = this.izx();
+        this.ADC(address);
+        this.addCycles(6);
+        break;
+      case 0xC1:
+        // CMP ixz 6
+        address = this.izx();
+        this.CMP(address);
+        this.addCycles(6);
+        break;
+      case 0xE1:
+        // SBC izx 6
+        address = this.izx();
+        this.SBC(address);
+        this.addCycles(6);
+        break;
+      case 0xA4:
+        // LDY zp 3
+        address = this.zp();
+        this.LDY(address);
+        this.addCycles(3);
+        break;
+      case 0x84:
+        // STY zp 3
+        address = this.zp();
+        this.STY(address);
+        this.addCycles(3);
+        break;
+      case 0xA6:
+        // LDX zp 3
+        address = this.zp();
+        this.LDX(address);
+        this.addCycles(3);
+        break;
+      case 0x05:
+        // ORA zp 3
+        address = this.zp();
+        this.ORA(address);
+        this.addCycles(3);
+        break;
+      case 0x25:
+        // AND zp 3
+        address = this.zp();
+        this.AND(address);
+        this.addCycles(3);
+        break;
+      case 0x45:
+        // EOR zp 3
+        address = this.zp();
+        this.EOR(address);
+        this.addCycles(3);
+        break;
+      case 0x65:
+        // ADC zp 3
+        address = this.zp();
+        this.ADC(address);
+        this.addCycles(3);
+        break;
+      case 0xC5:
+        // CMP zp 3
+        address = this.zp();
+        this.CMP(address);
+        this.addCycles(3);
+        break;
+      case 0xE5:
+        // SBC zp 3
+        address = this.zp();
+        this.SBC(address);
+        this.addCycles(3);
+        break;
+      case 0xE4:
+        // CPX zp 3
+        address = this.zp();
+        this.CPX(address);
+        this.addCycles(3);
+        break;
+      case 0xC4:
+        // CPY zp 3
+        address = this.zp();
+        this.CPY(address);
+        this.addCycles(3);
+        break;
+      case 0x46:
+        // LSR zp 5
+        address = this.zp();
+        this.LSR(address);
+        this.addCycles(5);
+        break;
+      case 0x06:
+        // ASL zp 5
+        address = this.zp();
+        this.ASL(address);
+        this.addCycles(5);
+        break;
+      case 0x66:
+        // ROR zp 5
+        address = this.zp();
+        this.ROR(address);
+        this.addCycles(5);
+        break;
+      case 0x26:
+        // ROL zp 5
+        address = this.zp();
+        this.ROL(address);
+        this.addCycles(5);
+        break;
+      case 0xE6:
+        // INC zp 5
+        address = this.zp();
+        this.INC(address);
+        this.addCycles(5);
+        break;
+      case 0xC6:
+        // DEC zp 5
+        address = this.zp();
+        this.DEC(address);
+        this.addCycles(5);
+        break;
+      case 0xAC:
+        // LDY abs 4
+        address = this.abs();
+        this.LDY(address);
+        this.addCycles(4);
+        break;
+      case 0x8C:
+        // STY abs 4
+        address = this.abs();
+        this.STY(address);
+        this.addCycles(4);
+        break;
+      case 0x2C:
+        // BIT abs 4
+        address = this.abs();
+        this.BIT(address);
+        this.addCycles(4);
+        break;
+      case 0x0D:
+        // ORA abs 4
+        address = this.abs();
+        this.ORA(address);
+        this.addCycles(4);
+        break;
+      case 0x2D:
+        // AND abs 4
+        address = this.abs();
+        this.AND(address);
+        this.addCycles(4);
+        break;
+      case 0x4D:
+        // EOR abs 4
+        address = this.abs();
+        this.EOR(address);
+        this.addCycles(4);
+        break;
+      case 0x6D:
+        // ADC abs 4
+        address = this.abs();
+        this.ADC(address);
+        this.addCycles(4);
+        break;
+      case 0xCD:
+        // CMP abs 4
+        address = this.abs();
+        this.CMP(address);
+        this.addCycles(4);
+        break;
+      case 0xED:
+        // SBC abs 4
+        address = this.abs();
+        this.SBC(address);
+        this.addCycles(4);
+        break;
+      case 0xEC:
+        // CPX abs 4
+        address = this.abs();
+        this.CPX(address);
+        this.addCycles(4);
+        break;
+      case 0xCC:
+        // CPY abs 4
+        address = this.abs();
+        this.CPY(address);
+        this.addCycles(4);
+        break;
       default:
         throw new Error(`Invalid opcode: ${opcode.toString(16).toUpperCase()}`);
     }
@@ -608,37 +818,81 @@ export class CPU2A03 implements ICPU {
     this.regs.P = (this.regs.P & 0x30) | (this.popByte() & 0xCF);
     this.regs.PC = this.popWord();
   }
-  private LSR(){
+  private LSR(address: uint16 = 0xF0000){
     debugCatchOpName("LSR");
-    this.setFlag(Flags.C, ((this.regs.A & 0x01) === 0x01));
-    this.regs.A = 0xFF & (this.regs.A >> 1);
-    this.checkResultZN(this.regs.A);
+    if (address === 0xF0000){
+      this.setFlag(Flags.C, ((this.regs.A & 0x01) === 0x01));
+      this.regs.A = 0xFF & (this.regs.A >> 1);
+      this.checkResultZN(this.regs.A);
+    }
+    else{
+      let memory = this.bus.readByte(address);
+      this.setFlag(Flags.C, ((memory & 0x01) === 0x01));
+      memory = 0xFF & (memory >> 1);
+      this.bus.writeByte(address, memory);
+      this.checkResultZN(memory);
+    }
   }
-  private ASL(){
+  private ASL(address: uint16 = 0xF0000){
     debugCatchOpName("ASL");
-    this.setFlag(Flags.C, ((this.regs.A & 0x80) === 0x80));
-    this.regs.A = 0xFF & (this.regs.A << 1);
-    this.checkResultZN(this.regs.A);
+    if (address === 0xF0000){
+      this.setFlag(Flags.C, ((this.regs.A & 0x80) === 0x80));
+      this.regs.A = 0xFF & (this.regs.A << 1);
+      this.checkResultZN(this.regs.A);
+    }
+    else{
+      let memory = this.bus.readByte(address);
+      this.setFlag(Flags.C, ((memory & 0x80) === 0x80));
+      memory = 0xFF & (memory << 1);
+      this.bus.writeByte(address, memory);
+      this.checkResultZN(memory);
+    }
   }
-  private ROR(){
+  private ROR(address: uint16 = 0xF0000){
     debugCatchOpName("ROR");
-    let flagC = this.isFlagSet(Flags.C);
-    this.setFlag(Flags.C, ((this.regs.A & 0x01) === 0x01));
-    this.regs.A = 0xFF & (this.regs.A >> 1);
-    if (flagC){
-      this.regs.A |= 0x80;
+    if (address === 0xF0000){
+      let flagC = this.isFlagSet(Flags.C);
+      this.setFlag(Flags.C, ((this.regs.A & 0x01) === 0x01));
+      this.regs.A = 0xFF & (this.regs.A >> 1);
+      if (flagC){
+        this.regs.A |= 0x80;
+      }
+      this.checkResultZN(this.regs.A);
     }
-    this.checkResultZN(this.regs.A);
+    else{
+      let memory = this.bus.readByte(address);
+      let flagC = this.isFlagSet(Flags.C);
+      this.setFlag(Flags.C, ((memory & 0x01) === 0x01));
+      memory = 0xFF & (memory >> 1);
+      if (flagC){
+        memory |= 0x80;
+      }
+      this.bus.writeByte(address, memory);
+      this.checkResultZN(memory);
+    }
   }
-  private ROL(){
+  private ROL(address: uint16 = 0xF0000){
     debugCatchOpName("ROL");
-    let flagC = this.isFlagSet(Flags.C);
-    this.setFlag(Flags.C, ((this.regs.A & 0x80) === 0x80));
-    this.regs.A = 0xFF & (this.regs.A << 1);
-    if (flagC){
-      this.regs.A |= 0x01;
+    if (address === 0xF0000){
+      let flagC = this.isFlagSet(Flags.C);
+      this.setFlag(Flags.C, ((this.regs.A & 0x80) === 0x80));
+      this.regs.A = 0xFF & (this.regs.A << 1);
+      if (flagC){
+        this.regs.A |= 0x01;
+      }
+      this.checkResultZN(this.regs.A);
     }
-    this.checkResultZN(this.regs.A);
+    else{
+      let memory = this.bus.readByte(address);
+      let flagC = this.isFlagSet(Flags.C);
+      this.setFlag(Flags.C, ((memory & 0x80) === 0x80));
+      memory = 0xFF & (memory << 1);
+      if (flagC){
+        memory |= 0x01;
+      }
+      this.bus.writeByte(address, memory);
+      this.checkResultZN(memory);
+    }
   }
   private AND(address: uint16){
     debugCatchOpName("AND");
@@ -696,6 +950,13 @@ export class CPU2A03 implements ICPU {
     debugCatchOpName("INX");
     this.regs.X = 0xFF & (this.regs.X + 1);
     this.checkResultZN(this.regs.X);
+  }
+  private INC(address: uint16){
+    debugCatchOpName("INC");
+    let memory = this.bus.readByte(address);
+    memory = 0xFF & (memory + 1);
+    this.bus.writeByte(address, memory);
+    this.checkResultZN(memory);
   }
   private DEY(){
     debugCatchOpName("DEY");

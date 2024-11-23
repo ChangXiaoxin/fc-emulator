@@ -209,11 +209,19 @@ export function debugCatchDataCode(address: uint16, addrMode: ADDR_MODE)
                          + zeroFill((cpubus.readByte(address)).toString(16).toUpperCase(), 2);
       break;
     case ADDR_MODE.IND:
+      let regspc = 0xFFFF;
+      if ((address & 0x00FF) === 0x00FF){
+        const address2 = address & 0xFF00;
+        regspc = (cpubus.readByte(address2) << 8) | (cpubus.readByte(address)) & 0xFFFF;
+      }
+      else{
+        regspc = cpubus.readWord(address);
+      }
       const peekedindStr = zeroFill((address).toString(16).toUpperCase(), 4);
       cpulog.dataCode = zeroFill((address&0xFF).toString(16).toUpperCase(), 2) + " "
                       + zeroFill(((address>>8)&0xFF).toString(16).toUpperCase(), 2);
       cpulog.dataContent = "($" + peekedindStr + ") = "
-                         + zeroFill(cpuregs.PC.toString(16).toUpperCase(), 4);
+                         + zeroFill(regspc.toString(16).toUpperCase(), 4);
       break;
     default:
       break;

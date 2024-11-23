@@ -744,7 +744,8 @@ export class CPU2A03 implements ICPU {
         break;
       case 0x6C:
         // JMP ind 5
-        this.JMPind();
+        address = this.ind();
+        this.JMP(address);
         this.addCycles(5);
         break;
       case 0xB9:
@@ -1219,10 +1220,25 @@ export class CPU2A03 implements ICPU {
   }
   private ind(): uint16{
     // Indirect (Special for JMP)
-    let address = this.bus.readWord(this.regs.PC);
-    address = this.bus.readWord(address);
+    let memory = this.bus.readWord(this.regs.PC);
+    let address = 0x00;
     this.regs.PC += 2;
-    debugCatchDataCode(address, ADDR_MODE.IND);
+    // implement the JMP ind BUG: cannot peek cross the page normally.
+    // The indirect addressing mode uses the operand as a pointer, 
+    // getting the new 2-byte program counter value from the specified address.
+    // Unfortunately, because of a CPU bug, if this 2-byte variable has an 
+    // address ending in $FF and thus crosses a page, then the CPU fails to 
+    // increment the page when reading the second byte and thus reads the wrong
+    // address. For example, JMP ($03FF) reads $03FF and $0300 instead of $0400.
+    // Care should be taken to ensure this variable does not cross a page.
+    if ((memory & 0x00FF) === 0x00FF){
+      const address2 = memory & 0xFF00;
+      address = (this.bus.readByte(address2) << 8) | (this.bus.readByte(memory)) & 0xFFFF;
+    }
+    else{
+      address = this.bus.readWord(memory);
+    }
+    debugCatchDataCode(memory, ADDR_MODE.IND);
     return address;
   }
   private zp(): uint16{
@@ -1260,20 +1276,6 @@ export class CPU2A03 implements ICPU {
   private JMP(address: uint16){
     debugCatchOpName("JMP");
     this.regs.PC = address;
-  }
-  private JMPind(){
-    // Indirect
-    let address = this.bus.readWord(this.regs.PC);
-    this.regs.PC += 2;
-    if ((address & 0x00FF) === 0x00FF){
-      const address2 = address & 0xFF00;
-      this.regs.PC = (this.bus.readByte(address2) << 8) | (this.bus.readByte(address)) & 0xFFFF;
-    }
-    else{
-      this.regs.PC = this.bus.readWord(address);
-    }
-    debugCatchDataCode(address, ADDR_MODE.IND);
-    debugCatchOpName("JMP");
   }
   private LDX(address: uint16){
     debugCatchOpName("LDX");

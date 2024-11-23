@@ -694,6 +694,60 @@ export class CPU2A03 implements ICPU {
         this.DEC(address);
         this.addCycles(6);
         break;
+      case 0xB1:
+        // LDA izy 5
+        address = this.izy();
+        this.LDA(address);
+        this.addCycles(5);
+        break;
+      case 0x11:
+        // ORA izy 5
+        address = this.izy();
+        this.ORA(address);
+        this.addCycles(5);
+        break;
+      case 0x31:
+        // AND izy 5
+        address = this.izy();
+        this.AND(address);
+        this.addCycles(5);
+        break;
+      case 0x51:
+        // EOR izy 5
+        address = this.izy();
+        this.EOR(address);
+        this.addCycles(5);
+        break;
+      case 0x71:
+        // ADC izy 5
+        address = this.izy();
+        this.ADC(address);
+        this.addCycles(5);
+        break;
+      case 0xD1:
+        // CMP izy 5
+        address = this.izy();
+        this.CMP(address);
+        this.addCycles(5);
+        break;
+      case 0xF1:
+        // SBC izy 5
+        address = this.izy();
+        this.SBC(address);
+        this.addCycles(5);
+        break;
+      case 0x91:
+        // STA izy 6 // TODO: why izy 6 here?
+        address = this.izy();
+        this.STA(address);
+        this.addCycles(6);
+        break;
+      case 0x6C:
+        // JMP ind 5
+        this.JMPind();
+        this.addCycles(5);
+        break;
+      
       default:
         throw new Error(`Invalid opcode: ${opcode.toString(16).toUpperCase()}`);
     }
@@ -710,7 +764,7 @@ export class CPU2A03 implements ICPU {
   /************************************************/
   private abs(): uint16{
     // Absolute
-    const address =  this.bus.readWord(this.regs.PC);
+    const address = this.bus.readWord(this.regs.PC);
     this.regs.PC += 2;
     debugCatchDataCode(address, ADDR_MODE.ABS);
     return address;
@@ -730,6 +784,29 @@ export class CPU2A03 implements ICPU {
     const address = peeked3 | peeked2;
     this.regs.PC += 1;
     debugCatchDataCode(address, ADDR_MODE.IZX);
+    return address;
+  }
+  private izy(): uint16{
+    // Indirect indexed Y
+    const peeked1 = this.bus.readByte(this.regs.PC);
+    const peeked2 = this.bus.readByte(peeked1);
+    const peeked3 = this.bus.readByte((peeked1 + 1) & 0xFF) << 8;
+    const address = 0xFFFF & ((peeked3 | peeked2) + this.regs.Y);
+    // oops cycle for different page
+    if (((peeked3 | peeked2) & 0xFF00) !== (address & 0xFF00))
+    {
+      this.addCycles(1);
+    }
+    this.regs.PC += 1;
+    debugCatchDataCode(address, ADDR_MODE.IZY);
+    return address;
+  }
+  private ind(): uint16{
+    // Indirect (Special for JMP)
+    let address = this.bus.readWord(this.regs.PC);
+    address = this.bus.readWord(address);
+    this.regs.PC += 2;
+    debugCatchDataCode(address, ADDR_MODE.IND);
     return address;
   }
   private zp(): uint16{
@@ -753,6 +830,20 @@ export class CPU2A03 implements ICPU {
   private JMP(address: uint16){
     debugCatchOpName("JMP");
     this.regs.PC = address;
+  }
+  private JMPind(){
+    // Indirect
+    let address = this.bus.readWord(this.regs.PC);
+    this.regs.PC += 2;
+    if ((address & 0x00FF) === 0x00FF){
+      const address2 = address & 0xFF00;
+      this.regs.PC = (this.bus.readByte(address2) << 8) | (this.bus.readByte(address)) & 0xFFFF;
+    }
+    else{
+      this.regs.PC = this.bus.readWord(address);
+    }
+    debugCatchDataCode(address, ADDR_MODE.IND);
+    debugCatchOpName("JMP");
   }
   private LDX(address: uint16){
     debugCatchOpName("LDX");

@@ -25,6 +25,8 @@ export enum ADDR_MODE {
   ABS,
   ZP,
   IZX,
+  IZY,
+  IND,
   REL,
 };
 
@@ -88,7 +90,7 @@ export function debugCatchCPURegs(regs: IRegs){
 
 export function debugCatchRegs()
 {
-  cpulog.PC  = cpuregs.PC.toString(16).toUpperCase();
+  cpulog.PC  = zeroFill(cpuregs.PC.toString(16).toUpperCase(), 4);
   cpulog.A   = zeroFill(cpuregs.A.toString(16).toUpperCase(), 2);
   cpulog.X   = zeroFill(cpuregs.X.toString(16).toUpperCase(), 2);
   cpulog.Y   = zeroFill(cpuregs.Y.toString(16).toUpperCase(), 2);
@@ -150,13 +152,31 @@ export function debugCatchDataCode(address: uint16, addrMode: ADDR_MODE)
                          + zeroFill((cpubus.readByte(address)).toString(16).toUpperCase(), 2);
       break;
     case ADDR_MODE.IZX:
-      let peeked = cpubus.readByte(cpuregs.PC-1);
-      let peekedStr = zeroFill((peeked).toString(16).toUpperCase(), 2);
+      const peeked = cpubus.readByte(cpuregs.PC-1);
+      const peekedStr = zeroFill((peeked).toString(16).toUpperCase(), 2);
       cpulog.dataCode = peekedStr;
       cpulog.dataContent = "($" + peekedStr + ",X) @ "
                          + zeroFill(((peeked + cpuregs.X) & 0xFF).toString(16).toUpperCase(), 2) + " = "
                          + zeroFill((address).toString(16).toUpperCase(), 4) + " = "
                          + zeroFill((cpubus.readByte(address)).toString(16).toUpperCase(), 2);
+      break;
+    case ADDR_MODE.IZY:
+      const peekedy = cpubus.readByte(cpuregs.PC-1);
+      const peeked2 = cpubus.readByte(peekedy);
+      const peeked3 = cpubus.readByte((peekedy + 1) & 0xFF) << 8;
+      const peekedyStr = zeroFill((peekedy).toString(16).toUpperCase(), 2);
+      cpulog.dataCode = peekedyStr;
+      cpulog.dataContent = "($" + peekedyStr + "),Y = "
+                         + zeroFill((peeked2 | peeked3).toString(16).toUpperCase(), 4) + " @ "
+                         + zeroFill((address).toString(16).toUpperCase(), 4) + " = "
+                         + zeroFill((cpubus.readByte(address)).toString(16).toUpperCase(), 2);
+      break;
+    case ADDR_MODE.IND:
+      const peekedindStr = zeroFill((address).toString(16).toUpperCase(), 4);
+      cpulog.dataCode = zeroFill((address&0xFF).toString(16).toUpperCase(), 2) + " "
+                      + zeroFill(((address>>8)&0xFF).toString(16).toUpperCase(), 2);
+      cpulog.dataContent = "($" + peekedindStr + ") = "
+                         + zeroFill(cpuregs.PC.toString(16).toUpperCase(), 4);
       break;
     default:
       break;

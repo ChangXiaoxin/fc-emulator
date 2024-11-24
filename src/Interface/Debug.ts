@@ -122,6 +122,7 @@ export function debugCatchExtendedDataContent(){
     if (cpulog.opName === "JMP" || cpulog.opName === "JSR"){
     }
     else{
+      cpulog.addrMode = ADDR_MODE.IMM;  // Make sure only extend data content once.
       cpulog.dataContent += " = " + zeroFill((cpubus.readByte(cpulog.address)).toString(16).toUpperCase(), 2);
     }
   }

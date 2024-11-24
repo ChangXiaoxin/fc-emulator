@@ -795,6 +795,12 @@ export class CPU2A03 implements ICPU {
         this.LDX(address);
         this.addCycles(3);
         break;
+      case 0xA7: // unoffical
+        // LAX zp 3
+        address = this.zp();
+        this.LAX(address);
+        this.addCycles(3);
+        break;
       case 0xA8:
         // TAY 2
         this.TAY();
@@ -809,6 +815,12 @@ export class CPU2A03 implements ICPU {
       case 0xAA:
         // TAX 2
         this.TAX();
+        this.addCycles(2);
+        break;
+      case 0xAB: // unoffical
+        // LAX imm 2
+        address = this.imm();
+        this.LAX(address);
         this.addCycles(2);
         break;
       case 0xAC:
@@ -829,6 +841,12 @@ export class CPU2A03 implements ICPU {
         this.LDX(address);
         this.addCycles(4);
         break;
+      case 0xAF: // unoffical
+        // LAX abs 4
+        address = this.abs();
+        this.LAX(address);
+        this.addCycles(4);
+        break;
       // row B
       case 0xB0:
         // BCS rel 2*
@@ -840,6 +858,12 @@ export class CPU2A03 implements ICPU {
         // LDA izy 5*
         address = this.izy();
         this.LDA(address);
+        this.addCycles(5);
+        break;
+      case 0xB3: // unoffical
+        // LAX izy 5*
+        address = this.izy();
+        this.LAX(address);
         this.addCycles(5);
         break;
       case 0xB4:
@@ -858,6 +882,12 @@ export class CPU2A03 implements ICPU {
         // LDX zpy 4
         address = this.zpy();
         this.LDX(address);
+        this.addCycles(4);
+        break;
+      case 0xB7: // unoffical
+        // LAX zpy 4
+        address = this.zpy();
+        this.LAX(address);
         this.addCycles(4);
         break;
       case 0xB8:
@@ -892,6 +922,12 @@ export class CPU2A03 implements ICPU {
         // LDX aby 4*
         address = this.aby();
         this.LDX(address);
+        this.addCycles(4);
+        break;
+      case 0xBF: // unoffical
+        // LAX aby 4*
+        address = this.aby();
+        this.LAX(address);
         this.addCycles(4);
         break;
       // row C
@@ -1646,9 +1682,10 @@ export class CPU2A03 implements ICPU {
   /************************************************/
   /* Unoffical Operations.
   /************************************************/
-  private LAX(addCycles: uint16){
+  private LAX(address: uint16){
+    this.LDA(address);
+    this.TAX();
     debugCatchOpName("*LAX");
-    
   }
 
   /************************************************/

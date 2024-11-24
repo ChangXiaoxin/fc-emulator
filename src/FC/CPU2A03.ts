@@ -134,6 +134,12 @@ export class CPU2A03 implements ICPU {
         this.ORA(address);
         this.addCycles(6);
         break;
+      case 0x03:
+        // *SLO izx 8
+        address = this.izx();
+        this.SLO(address);
+        this.addCycles(8);
+        break;
       case 0x04: // unoffical
         // NOP zp 3
         address = this.zp();
@@ -150,6 +156,12 @@ export class CPU2A03 implements ICPU {
         // ASL zp 5
         address = this.zp();
         this.ASL(address);
+        this.addCycles(5);
+        break;
+      case 0x07:
+        // *SLO zp 5
+        address = this.zp();
+        this.SLO(address);
         this.addCycles(5);
         break;
       case 0x08:
@@ -186,6 +198,12 @@ export class CPU2A03 implements ICPU {
         this.ASL(address);
         this.addCycles(6);
         break;
+      case 0x0F:
+        // *SLO abs 6
+        address = this.abs();
+        this.SLO(address);
+        this.addCycles(6);
+        break;
       // row 1
       case 0x10:
         // BPL rel 2*
@@ -198,6 +216,12 @@ export class CPU2A03 implements ICPU {
         address = this.izy();
         this.ORA(address);
         this.addCycles(5);
+        break;
+      case 0x13:
+        // *SLO izy 8
+        address = this.izy(true);
+        this.SLO(address);
+        this.addCycles(7);
         break;
       case 0x14: // unoffical
         // NOP zpx 4
@@ -217,6 +241,12 @@ export class CPU2A03 implements ICPU {
         this.ASL(address);
         this.addCycles(6);
         break;
+      case 0x17:
+        // *SLO zpx 6
+        address = this.zpx();
+        this.SLO(address);
+        this.addCycles(6);
+        break;
       case 0x18:
         // CLC 2
         this.CLC();
@@ -232,6 +262,12 @@ export class CPU2A03 implements ICPU {
         // NOP 2
         this.NOP(true);
         this.addCycles(2);
+        break;
+      case 0x1B:
+        // *SLO aby 7
+        address = this.aby(true);
+        this.SLO(address);
+        this.addCycles(6);
         break;
       case 0x1C:
         // NOP abx 4*
@@ -251,6 +287,12 @@ export class CPU2A03 implements ICPU {
         this.ASL(address);
         this.addCycles(6);
         break;
+      case 0x1F:
+        // *SLO abx 7
+        address = this.abx(true);
+        this.SLO(address);
+        this.addCycles(6);
+        break;
       // row 2
       case 0x20:
         // JSR abs 6
@@ -263,6 +305,12 @@ export class CPU2A03 implements ICPU {
         address = this.izx();
         this.AND(address);
         this.addCycles(6);
+        break;
+      case 0x23:
+        // *RLA izx 8
+        address = this.izx();
+        this.RLA(address);
+        this.addCycles(8);
         break;
       case 0x24:
         // BIT zp 3
@@ -280,6 +328,12 @@ export class CPU2A03 implements ICPU {
         // ROL zp 5
         address = this.zp();
         this.ROL(address);
+        this.addCycles(5);
+        break;
+      case 0x27:
+        // *RLA zp 5
+        address = this.zp();
+        this.RLA(address);
         this.addCycles(5);
         break;
       case 0x28:
@@ -316,6 +370,12 @@ export class CPU2A03 implements ICPU {
         this.ROL(address);
         this.addCycles(6);
         break;
+      case 0x2F:
+        // *RLA abs 6
+        address = this.abs();
+        this.RLA(address);
+        this.addCycles(6);
+        break;
       // row 3
       case 0x30:
         // BMI rel 2*
@@ -328,6 +388,12 @@ export class CPU2A03 implements ICPU {
         address = this.izy();
         this.AND(address);
         this.addCycles(5);
+        break;
+      case 0x33:
+        // *RLA izy 8
+        address = this.izy(true);
+        this.RLA(address);
+        this.addCycles(7);
         break;
       case 0x34: // unoffical
         // NOP zpx 4
@@ -347,6 +413,12 @@ export class CPU2A03 implements ICPU {
         this.ROL(address);
         this.addCycles(6);
         break;
+      case 0x37:
+        // *RLA zpx 6
+        address = this.zpx();
+        this.RLA(address);
+        this.addCycles(6);
+        break;
       case 0x38:
         // SEC 2
         this.SEC();
@@ -362,6 +434,12 @@ export class CPU2A03 implements ICPU {
         // NOP 2
         this.NOP(true);
         this.addCycles(2);
+        break;
+      case 0x3B:
+        // *RLA aby 7
+        address = this.aby(true);
+        this.RLA(address);
+        this.addCycles(6);
         break;
       case 0x3C:
         // NOP abx 4*
@@ -381,6 +459,12 @@ export class CPU2A03 implements ICPU {
         this.ROL(address);
         this.addCycles(6);
         break;
+      case 0x3F:
+        // *RLA abx 7
+        address = this.abx(true);
+        this.RLA(address);
+        this.addCycles(6);
+        break;
       // row 4
       case 0x40:
         // RTI 6
@@ -392,6 +476,12 @@ export class CPU2A03 implements ICPU {
         address = this.izx();
         this.EOR(address);
         this.addCycles(6);
+        break;
+      case 0x43:
+        // *SRE izx 8
+        address = this.izx();
+        this.SRE(address);
+        this.addCycles(8);
         break;
       case 0x44: // unoffical
         // NOP zp 3
@@ -409,6 +499,12 @@ export class CPU2A03 implements ICPU {
         // LSR zp 5
         address = this.zp();
         this.LSR(address);
+        this.addCycles(5);
+        break;
+      case 0x47:
+        // *SRE zp 5
+        address = this.zp();
+        this.SRE(address);
         this.addCycles(5);
         break;
       case 0x48:
@@ -445,6 +541,12 @@ export class CPU2A03 implements ICPU {
         this.LSR(address);
         this.addCycles(6);
         break;
+      case 0x4F:
+        // *SRE abs 6
+        address = this.abs();
+        this.SRE(address);
+        this.addCycles(6);
+        break;
       // row 5
       case 0x50:
         // BVC rel 2*
@@ -457,6 +559,12 @@ export class CPU2A03 implements ICPU {
         address = this.izy();
         this.EOR(address);
         this.addCycles(5);
+        break;
+      case 0x53:
+        // *SRE izy 8
+        address = this.izy(true);
+        this.SRE(address);
+        this.addCycles(7);
         break;
       case 0x54: // unoffical
         // NOP zpx 4
@@ -476,6 +584,12 @@ export class CPU2A03 implements ICPU {
         this.LSR(address);
         this.addCycles(6);
         break;
+      case 0x57:
+        // *SRE zpx 6
+        address = this.zpx();
+        this.SRE(address);
+        this.addCycles(6);
+        break;
       case 0x59:
         // EOR aby 4*
         address = this.aby();
@@ -493,6 +607,12 @@ export class CPU2A03 implements ICPU {
         this.NOP(true);
         this.addCycles(4);
         break;
+      case 0x5B:
+        // *SRE aby 7
+        address = this.aby(true);
+        this.SRE(address);
+        this.addCycles(6);
+        break;
       case 0x5D:
         // EOR abx 4*
         address = this.abx();
@@ -503,6 +623,12 @@ export class CPU2A03 implements ICPU {
         // LSR abx 7
         address = this.abx(true);
         this.LSR(address);
+        this.addCycles(6);
+        break;
+      case 0x5F:
+        // *SRE abx 7
+        address = this.abx(true);
+        this.SRE(address);
         this.addCycles(6);
         break;
       // row 6
@@ -516,6 +642,12 @@ export class CPU2A03 implements ICPU {
         address = this.izx();
         this.ADC(address);
         this.addCycles(6);
+        break;
+      case 0x63:
+        // *RRA izx 8
+        address = this.izx();
+        this.RRA(address);
+        this.addCycles(8);
         break;
       case 0x64: // unoffical
         // NOP zp 3
@@ -533,6 +665,12 @@ export class CPU2A03 implements ICPU {
         // ROR zp 5
         address = this.zp();
         this.ROR(address);
+        this.addCycles(5);
+        break;
+      case 0x67:
+        // *RRA zp 5
+        address = this.zp();
+        this.RRA(address);
         this.addCycles(5);
         break;
       case 0x68:
@@ -569,6 +707,12 @@ export class CPU2A03 implements ICPU {
         this.ROR(address);
         this.addCycles(6);
         break;
+      case 0x6F:
+        // *RRA abs 6
+        address = this.abs();
+        this.RRA(address);
+        this.addCycles(6);
+        break;
       // row 7
       case 0x70:
         // BVS rel 2*
@@ -581,6 +725,12 @@ export class CPU2A03 implements ICPU {
         address = this.izy();
         this.ADC(address);
         this.addCycles(5);
+        break;
+      case 0x73:
+        // *RRA izy 8
+        address = this.izy(true);
+        this.RRA(address);
+        this.addCycles(7);
         break;
       case 0x74: // unoffical
         // NOP zpx 4
@@ -600,6 +750,12 @@ export class CPU2A03 implements ICPU {
         this.ROR(address);
         this.addCycles(6);
         break;
+      case 0x77:
+        // *RRA zpx 6
+        address = this.zpx();
+        this.RRA(address);
+        this.addCycles(6);
+        break;
       case 0x78:
         // SEI 2
         this.SEI();
@@ -615,6 +771,12 @@ export class CPU2A03 implements ICPU {
         // NOP 2
         this.NOP(true);
         this.addCycles(2);
+        break;
+      case 0x7B:
+        // *RRA aby 7
+        address = this.aby(true);
+        this.RRA(address);
+        this.addCycles(6);
         break;
       case 0x7C:
         // NOP abx 4*
@@ -632,6 +794,12 @@ export class CPU2A03 implements ICPU {
         // ROR abx 7
         address = this.abx(true);
         this.ROR(address);
+        this.addCycles(6);
+        break;
+      case 0x7F:
+        // *RRA abx 7
+        address = this.abx(true);
+        this.RRA(address);
         this.addCycles(6);
         break;
       // row 8
@@ -653,6 +821,12 @@ export class CPU2A03 implements ICPU {
         this.NOP(true);
         this.addCycles(2);
         break;
+      case 0x83: // unoffical
+        // *SAX izx 6
+        address = this.izx();
+        this.SAX(address);
+        this.addCycles(6);
+        break;
       case 0x84:
         // STY zp 3
         address = this.zp();
@@ -669,6 +843,12 @@ export class CPU2A03 implements ICPU {
         // STX zp 3
         address = this.zp();
         this.STX(address);
+        this.addCycles(3);
+        break;
+      case 0x87: // unoffical
+        // *SAX zp 3
+        address = this.zp();
+        this.SAX(address);
         this.addCycles(3);
         break;
       case 0x88:
@@ -697,6 +877,12 @@ export class CPU2A03 implements ICPU {
         // STX abs 4
         address = this.abs();
         this.STX(address);
+        this.addCycles(4);
+        break;
+      case 0x8F: // unoffical
+        // *SAX abs 4
+        address = this.abs();
+        this.SAX(address);
         this.addCycles(4);
         break;
       // row 9
@@ -730,6 +916,12 @@ export class CPU2A03 implements ICPU {
         this.STX(address);
         this.addCycles(4);
         break;
+      case 0x97:
+        // *SAX zpy 4
+        address = this.zpy();
+        this.SAX(address);
+        this.addCycles(4);
+        break;
       case 0x98:
         // TYA 2
         this.TYA();
@@ -737,9 +929,9 @@ export class CPU2A03 implements ICPU {
         break;
       case 0x99:
         // STA aby 5
-        address = this.aby();
+        address = this.aby(true);
         this.STA(address);
-        this.addCycles(5);
+        this.addCycles(4);
         break;
       case 0x9A:
         // TXS 2
@@ -772,7 +964,7 @@ export class CPU2A03 implements ICPU {
         this.addCycles(2);
         break;
       case 0xA3: // unoffical
-        // LAX izx 6
+        // *LAX izx 6
         address = this.izx();
         this.LAX(address);
         this.addCycles(6);
@@ -949,6 +1141,12 @@ export class CPU2A03 implements ICPU {
         this.NOP(true);
         this.addCycles(2);
         break;
+      case 0xC3: // unoffical
+        // DCP izx 8
+        address = this.izx();
+        this.DCP(address);
+        this.addCycles(8);
+        break;
       case 0xC4:
         // CPY zp 3
         address = this.zp();
@@ -965,6 +1163,12 @@ export class CPU2A03 implements ICPU {
         // DEC zp 5
         address = this.zp();
         this.DEC(address);
+        this.addCycles(5);
+        break;
+      case 0xC7: // unoffical
+        // DCP zp 5
+        address = this.zp();
+        this.DCP(address);
         this.addCycles(5);
         break;
       case 0xC8:
@@ -1001,6 +1205,12 @@ export class CPU2A03 implements ICPU {
         this.DEC(address);
         this.addCycles(6);
         break;
+      case 0xCF: // unoffical
+        // DCP abs 6
+        address = this.abs();
+        this.DCP(address);
+        this.addCycles(6);
+        break;
       // row D
       case 0xD0:
         // BNE rel 2*
@@ -1013,6 +1223,12 @@ export class CPU2A03 implements ICPU {
         address = this.izy();
         this.CMP(address);
         this.addCycles(5);
+        break;
+      case 0xD3: // unoffical
+        // DCP izy 8
+        address = this.izy(true);
+        this.DCP(address);
+        this.addCycles(7);
         break;
       case 0xD4: // unoffical
         // NOP zpx 4
@@ -1032,6 +1248,12 @@ export class CPU2A03 implements ICPU {
         this.DEC(address);
         this.addCycles(6);
         break;
+      case 0xD7: // unoffical
+        // DCP zpx 6
+        address = this.zpx();
+        this.DCP(address);
+        this.addCycles(6);
+        break;
       case 0xD8:
         // CLD 2
         this.CLD();
@@ -1047,6 +1269,12 @@ export class CPU2A03 implements ICPU {
         // NOP 2
         this.NOP(true);
         this.addCycles(2);
+        break;
+      case 0xDB: // unoffical
+        // DCP aby 7
+        address = this.aby(true);
+        this.DCP(address);
+        this.addCycles(6);
         break;
       case 0xDC:
         // NOP abx 4*
@@ -1064,6 +1292,12 @@ export class CPU2A03 implements ICPU {
         // DEC abx 7
         address = this.abx(true);
         this.DEC(address);
+        this.addCycles(6);
+        break;
+      case 0xDF: // unoffical
+        // DCP abx 7
+        address = this.abx(true);
+        this.DCP(address);
         this.addCycles(6);
         break;
       // row E
@@ -1085,6 +1319,12 @@ export class CPU2A03 implements ICPU {
         this.NOP(true);
         this.addCycles(2);
         break;
+      case 0xE3: // unoffical
+        // *ISC izx 8
+        address = this.izx();
+        this.ISC(address);
+        this.addCycles(8);
+        break;
       case 0xE4:
         // CPX zp 3
         address = this.zp();
@@ -1103,6 +1343,12 @@ export class CPU2A03 implements ICPU {
         this.INC(address);
         this.addCycles(5);
         break;
+      case 0xE7: // unoffical
+        // *ISC zp 5
+        address = this.zp();
+        this.ISC(address);
+        this.addCycles(5);
+        break;
       case 0xE8:
         // INX 2
         this.INX();
@@ -1117,6 +1363,12 @@ export class CPU2A03 implements ICPU {
       case 0xEA:
         // NOP 2
         this.NOP();
+        this.addCycles(2);
+        break;
+      case 0xEB: // unoffical
+        // *SBC imm 2
+        address = this.imm();
+        this.SBC(address);
         this.addCycles(2);
         break;
       case 0xEC:
@@ -1137,6 +1389,12 @@ export class CPU2A03 implements ICPU {
         this.INC(address);
         this.addCycles(6);
         break;
+      case 0xEF: // unoffical
+        // *ISC abs 6
+        address = this.abs();
+        this.ISC(address);
+        this.addCycles(6);
+        break;
       // row F
       case 0xF0:
         // BEQ rel 2*
@@ -1149,6 +1407,12 @@ export class CPU2A03 implements ICPU {
         address = this.izy();
         this.SBC(address);
         this.addCycles(5);
+        break;
+      case 0xF3: // unoffical
+        // *ISC izy 8
+        address = this.izy(true);
+        this.ISC(address);
+        this.addCycles(7);
         break;
       case 0xF4: // unoffical
         // NOP zpx 4
@@ -1168,6 +1432,12 @@ export class CPU2A03 implements ICPU {
         this.INC(address);
         this.addCycles(6);
         break;
+      case 0xF7: // unoffical
+        // *ISC zpx 7
+        address = this.zpx();
+        this.ISC(address);
+        this.addCycles(6);
+        break;
       case 0xF8:
         // SED 2
         this.SED();
@@ -1183,6 +1453,12 @@ export class CPU2A03 implements ICPU {
         // NOP 2
         this.NOP(true);
         this.addCycles(2);
+        break;
+      case 0xFB: // unoffical
+        // *ISC aby 7
+        address = this.aby(true);
+        this.ISC(address);
+        this.addCycles(6);
         break;
       case 0xFC:
         // NOP abx 4*
@@ -1200,6 +1476,12 @@ export class CPU2A03 implements ICPU {
         // INC abx 7
         address = this.abx(true);
         this.INC(address);
+        this.addCycles(6);
+        break;
+      case 0xFF: // unoffical
+        // *ISC abx 7
+        address = this.abx(true);
+        this.ISC(address);
         this.addCycles(6);
         break;
 
@@ -1685,9 +1967,42 @@ export class CPU2A03 implements ICPU {
   private LAX(address: uint16){
     this.LDA(address);
     this.TAX();
-    debugCatchOpName("*LAX");
+    debugCatchOpName("*LAX");  // put the end to catch the unoffical code *LAX.
   }
-
+  private SAX(address: uint16){
+    debugCatchOpName("*SAX");
+    this.bus.writeByte(address, this.regs.A & this.regs.X);
+  }
+  private DCP(address: uint16){
+    this.DEC(address);
+    this.CMP(address);
+    debugCatchOpName("*DCP");
+  }
+  private ISC(address: uint16){
+    this.INC(address);
+    this.SBC(address);
+    debugCatchOpName("*ISC");
+  }
+  private SLO(address: uint16){
+    this.ASL(address);
+    this.ORA(address);
+    debugCatchOpName("*SLO");
+  }
+  private RLA(address: uint16){
+    this.ROL(address);
+    this.AND(address);
+    debugCatchOpName("*RLA");
+  }
+  private SRE(address: uint16){
+    this.LSR(address);
+    this.EOR(address);
+    debugCatchOpName("*SRE");
+  }
+  private RRA(address: uint16){
+    this.ROR(address);
+    this.ADC(address);
+    debugCatchOpName("*RRA");
+  }
   /************************************************/
   /* Internal Helper.
   /************************************************/

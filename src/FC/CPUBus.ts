@@ -27,7 +27,7 @@ export class CPUBus implements IBus {
     }
     else if (address < 0x6000){
       // IO Registers
-      return 0;
+      return 0xFF;
     }
     else{
       // Cartridge

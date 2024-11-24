@@ -126,6 +126,9 @@ export function debugCatchExtendedDataContent(){
       cpulog.dataContent += " = " + zeroFill((cpubus.readByte(cpulog.address)).toString(16).toUpperCase(), 2);
     }
   }
+  if (cpulog.opName === "SBC" && cpulog.opCode === "EB"){
+    cpulog.opName = "*SBC";
+  }
 }
 export function debugCatchDataCode(address: uint16, addrMode: ADDR_MODE)
 {

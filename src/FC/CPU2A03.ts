@@ -127,385 +127,17 @@ export class CPU2A03 implements ICPU {
     const opcode = this.bus.readByte(this.regs.PC++);
     debugCatchOpCode(opcode);
     switch (opcode) {
-      case 0x4C:
-        // JMP abs 3
-        address = this.abs();
-        this.JMP(address);
-        this.addCycles(3);
-        break;
-      case 0xA2:
-        // LDX imm 2
-        address = this.imm();
-        this.LDX(address);
-        this.addCycles(2);
-        break;
-      case 0x86:
-        // STX zp 3
-        address = this.zp();
-        this.STX(address);
-        this.addCycles(3);
-        break;
-      case 0x20:
-        // JSR abs 6
-        address = this.abs();
-        this.JSR(address);
-        this.addCycles(6);
-        break;
-      case 0xEA:
-        // NOP 2
-        this.NOP();
-        this.addCycles(2);
-        break;
-      case 0x38:
-        // SEC 2
-        this.SEC();
-        this.addCycles(2);
-        break;
-      case 0x18:
-        // CLC 2
-        this.CLC();
-        this.addCycles(2);
-        break;
-      case 0xB0:
-        // BCS rel 2*
-        address = this.rel();
-        this.BCS(address);
-        this.addCycles(2);
-        break;
-      case 0x90:
-        // BCC rel 2*
-        address = this.rel();
-        this.BCC(address);
-        this.addCycles(2);
-        break;
-      case 0xA9:
-        // LDA imm 2
-        address = this.imm();
-        this.LDA(address);
-        this.addCycles(2);
-        break;
-      case 0xF0:
-        // BEQ rel 2*
-        address = this.rel();
-        this.BEQ(address);
-        this.addCycles(2);
-        break;
-      case 0xD0:
-        // BNE rel 2*
-        address = this.rel();
-        this.BNE(address);
-        this.addCycles(2);
-        break;
-      case 0x85:
-        // STA zp 3
-        address = this.zp();
-        this.STA(address);
-        this.addCycles(3);
-        break;
-      case 0x24:
-        // BIT zp 3
-        address = this.zp();
-        this.BIT(address);
-        this.addCycles(3);
-        break;
-      case 0x70:
-        // BVS rel 2*
-        address = this.rel();
-        this.BVS(address);
-        this.addCycles(2);
-        break;
-      case 0x50:
-        // BVC rel 2*
-        address = this.rel();
-        this.BVC(address);
-        this.addCycles(2);
-        break;
-      case 0x10:
-        // BPL rel 2*
-        address = this.rel();
-        this.BPL(address);
-        this.addCycles(2);
-        break;
-      case 0x60:
-        // RTS 6
-        this.RTS();
-        this.addCycles(6);
-        break;
-      case 0x78:
-        // SEI 2
-        this.SEI();
-        this.addCycles(2);
-        break;
-      case 0xF8:
-        // SED 2
-        this.SED();
-        this.addCycles(2);
-        break;
-      case 0x08:
-        // PHP 3
-        this.PHP();
-        this.addCycles(3);
-        break;
-      case 0x68:
-        // PLA 4
-        this.PLA();
-        this.addCycles(4);
-        break;
-      case 0x29:
-        // AND imm 2
-        address = this.imm();
-        this.AND(address);
-        this.addCycles(2);
-        break;
-      case 0xC9:
-        // CMP imm 2
-        address = this.imm();
-        this.CMP(address);
-        this.addCycles(2);
-        break;
-      case 0xD8:
-        // CLD 2
-        this.CLD();
-        this.addCycles(2);
-        break;
-      case 0x48:
-        // PHA 3
-        this.PHA();
-        this.addCycles(3);
-        break;
-      case 0x28:
-        // PLP 4
-        this.PLP();
-        this.addCycles(4);
-        break;
-      case 0x30:
-        // BMI rel 2*
-        address = this.rel();
-        this.BMI(address);
-        this.addCycles(2);
-        break;
-      case 0x09:
-        // ORA imm 2
-        address = this.imm();
-        this.ORA(address);
-        this.addCycles(2);
-        break;
-      case 0xB8:
-        // CLV 2
-        this.CLV();
-        this.addCycles(2);
-        break;
-      case 0x49:
-        // EOR imm 2
-        address = this.imm();
-        this.EOR(address);
-        this.addCycles(2);
-        break;
-      case 0x69:
-        // ADC imm 2
-        address = this.imm();
-        this.ADC(address);
-        this.addCycles(2);
-        break;
-      case 0xA0:
-        // LDY imm 2
-        address = this.imm();
-        this.LDY(address);
-        this.addCycles(2);
-        break;
-      case 0xC0:
-        // CPY imm 2
-        address = this.imm();
-        this.CPY(address);
-        this.addCycles(2);
-        break;
-      case 0xE0:
-        // CPX imm 2
-        address = this.imm();
-        this.CPX(address);
-        this.addCycles(2);
-        break;
-      case 0xE9:
-        // SBC imm 2
-        address = this.imm();
-        this.SBC(address);
-        this.addCycles(2);
-        break;
-      case 0xC8:
-        // INY 2
-        this.INY();
-        this.addCycles(2);
-        break;
-      case 0xE8:
-        // INX 2
-        this.INX();
-        this.addCycles(2);
-        break;
-      case 0x88:
-        // DEY 2
-        this.DEY();
-        this.addCycles(2);
-        break;
-      case 0xCA:
-        // DEX 2
-        this.DEX();
-        this.addCycles(2);
-        break;
-      case 0xA8:
-        // TAY 2
-        this.TAY();
-        this.addCycles(2);
-        break;
-      case 0xAA:
-        // TAX 2
-        this.TAX();
-        this.addCycles(2);
-        break;
-      case 0x98:
-        // TYA 2
-        this.TYA();
-        this.addCycles(2);
-        break;
-      case 0x8A:
-        // TXA 2
-        this.TXA();
-        this.addCycles(2);
-        break;
-      case 0xBA:
-        // TSX 2
-        this.TSX();
-        this.addCycles(2);
-        break;
-      case 0x8E:
-        // STX abs 4
-        address = this.abs();
-        this.STX(address);
-        this.addCycles(4);
-        break;
-      case 0x9A:
-        // TXS 2
-        this.TXS();
-        this.addCycles(2);
-        break;
-      case 0xA1:
-        // LDA izx 6
-        address = this.izx();
-        this.LDA(address);
-        this.addCycles(6);
-        break;
-      case 0xAE:
-        // LDX abs 4
-        address = this.abs();
-        this.LDX(address);
-        this.addCycles(4);
-        break;
-      case 0xAD:
-        // LDA abs 4
-        address = this.abs();
-        this.LDA(address);
-        this.addCycles(4);
-        break;
-      case 0x40:
-        // RTI 6
-        this.RTI();
-        this.addCycles(6);
-        break;
-      case 0x4A:
-        // LSR 2
-        this.LSR();
-        this.addCycles(2);
-        break;
-      case 0x0A:
-        // ASL 2
-        this.ASL();
-        this.addCycles(2);
-        break;
-      case 0x6A:
-        // ROR 2
-        this.ROR();
-        this.addCycles(2);
-        break;
-      case 0x2A:
-        // ROL 2
-        this.ROL();
-        this.addCycles(2);
-        break;
-      case 0xA5:
-        // LDA zp 3
-        address = this.zp();
-        this.LDA(address);
-        this.addCycles(3);
-        break;
-      case 0x8D:
-        // STA abs 4
-        address = this.abs();
-        this.STA(address);
-        this.addCycles(4);
-        break;
-      case 0xC9:
-        // CMP imm 2
-        address = this.imm();
-        this.CMP(address);
-        this.addCycles(2);
-        break;
-      case 0x81:
-        // STA izx 6
-        address = this.izx();
-        this.STA(address);
-        this.addCycles(6);
-        break;
+      // row 0
       case 0x01:
         // ORA izx 6
         address = this.izx();
         this.ORA(address);
         this.addCycles(6);
         break;
-      case 0x21:
-        // AND izx 6
-        address = this.izx();
-        this.AND(address);
-        this.addCycles(6);
-        break;
-      case 0x41:
-        // EOR izx 6
-        address = this.izx();
-        this.EOR(address);
-        this.addCycles(6);
-        break;
-      case 0x61:
-        // ADC izx 6
-        address = this.izx();
-        this.ADC(address);
-        this.addCycles(6);
-        break;
-      case 0xC1:
-        // CMP ixz 6
-        address = this.izx();
-        this.CMP(address);
-        this.addCycles(6);
-        break;
-      case 0xE1:
-        // SBC izx 6
-        address = this.izx();
-        this.SBC(address);
-        this.addCycles(6);
-        break;
-      case 0xA4:
-        // LDY zp 3
+      case 0x04: // unoffical
+        // NOP zp 3
         address = this.zp();
-        this.LDY(address);
-        this.addCycles(3);
-        break;
-      case 0x84:
-        // STY zp 3
-        address = this.zp();
-        this.STY(address);
-        this.addCycles(3);
-        break;
-      case 0xA6:
-        // LDX zp 3
-        address = this.zp();
-        this.LDX(address);
+        this.NOP(true);
         this.addCycles(3);
         break;
       case 0x05:
@@ -514,100 +146,32 @@ export class CPU2A03 implements ICPU {
         this.ORA(address);
         this.addCycles(3);
         break;
-      case 0x25:
-        // AND zp 3
-        address = this.zp();
-        this.AND(address);
-        this.addCycles(3);
-        break;
-      case 0x45:
-        // EOR zp 3
-        address = this.zp();
-        this.EOR(address);
-        this.addCycles(3);
-        break;
-      case 0x65:
-        // ADC zp 3
-        address = this.zp();
-        this.ADC(address);
-        this.addCycles(3);
-        break;
-      case 0xC5:
-        // CMP zp 3
-        address = this.zp();
-        this.CMP(address);
-        this.addCycles(3);
-        break;
-      case 0xE5:
-        // SBC zp 3
-        address = this.zp();
-        this.SBC(address);
-        this.addCycles(3);
-        break;
-      case 0xE4:
-        // CPX zp 3
-        address = this.zp();
-        this.CPX(address);
-        this.addCycles(3);
-        break;
-      case 0xC4:
-        // CPY zp 3
-        address = this.zp();
-        this.CPY(address);
-        this.addCycles(3);
-        break;
-      case 0x46:
-        // LSR zp 5
-        address = this.zp();
-        this.LSR(address);
-        this.addCycles(5);
-        break;
       case 0x06:
         // ASL zp 5
         address = this.zp();
         this.ASL(address);
         this.addCycles(5);
         break;
-      case 0x66:
-        // ROR zp 5
-        address = this.zp();
-        this.ROR(address);
-        this.addCycles(5);
+      case 0x08:
+        // PHP 3
+        this.PHP();
+        this.addCycles(3);
         break;
-      case 0x26:
-        // ROL zp 5
-        address = this.zp();
-        this.ROL(address);
-        this.addCycles(5);
+      case 0x09:
+        // ORA imm 2
+        address = this.imm();
+        this.ORA(address);
+        this.addCycles(2);
         break;
-      case 0xE6:
-        // INC zp 5
-        address = this.zp();
-        this.INC(address);
-        this.addCycles(5);
+      case 0x0A:
+        // ASL 2
+        this.ASL();
+        this.addCycles(2);
         break;
-      case 0xC6:
-        // DEC zp 5
-        address = this.zp();
-        this.DEC(address);
-        this.addCycles(5);
-        break;
-      case 0xAC:
-        // LDY abs 4
+      case 0x0C:
+        // NOP abs 4
         address = this.abs();
-        this.LDY(address);
-        this.addCycles(4);
-        break;
-      case 0x8C:
-        // STY abs 4
-        address = this.abs();
-        this.STY(address);
-        this.addCycles(4);
-        break;
-      case 0x2C:
-        // BIT abs 4
-        address = this.abs();
-        this.BIT(address);
+        this.NOP(true);
         this.addCycles(4);
         break;
       case 0x0D:
@@ -616,89 +180,18 @@ export class CPU2A03 implements ICPU {
         this.ORA(address);
         this.addCycles(4);
         break;
-      case 0x2D:
-        // AND abs 4
-        address = this.abs();
-        this.AND(address);
-        this.addCycles(4);
-        break;
-      case 0x4D:
-        // EOR abs 4
-        address = this.abs();
-        this.EOR(address);
-        this.addCycles(4);
-        break;
-      case 0x6D:
-        // ADC abs 4
-        address = this.abs();
-        this.ADC(address);
-        this.addCycles(4);
-        break;
-      case 0xCD:
-        // CMP abs 4
-        address = this.abs();
-        this.CMP(address);
-        this.addCycles(4);
-        break;
-      case 0xED:
-        // SBC abs 4
-        address = this.abs();
-        this.SBC(address);
-        this.addCycles(4);
-        break;
-      case 0xEC:
-        // CPX abs 4
-        address = this.abs();
-        this.CPX(address);
-        this.addCycles(4);
-        break;
-      case 0xCC:
-        // CPY abs 4
-        address = this.abs();
-        this.CPY(address);
-        this.addCycles(4);
-        break;
-      case 0x4E:
-        // LSR abs 6
-        address = this.abs();
-        this.LSR(address);
-        this.addCycles(6);
-        break;
       case 0x0E:
         // ASL abs 6
         address = this.abs();
         this.ASL(address);
         this.addCycles(6);
         break;
-      case 0x6E:
-        // ROR abs 6
-        address = this.abs();
-        this.ROR(address);
-        this.addCycles(6);
-        break;
-      case 0x2E:
-        // ROL abs 6
-        address = this.abs();
-        this.ROL(address);
-        this.addCycles(6);
-        break;
-      case 0xEE:
-        // INC abs 6
-        address = this.abs();
-        this.INC(address);
-        this.addCycles(6);
-        break;
-      case 0xCE:
-        // DEC abs 6
-        address = this.abs();
-        this.DEC(address);
-        this.addCycles(6);
-        break;
-      case 0xB1:
-        // LDA izy 5*
-        address = this.izy();
-        this.LDA(address);
-        this.addCycles(5);
+      // row 1
+      case 0x10:
+        // BPL rel 2*
+        address = this.rel();
+        this.BPL(address);
+        this.addCycles(2);
         break;
       case 0x11:
         // ORA izy 5*
@@ -706,106 +199,10 @@ export class CPU2A03 implements ICPU {
         this.ORA(address);
         this.addCycles(5);
         break;
-      case 0x31:
-        // AND izy 5*
-        address = this.izy();
-        this.AND(address);
-        this.addCycles(5);
-        break;
-      case 0x51:
-        // EOR izy 5*
-        address = this.izy();
-        this.EOR(address);
-        this.addCycles(5);
-        break;
-      case 0x71:
-        // ADC izy 5*
-        address = this.izy();
-        this.ADC(address);
-        this.addCycles(5);
-        break;
-      case 0xD1:
-        // CMP izy 5*
-        address = this.izy();
-        this.CMP(address);
-        this.addCycles(5);
-        break;
-      case 0xF1:
-        // SBC izy 5*
-        address = this.izy();
-        this.SBC(address);
-        this.addCycles(5);
-        break;
-      case 0x91:
-        // STA izy 6
-        address = this.izy(true);
-        this.STA(address);
-        this.addCycles(5);
-        break;
-      case 0x6C:
-        // JMP ind 5
-        address = this.ind();
-        this.JMP(address);
-        this.addCycles(5);
-        break;
-      case 0xB9:
-        // LDA aby 4*
-        address = this.aby();
-        this.LDA(address);
-        this.addCycles(4);
-        break;
-      case 0x19:
-        // ORA aby 4*
-        address = this.aby();
-        this.ORA(address);
-        this.addCycles(4);
-        break;
-      case 0x39:
-        // AND aby 4*
-        address = this.aby();
-        this.AND(address);
-        this.addCycles(4);
-        break;
-      case 0x59:
-        // EOR aby 4*
-        address = this.aby();
-        this.EOR(address);
-        this.addCycles(4);
-        break;
-      case 0x79:
-        // ADC aby 4*
-        address = this.aby();
-        this.ADC(address);
-        this.addCycles(4);
-        break;
-      case 0x99:
-        // STA aby 5
-        address = this.aby();
-        this.STA(address);
-        this.addCycles(5);
-        break;
-      case 0xD9:
-        // CMP aby 4*
-        address = this.aby();
-        this.CMP(address);
-        this.addCycles(4);
-        break;
-      case 0xF9:
-        // SBC aby 4*
-        address = this.aby();
-        this.SBC(address);
-        this.addCycles(4);
-        break;
-      case 0xB4:
-        // LDY zpx 4
+      case 0x14: // unoffical
+        // NOP zpx 4
         address = this.zpx();
-        this.LDY(address);
-        this.addCycles(4);
-        break;
-      case 0x94:
-        // STY zpx 4
-        address = this.zpx();
-        this.STY(address);
+        this.NOP(true);
         this.addCycles(4);
         break;
       case 0x15:
@@ -814,286 +211,25 @@ export class CPU2A03 implements ICPU {
         this.ORA(address);
         this.addCycles(4);
         break;
-      case 0x35:
-        // AND zpx 4
-        address = this.zpx();
-        this.AND(address);
-        this.addCycles(4);
-        break;
-      case 0x55:
-        // EOR zpx 4
-        address = this.zpx();
-        this.EOR(address);
-        this.addCycles(4);
-        break;
-      case 0x75:
-        // ADC zpx 4
-        address = this.zpx();
-        this.ADC(address);
-        this.addCycles(4);
-        break;
-      case 0x95:
-        // STA zpx 4
-        address = this.zpx();
-        this.STA(address);
-        this.addCycles(4);
-        break;
-      case 0xB5:
-        // LDA zpx 4
-        address = this.zpx();
-        this.LDA(address);
-        this.addCycles(4);
-        break;
-      case 0xD5:
-        // CMP zpx 4
-        address = this.zpx();
-        this.CMP(address);
-        this.addCycles(4);
-        break;
-      case 0xF5:
-        // SBC zpx 4
-        address = this.zpx();
-        this.SBC(address);
-        this.addCycles(4);
-        break;
-      case 0x56:
-        // LSR zpx 6
-        address = this.zpx();
-        this.LSR(address);
-        this.addCycles(6);
-        break;
       case 0x16:
         // ASL zpx 6
         address = this.zpx();
         this.ASL(address);
         this.addCycles(6);
         break;
-      case 0x36:
-        // ROL zpx 6
-        address = this.zpx();
-        this.ROL(address);
-        this.addCycles(6);
+      case 0x18:
+        // CLC 2
+        this.CLC();
+        this.addCycles(2);
         break;
-      case 0x76:
-        // ROR zpx 6
-        address = this.zpx();
-        this.ROR(address);
-        this.addCycles(6);
-        break;
-      case 0xD6:
-        // DEC zpx 6
-        address = this.zpx();
-        this.DEC(address);
-        this.addCycles(6);
-        break;
-      case 0xF6:
-        // INC zpx 6
-        address = this.zpx();
-        this.INC(address);
-        this.addCycles(6);
-        break;
-      case 0xB6:
-        // LDX zpy 4
-        address = this.zpy();
-        this.LDX(address);
-        this.addCycles(4);
-        break;
-      case 0x96:
-        // STX zpy 4
-        address = this.zpy();
-        this.STX(address);
-        this.addCycles(4);
-        break;
-      case 0xBC:
-        // LDY abx 4*
-        address = this.abx();
-        this.LDY(address);
-        this.addCycles(4);
-        break;
-      case 0x1D:
-        // ORA abx 4*
-        address = this.abx();
-        this.ORA(address);
-        this.addCycles(4);
-        break;
-      case 0x3D:
-        // AND abx 4*
-        address = this.abx();
-        this.AND(address);
-        this.addCycles(4);
-        break;
-      case 0x5D:
-        // EOR abx 4*
-        address = this.abx();
-        this.EOR(address);
-        this.addCycles(4);
-        break;
-      case 0x7D:
-        // ADC abx 4*
-        address = this.abx();
-        this.ADC(address);
-        this.addCycles(4);
-        break;
-      case 0xBD:
-        // LDA abx 4*
-        address = this.abx();
-        this.LDA(address);
-        this.addCycles(4);
-        break;
-      case 0xDD:
-        // CMP abx 4*
-        address = this.abx();
-        this.CMP(address);
-        this.addCycles(4);
-        break;
-      case 0xFD:
-        // SBC abx 4*
-        address = this.abx();
-        this.SBC(address);
-        this.addCycles(4);
-        break;
-      case 0x9D:
-        // STA abx 5
-        address = this.abx(true);
-        this.STA(address);
-        this.addCycles(4);
-        break;
-      case 0x5E:
-        // LSR abx 7
-        address = this.abx(true);
-        this.LSR(address);
-        this.addCycles(6);
-        break;
-      case 0x1E:
-        // ASL abx 7
-        address = this.abx(true);
-        this.ASL(address);
-        this.addCycles(6);
-        break;
-      case 0x3E:
-        // ROL abx 7
-        address = this.abx(true);
-        this.ROL(address);
-        this.addCycles(6);
-        break;
-      case 0x7E:
-        // ROR abx 7
-        address = this.abx(true);
-        this.ROR(address);
-        this.addCycles(6);
-        break;
-      case 0xDE:
-        // DEC abx 7
-        address = this.abx(true);
-        this.DEC(address);
-        this.addCycles(6);
-        break;
-      case 0xFE:
-        // INC abx 7
-        address = this.abx(true);
-        this.INC(address);
-        this.addCycles(6);
-        break;
-      case 0xBE:
-        // LDX aby 4*
+      case 0x19:
+        // ORA aby 4*
         address = this.aby();
-        this.LDX(address);
-        this.addCycles(4);
-        break;
-      // Unoffical opCode:
-      case 0x04:
-        // NOP zp 3
-        address = this.zp();
-        this.NOP(true);
-        this.addCycles(3);
-        break;
-      case 0x44:
-        // NOP zp 3
-        address = this.zp();
-        this.NOP(true);
-        this.addCycles(3);
-        break;
-      case 0x64:
-        // NOP zp 3
-        address = this.zp();
-        this.NOP(true);
-        this.addCycles(3);
-        break;
-      case 0x0C:
-        // NOP abs 4
-        address = this.abs();
-        this.NOP(true);
-        this.addCycles(4);
-        break;
-      case 0x14:
-        // NOP zpx 4
-        address = this.zpx();
-        this.NOP(true);
-        this.addCycles(4);
-        break;
-      case 0x34:
-        // NOP zpx 4
-        address = this.zpx();
-        this.NOP(true);
-        this.addCycles(4);
-        break;
-      case 0x54:
-        // NOP zpx 4
-        address = this.zpx();
-        this.NOP(true);
-        this.addCycles(4);
-        break;
-      case 0x74:
-        // NOP zpx 4
-        address = this.zpx();
-        this.NOP(true);
-        this.addCycles(4);
-        break;
-      case 0xD4:
-        // NOP zpx 4
-        address = this.zpx();
-        this.NOP(true);
-        this.addCycles(4);
-        break;
-      case 0xF4:
-        // NOP zpx 4
-        address = this.zpx();
-        this.NOP(true);
+        this.ORA(address);
         this.addCycles(4);
         break;
       case 0x1A:
         // NOP 2
-        this.NOP(true);
-        this.addCycles(2);
-        break;
-      case 0x3A:
-        // NOP 2
-        this.NOP(true);
-        this.addCycles(2);
-        break;
-      case 0x5A:
-        // NOP 2
-        this.NOP(true);
-        this.addCycles(2);
-        break;
-      case 0x7A:
-        // NOP 2
-        this.NOP(true);
-        this.addCycles(2);
-        break;
-      case 0xDA:
-        // NOP 2
-        this.NOP(true);
-        this.addCycles(2);
-        break;
-      case 0xFA:
-        // NOP 2
-        this.NOP(true);
-        this.addCycles(2);
-        break;
-      case 0x80:
-        // NOP imm 2
-        address = this.imm();
         this.NOP(true);
         this.addCycles(2);
         break;
@@ -1103,11 +239,253 @@ export class CPU2A03 implements ICPU {
         this.NOP(true);
         this.addCycles(4);
         break;
+      case 0x1D:
+        // ORA abx 4*
+        address = this.abx();
+        this.ORA(address);
+        this.addCycles(4);
+        break;
+      case 0x1E:
+        // ASL abx 7
+        address = this.abx(true);
+        this.ASL(address);
+        this.addCycles(6);
+        break;
+      // row 2
+      case 0x20:
+        // JSR abs 6
+        address = this.abs();
+        this.JSR(address);
+        this.addCycles(6);
+        break;
+      case 0x21:
+        // AND izx 6
+        address = this.izx();
+        this.AND(address);
+        this.addCycles(6);
+        break;
+      case 0x24:
+        // BIT zp 3
+        address = this.zp();
+        this.BIT(address);
+        this.addCycles(3);
+        break;
+      case 0x25:
+        // AND zp 3
+        address = this.zp();
+        this.AND(address);
+        this.addCycles(3);
+        break;
+      case 0x26:
+        // ROL zp 5
+        address = this.zp();
+        this.ROL(address);
+        this.addCycles(5);
+        break;
+      case 0x28:
+        // PLP 4
+        this.PLP();
+        this.addCycles(4);
+        break;
+      case 0x29:
+        // AND imm 2
+        address = this.imm();
+        this.AND(address);
+        this.addCycles(2);
+        break;
+      case 0x2A:
+        // ROL 2
+        this.ROL();
+        this.addCycles(2);
+        break;
+      case 0x2C:
+        // BIT abs 4
+        address = this.abs();
+        this.BIT(address);
+        this.addCycles(4);
+        break;
+      case 0x2D:
+        // AND abs 4
+        address = this.abs();
+        this.AND(address);
+        this.addCycles(4);
+        break;
+      case 0x2E:
+        // ROL abs 6
+        address = this.abs();
+        this.ROL(address);
+        this.addCycles(6);
+        break;
+      // row 3
+      case 0x30:
+        // BMI rel 2*
+        address = this.rel();
+        this.BMI(address);
+        this.addCycles(2);
+        break;
+      case 0x31:
+        // AND izy 5*
+        address = this.izy();
+        this.AND(address);
+        this.addCycles(5);
+        break;
+      case 0x34: // unoffical
+        // NOP zpx 4
+        address = this.zpx();
+        this.NOP(true);
+        this.addCycles(4);
+        break;
+      case 0x35:
+        // AND zpx 4
+        address = this.zpx();
+        this.AND(address);
+        this.addCycles(4);
+        break;
+      case 0x36:
+        // ROL zpx 6
+        address = this.zpx();
+        this.ROL(address);
+        this.addCycles(6);
+        break;
+      case 0x38:
+        // SEC 2
+        this.SEC();
+        this.addCycles(2);
+        break;
+      case 0x39:
+        // AND aby 4*
+        address = this.aby();
+        this.AND(address);
+        this.addCycles(4);
+        break;
+      case 0x3A:
+        // NOP 2
+        this.NOP(true);
+        this.addCycles(2);
+        break;
       case 0x3C:
         // NOP abx 4*
         address = this.abx();
         this.NOP(true);
         this.addCycles(4);
+        break;
+      case 0x3D:
+        // AND abx 4*
+        address = this.abx();
+        this.AND(address);
+        this.addCycles(4);
+        break;
+      case 0x3E:
+        // ROL abx 7
+        address = this.abx(true);
+        this.ROL(address);
+        this.addCycles(6);
+        break;
+      // row 4
+      case 0x40:
+        // RTI 6
+        this.RTI();
+        this.addCycles(6);
+        break;
+      case 0x41:
+        // EOR izx 6
+        address = this.izx();
+        this.EOR(address);
+        this.addCycles(6);
+        break;
+      case 0x44: // unoffical
+        // NOP zp 3
+        address = this.zp();
+        this.NOP(true);
+        this.addCycles(3);
+        break;
+      case 0x45:
+        // EOR zp 3
+        address = this.zp();
+        this.EOR(address);
+        this.addCycles(3);
+        break;
+      case 0x46:
+        // LSR zp 5
+        address = this.zp();
+        this.LSR(address);
+        this.addCycles(5);
+        break;
+      case 0x48:
+        // PHA 3
+        this.PHA();
+        this.addCycles(3);
+        break;
+      case 0x49:
+        // EOR imm 2
+        address = this.imm();
+        this.EOR(address);
+        this.addCycles(2);
+        break;
+      case 0x4A:
+        // LSR 2
+        this.LSR();
+        this.addCycles(2);
+        break;
+      case 0x4C:
+        // JMP abs 3
+        address = this.abs();
+        this.JMP(address);
+        this.addCycles(3);
+        break;
+      case 0x4D:
+        // EOR abs 4
+        address = this.abs();
+        this.EOR(address);
+        this.addCycles(4);
+        break;
+      case 0x4E:
+        // LSR abs 6
+        address = this.abs();
+        this.LSR(address);
+        this.addCycles(6);
+        break;
+      // row 5
+      case 0x50:
+        // BVC rel 2*
+        address = this.rel();
+        this.BVC(address);
+        this.addCycles(2);
+        break;
+      case 0x51:
+        // EOR izy 5*
+        address = this.izy();
+        this.EOR(address);
+        this.addCycles(5);
+        break;
+      case 0x54: // unoffical
+        // NOP zpx 4
+        address = this.zpx();
+        this.NOP(true);
+        this.addCycles(4);
+        break;
+      case 0x55:
+        // EOR zpx 4
+        address = this.zpx();
+        this.EOR(address);
+        this.addCycles(4);
+        break;
+      case 0x56:
+        // LSR zpx 6
+        address = this.zpx();
+        this.LSR(address);
+        this.addCycles(6);
+        break;
+      case 0x59:
+        // EOR aby 4*
+        address = this.aby();
+        this.EOR(address);
+        this.addCycles(4);
+        break;
+      case 0x5A:
+        // NOP 2
+        this.NOP(true);
+        this.addCycles(2);
         break;
       case 0x5C:
         // NOP abx 4*
@@ -1115,11 +493,524 @@ export class CPU2A03 implements ICPU {
         this.NOP(true);
         this.addCycles(4);
         break;
+      case 0x5D:
+        // EOR abx 4*
+        address = this.abx();
+        this.EOR(address);
+        this.addCycles(4);
+        break;
+      case 0x5E:
+        // LSR abx 7
+        address = this.abx(true);
+        this.LSR(address);
+        this.addCycles(6);
+        break;
+      // row 6
+      case 0x60:
+        // RTS 6
+        this.RTS();
+        this.addCycles(6);
+        break;
+      case 0x61:
+        // ADC izx 6
+        address = this.izx();
+        this.ADC(address);
+        this.addCycles(6);
+        break;
+      case 0x64: // unoffical
+        // NOP zp 3
+        address = this.zp();
+        this.NOP(true);
+        this.addCycles(3);
+        break;
+      case 0x65:
+        // ADC zp 3
+        address = this.zp();
+        this.ADC(address);
+        this.addCycles(3);
+        break;
+      case 0x66:
+        // ROR zp 5
+        address = this.zp();
+        this.ROR(address);
+        this.addCycles(5);
+        break;
+      case 0x68:
+        // PLA 4
+        this.PLA();
+        this.addCycles(4);
+        break;
+      case 0x69:
+        // ADC imm 2
+        address = this.imm();
+        this.ADC(address);
+        this.addCycles(2);
+        break;
+      case 0x6A:
+        // ROR 2
+        this.ROR();
+        this.addCycles(2);
+        break;
+      case 0x6C:
+        // JMP ind 5
+        address = this.ind();
+        this.JMP(address);
+        this.addCycles(5);
+        break;
+      case 0x6D:
+        // ADC abs 4
+        address = this.abs();
+        this.ADC(address);
+        this.addCycles(4);
+        break;
+      case 0x6E:
+        // ROR abs 6
+        address = this.abs();
+        this.ROR(address);
+        this.addCycles(6);
+        break;
+      // row 7
+      case 0x70:
+        // BVS rel 2*
+        address = this.rel();
+        this.BVS(address);
+        this.addCycles(2);
+        break;
+      case 0x71:
+        // ADC izy 5*
+        address = this.izy();
+        this.ADC(address);
+        this.addCycles(5);
+        break;
+      case 0x74: // unoffical
+        // NOP zpx 4
+        address = this.zpx();
+        this.NOP(true);
+        this.addCycles(4);
+        break;
+      case 0x75:
+        // ADC zpx 4
+        address = this.zpx();
+        this.ADC(address);
+        this.addCycles(4);
+        break;
+      case 0x76:
+        // ROR zpx 6
+        address = this.zpx();
+        this.ROR(address);
+        this.addCycles(6);
+        break;
+      case 0x78:
+        // SEI 2
+        this.SEI();
+        this.addCycles(2);
+        break;
+      case 0x79:
+        // ADC aby 4*
+        address = this.aby();
+        this.ADC(address);
+        this.addCycles(4);
+        break;
+      case 0x7A:
+        // NOP 2
+        this.NOP(true);
+        this.addCycles(2);
+        break;
       case 0x7C:
         // NOP abx 4*
         address = this.abx();
         this.NOP(true);
         this.addCycles(4);
+        break;
+      case 0x7D:
+        // ADC abx 4*
+        address = this.abx();
+        this.ADC(address);
+        this.addCycles(4);
+        break;
+      case 0x7E:
+        // ROR abx 7
+        address = this.abx(true);
+        this.ROR(address);
+        this.addCycles(6);
+        break;
+      // row 8
+      case 0x80: // unoffical
+        // NOP imm 2
+        address = this.imm();
+        this.NOP(true);
+        this.addCycles(2);
+        break;
+      case 0x81:
+        // STA izx 6
+        address = this.izx();
+        this.STA(address);
+        this.addCycles(6);
+        break;
+      case 0x82: // unoffical
+        // NOP imm 2
+        address = this.imm();
+        this.NOP(true);
+        this.addCycles(2);
+        break;
+      case 0x84:
+        // STY zp 3
+        address = this.zp();
+        this.STY(address);
+        this.addCycles(3);
+        break;
+      case 0x85:
+        // STA zp 3
+        address = this.zp();
+        this.STA(address);
+        this.addCycles(3);
+        break;
+      case 0x86:
+        // STX zp 3
+        address = this.zp();
+        this.STX(address);
+        this.addCycles(3);
+        break;
+      case 0x88:
+        // DEY 2
+        this.DEY();
+        this.addCycles(2);
+        break;
+      case 0x8A:
+        // TXA 2
+        this.TXA();
+        this.addCycles(2);
+        break;
+      case 0x8C:
+        // STY abs 4
+        address = this.abs();
+        this.STY(address);
+        this.addCycles(4);
+        break;
+      case 0x8D:
+        // STA abs 4
+        address = this.abs();
+        this.STA(address);
+        this.addCycles(4);
+        break;
+      case 0x8E:
+        // STX abs 4
+        address = this.abs();
+        this.STX(address);
+        this.addCycles(4);
+        break;
+      // row 9
+      case 0x90:
+        // BCC rel 2*
+        address = this.rel();
+        this.BCC(address);
+        this.addCycles(2);
+        break;
+      case 0x91:
+        // STA izy 6
+        address = this.izy(true);
+        this.STA(address);
+        this.addCycles(5);
+        break;
+      case 0x94:
+        // STY zpx 4
+        address = this.zpx();
+        this.STY(address);
+        this.addCycles(4);
+        break;
+      case 0x95:
+        // STA zpx 4
+        address = this.zpx();
+        this.STA(address);
+        this.addCycles(4);
+        break;
+      case 0x96:
+        // STX zpy 4
+        address = this.zpy();
+        this.STX(address);
+        this.addCycles(4);
+        break;
+      case 0x98:
+        // TYA 2
+        this.TYA();
+        this.addCycles(2);
+        break;
+      case 0x99:
+        // STA aby 5
+        address = this.aby();
+        this.STA(address);
+        this.addCycles(5);
+        break;
+      case 0x9A:
+        // TXS 2
+        this.TXS();
+        this.addCycles(2);
+        break;
+      case 0x9D:
+        // STA abx 5
+        address = this.abx(true);
+        this.STA(address);
+        this.addCycles(4);
+        break;
+      // row A
+      case 0xA0:
+        // LDY imm 2
+        address = this.imm();
+        this.LDY(address);
+        this.addCycles(2);
+        break;
+      case 0xA1:
+        // LDA izx 6
+        address = this.izx();
+        this.LDA(address);
+        this.addCycles(6);
+        break;
+      case 0xA2:
+        // LDX imm 2
+        address = this.imm();
+        this.LDX(address);
+        this.addCycles(2);
+        break;
+      case 0xA3: // unoffical
+        // LAX izx 6
+        address = this.izx();
+        this.LAX(address);
+        this.addCycles(6);
+        break;
+      case 0xA4:
+        // LDY zp 3
+        address = this.zp();
+        this.LDY(address);
+        this.addCycles(3);
+        break;
+      case 0xA5:
+        // LDA zp 3
+        address = this.zp();
+        this.LDA(address);
+        this.addCycles(3);
+        break;
+      case 0xA6:
+        // LDX zp 3
+        address = this.zp();
+        this.LDX(address);
+        this.addCycles(3);
+        break;
+      case 0xA8:
+        // TAY 2
+        this.TAY();
+        this.addCycles(2);
+        break;
+      case 0xA9:
+        // LDA imm 2
+        address = this.imm();
+        this.LDA(address);
+        this.addCycles(2);
+        break;
+      case 0xAA:
+        // TAX 2
+        this.TAX();
+        this.addCycles(2);
+        break;
+      case 0xAC:
+        // LDY abs 4
+        address = this.abs();
+        this.LDY(address);
+        this.addCycles(4);
+        break;
+      case 0xAD:
+        // LDA abs 4
+        address = this.abs();
+        this.LDA(address);
+        this.addCycles(4);
+        break;
+      case 0xAE:
+        // LDX abs 4
+        address = this.abs();
+        this.LDX(address);
+        this.addCycles(4);
+        break;
+      // row B
+      case 0xB0:
+        // BCS rel 2*
+        address = this.rel();
+        this.BCS(address);
+        this.addCycles(2);
+        break;
+      case 0xB1:
+        // LDA izy 5*
+        address = this.izy();
+        this.LDA(address);
+        this.addCycles(5);
+        break;
+      case 0xB4:
+        // LDY zpx 4
+        address = this.zpx();
+        this.LDY(address);
+        this.addCycles(4);
+        break;
+      case 0xB5:
+        // LDA zpx 4
+        address = this.zpx();
+        this.LDA(address);
+        this.addCycles(4);
+        break;
+      case 0xB6:
+        // LDX zpy 4
+        address = this.zpy();
+        this.LDX(address);
+        this.addCycles(4);
+        break;
+      case 0xB8:
+        // CLV 2
+        this.CLV();
+        this.addCycles(2);
+        break;
+      case 0xB9:
+        // LDA aby 4*
+        address = this.aby();
+        this.LDA(address);
+        this.addCycles(4);
+        break;
+      case 0xBA:
+        // TSX 2
+        this.TSX();
+        this.addCycles(2);
+        break;
+      case 0xBC:
+        // LDY abx 4*
+        address = this.abx();
+        this.LDY(address);
+        this.addCycles(4);
+        break;
+      case 0xBD:
+        // LDA abx 4*
+        address = this.abx();
+        this.LDA(address);
+        this.addCycles(4);
+        break;
+      case 0xBE:
+        // LDX aby 4*
+        address = this.aby();
+        this.LDX(address);
+        this.addCycles(4);
+        break;
+      // row C
+      case 0xC0:
+        // CPY imm 2
+        address = this.imm();
+        this.CPY(address);
+        this.addCycles(2);
+        break;
+      case 0xC1:
+        // CMP ixz 6
+        address = this.izx();
+        this.CMP(address);
+        this.addCycles(6);
+        break;
+      case 0xC2: // unoffical
+        // NOP imm 2
+        address = this.imm();
+        this.NOP(true);
+        this.addCycles(2);
+        break;
+      case 0xC4:
+        // CPY zp 3
+        address = this.zp();
+        this.CPY(address);
+        this.addCycles(3);
+        break;
+      case 0xC5:
+        // CMP zp 3
+        address = this.zp();
+        this.CMP(address);
+        this.addCycles(3);
+        break;
+      case 0xC6:
+        // DEC zp 5
+        address = this.zp();
+        this.DEC(address);
+        this.addCycles(5);
+        break;
+      case 0xC8:
+        // INY 2
+        this.INY();
+        this.addCycles(2);
+        break;
+      case 0xC9:
+        // CMP imm 2
+        address = this.imm();
+        this.CMP(address);
+        this.addCycles(2);
+        break;
+      case 0xCA:
+        // DEX 2
+        this.DEX();
+        this.addCycles(2);
+        break;
+      case 0xCC:
+        // CPY abs 4
+        address = this.abs();
+        this.CPY(address);
+        this.addCycles(4);
+        break;
+      case 0xCD:
+        // CMP abs 4
+        address = this.abs();
+        this.CMP(address);
+        this.addCycles(4);
+        break;
+      case 0xCE:
+        // DEC abs 6
+        address = this.abs();
+        this.DEC(address);
+        this.addCycles(6);
+        break;
+      // row D
+      case 0xD0:
+        // BNE rel 2*
+        address = this.rel();
+        this.BNE(address);
+        this.addCycles(2);
+        break;
+      case 0xD1:
+        // CMP izy 5*
+        address = this.izy();
+        this.CMP(address);
+        this.addCycles(5);
+        break;
+      case 0xD4: // unoffical
+        // NOP zpx 4
+        address = this.zpx();
+        this.NOP(true);
+        this.addCycles(4);
+        break;
+      case 0xD5:
+        // CMP zpx 4
+        address = this.zpx();
+        this.CMP(address);
+        this.addCycles(4);
+        break;
+      case 0xD6:
+        // DEC zpx 6
+        address = this.zpx();
+        this.DEC(address);
+        this.addCycles(6);
+        break;
+      case 0xD8:
+        // CLD 2
+        this.CLD();
+        this.addCycles(2);
+        break;
+      case 0xD9:
+        // CMP aby 4*
+        address = this.aby();
+        this.CMP(address);
+        this.addCycles(4);
+        break;
+      case 0xDA:
+        // NOP 2
+        this.NOP(true);
+        this.addCycles(2);
         break;
       case 0xDC:
         // NOP abx 4*
@@ -1127,18 +1018,155 @@ export class CPU2A03 implements ICPU {
         this.NOP(true);
         this.addCycles(4);
         break;
+      case 0xDD:
+        // CMP abx 4*
+        address = this.abx();
+        this.CMP(address);
+        this.addCycles(4);
+        break;
+      case 0xDE:
+        // DEC abx 7
+        address = this.abx(true);
+        this.DEC(address);
+        this.addCycles(6);
+        break;
+      // row E
+      case 0xE0:
+        // CPX imm 2
+        address = this.imm();
+        this.CPX(address);
+        this.addCycles(2);
+        break;
+      case 0xE1:
+        // SBC izx 6
+        address = this.izx();
+        this.SBC(address);
+        this.addCycles(6);
+        break;
+      case 0xE2: // unoffical
+        // NOP imm 2
+        address = this.imm();
+        this.NOP(true);
+        this.addCycles(2);
+        break;
+      case 0xE4:
+        // CPX zp 3
+        address = this.zp();
+        this.CPX(address);
+        this.addCycles(3);
+        break;
+      case 0xE5:
+        // SBC zp 3
+        address = this.zp();
+        this.SBC(address);
+        this.addCycles(3);
+        break;
+      case 0xE6:
+        // INC zp 5
+        address = this.zp();
+        this.INC(address);
+        this.addCycles(5);
+        break;
+      case 0xE8:
+        // INX 2
+        this.INX();
+        this.addCycles(2);
+        break;
+      case 0xE9:
+        // SBC imm 2
+        address = this.imm();
+        this.SBC(address);
+        this.addCycles(2);
+        break;
+      case 0xEA:
+        // NOP 2
+        this.NOP();
+        this.addCycles(2);
+        break;
+      case 0xEC:
+        // CPX abs 4
+        address = this.abs();
+        this.CPX(address);
+        this.addCycles(4);
+        break;
+      case 0xED:
+        // SBC abs 4
+        address = this.abs();
+        this.SBC(address);
+        this.addCycles(4);
+        break;
+      case 0xEE:
+        // INC abs 6
+        address = this.abs();
+        this.INC(address);
+        this.addCycles(6);
+        break;
+      // row F
+      case 0xF0:
+        // BEQ rel 2*
+        address = this.rel();
+        this.BEQ(address);
+        this.addCycles(2);
+        break;
+      case 0xF1:
+        // SBC izy 5*
+        address = this.izy();
+        this.SBC(address);
+        this.addCycles(5);
+        break;
+      case 0xF4: // unoffical
+        // NOP zpx 4
+        address = this.zpx();
+        this.NOP(true);
+        this.addCycles(4);
+        break;
+      case 0xF5:
+        // SBC zpx 4
+        address = this.zpx();
+        this.SBC(address);
+        this.addCycles(4);
+        break;
+      case 0xF6:
+        // INC zpx 6
+        address = this.zpx();
+        this.INC(address);
+        this.addCycles(6);
+        break;
+      case 0xF8:
+        // SED 2
+        this.SED();
+        this.addCycles(2);
+        break;
+      case 0xF9:
+        // SBC aby 4*
+        address = this.aby();
+        this.SBC(address);
+        this.addCycles(4);
+        break;
+      case 0xFA:
+        // NOP 2
+        this.NOP(true);
+        this.addCycles(2);
+        break;
       case 0xFC:
         // NOP abx 4*
         address = this.abx();
         this.NOP(true);
         this.addCycles(4);
         break;
-      case 0xA3:
-        // LAX izx 6
-        address = this.izx();
-        this.LAX(address);
+      case 0xFD:
+        // SBC abx 4*
+        address = this.abx();
+        this.SBC(address);
+        this.addCycles(4);
+        break;
+      case 0xFE:
+        // INC abx 7
+        address = this.abx(true);
+        this.INC(address);
         this.addCycles(6);
         break;
+
       default:
         throw new Error(`Invalid opcode: ${opcode.toString(16).toUpperCase()}`);
     }
@@ -1273,6 +1301,9 @@ export class CPU2A03 implements ICPU {
   /************************************************/
   /* Operations
   /************************************************/
+  private BRK(){
+
+  }
   private JMP(address: uint16){
     debugCatchOpName("JMP");
     this.regs.PC = address;
@@ -1344,6 +1375,16 @@ export class CPU2A03 implements ICPU {
      * changed after IRQ is polled, allowing an IRQ to be serviced between this and the
      * next instruction if the flag was previously 0. */
     this.setFlag(Flags.I, true);
+  }
+  private CLI(){
+    debugCatchOpName("CLI");
+    /* FIXME: The effect of changing this flag I is delayed 1 instruction.
+     * CLI clears the interrupt disable flag, enabling the CPU to handle hardware IRQs.
+     * The effect of changing this flag is delayed one instruction because the flag is
+     * changed after IRQ is polled, allowing the next instruction to execute before any
+     * pending IRQ is detected and serviced. This flag has no effect on NMI, which (as
+     * the "non-maskable" name suggests) cannot be ignored by the CPU.*/
+    this.setFlag(Flags.I, false);
   }
   private SED(){
     debugCatchOpName("SED");

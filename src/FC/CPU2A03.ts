@@ -180,6 +180,12 @@ export class CPU2A03 implements ICPU {
         this.ASL();
         this.addCycles(2);
         break;
+      case 0x0B:
+        // *ANC imm 2
+        address = this.imm();
+        this.ANC(address);
+        this.addCycles(2);
+        break;
       case 0x0C:
         // NOP abs 4
         address = this.abs();
@@ -350,6 +356,12 @@ export class CPU2A03 implements ICPU {
       case 0x2A:
         // ROL 2
         this.ROL();
+        this.addCycles(2);
+        break;
+      case 0x2B:
+        // *ANC imm 2
+        address = this.imm();
+        this.ANC(address);
         this.addCycles(2);
         break;
       case 0x2C:
@@ -523,6 +535,12 @@ export class CPU2A03 implements ICPU {
         this.LSR();
         this.addCycles(2);
         break;
+      case 0x4B:
+        // *ALR imm 2
+        address = this.imm();
+        this.ALR(address);
+        this.addCycles(2);
+        break;
       case 0x4C:
         // JMP abs 3
         address = this.abs();
@@ -590,6 +608,11 @@ export class CPU2A03 implements ICPU {
         this.SRE(address);
         this.addCycles(6);
         break;
+      case 0x58:
+        // CLI 2
+        this.CLI();
+        this.addCycles(2);
+        break;
       case 0x59:
         // EOR aby 4*
         address = this.aby();
@@ -601,17 +624,17 @@ export class CPU2A03 implements ICPU {
         this.NOP(true);
         this.addCycles(2);
         break;
-      case 0x5C:
-        // NOP abx 4*
-        address = this.abx();
-        this.NOP(true);
-        this.addCycles(4);
-        break;
       case 0x5B:
         // *SRE aby 7
         address = this.aby(true);
         this.SRE(address);
         this.addCycles(6);
+        break;
+      case 0x5C:
+        // NOP abx 4*
+        address = this.abx();
+        this.NOP(true);
+        this.addCycles(4);
         break;
       case 0x5D:
         // EOR abx 4*
@@ -687,6 +710,12 @@ export class CPU2A03 implements ICPU {
       case 0x6A:
         // ROR 2
         this.ROR();
+        this.addCycles(2);
+        break;
+      case 0x6B:
+        // *ARR imm 2
+        address = this.imm();
+        this.ARR(address);
         this.addCycles(2);
         break;
       case 0x6C:
@@ -861,6 +890,12 @@ export class CPU2A03 implements ICPU {
         this.TXA();
         this.addCycles(2);
         break;
+      case 0x8B:
+        // *XAA imm 2
+        address = this.imm();
+        this.XAA(address);
+        this.addCycles(2);
+        break;
       case 0x8C:
         // STY abs 4
         address = this.abs();
@@ -896,6 +931,12 @@ export class CPU2A03 implements ICPU {
         // STA izy 6
         address = this.izy(true);
         this.STA(address);
+        this.addCycles(5);
+        break;
+      case 0x93:
+        // *AHX izy 6
+        address = this.izy(true);
+        this.AHX(address);
         this.addCycles(5);
         break;
       case 0x94:
@@ -938,10 +979,34 @@ export class CPU2A03 implements ICPU {
         this.TXS();
         this.addCycles(2);
         break;
+      case 0x9B:
+        // *TAS aby 5
+        address = this.aby(true);
+        this.TAS(address);
+        this.addCycles(4);
+        break;
+      case 0x9C:
+        // *SHY abx 5
+        address = this.abx(true);
+        this.SHY(address);
+        this.addCycles(4);
+        break;
       case 0x9D:
         // STA abx 5
         address = this.abx(true);
         this.STA(address);
+        this.addCycles(4);
+        break;
+      case 0x9E:
+        // *SHX aby 5
+        address = this.aby(true);
+        this.SHX(address);
+        this.addCycles(4);
+        break;
+      case 0x9F:
+        // *AHX aby 5
+        address = this.aby(true);
+        this.AHX(address);
         this.addCycles(4);
         break;
       // row A
@@ -1010,7 +1075,7 @@ export class CPU2A03 implements ICPU {
         this.addCycles(2);
         break;
       case 0xAB: // unoffical
-        // LAX imm 2
+        // *LAX imm 2
         address = this.imm();
         this.LAX(address);
         this.addCycles(2);
@@ -1097,6 +1162,12 @@ export class CPU2A03 implements ICPU {
         // TSX 2
         this.TSX();
         this.addCycles(2);
+        break;
+      case 0xBB:
+        // *LAS aby 4*
+        address = this.aby();
+        this.LAS(address);
+        this.addCycles(4);
         break;
       case 0xBC:
         // LDY abx 4*
@@ -1185,6 +1256,12 @@ export class CPU2A03 implements ICPU {
       case 0xCA:
         // DEX 2
         this.DEX();
+        this.addCycles(2);
+        break;
+      case 0xCB:
+        // *AXS imm 2
+        address = this.imm();
+        this.AXS(address);
         this.addCycles(2);
         break;
       case 0xCC:
@@ -2002,6 +2079,68 @@ export class CPU2A03 implements ICPU {
     this.ROR(address);
     this.ADC(address);
     debugCatchOpName("*RRA");
+  }
+  private ANC(address: uint16){
+    this.AND(address);
+    this.setFlag(Flags.C, this.isFlagSet(Flags.N));
+    debugCatchOpName("*ANC");
+  }
+  private ALR(address: uint16){
+    // Unfortunately, this instruction doesn't work reliably on at least
+    // the UM6561AF-2 famiclone chip, and possibly others.
+    this.AND(address);
+    this.LSR();
+    debugCatchOpName("*ALR");
+  }
+  private ARR(address: uint16){
+    this.AND(address);
+    // this.ROR(address);
+    let memory = this.bus.readByte(address);
+    let flagC = this.isFlagSet(Flags.C);
+    this.setFlag(Flags.C, ((memory & 0x01) === 0x01));
+    memory = 0xFF & (memory >> 1);
+    if (flagC){
+      memory |= 0x80;
+    }
+    this.bus.writeByte(address, memory);
+    this.checkResultZN(memory);
+    this.setFlag(Flags.C, (memory & 0x40) === 0x40);
+    let bit6 = ((memory & 0x60) === 0x60);
+    let bit5 = ((memory & 0x50) === 0x50);
+    this.setFlag(Flags.V, bit5!==bit6);
+    debugCatchOpName("*ARR");
+  }
+  private XAA(address: uint16){
+    // have unpredictable behaviour,
+    // depends on analog effects
+    // this.AND(address);
+    this.regs.A = this.regs.X & this.regs.A & this.bus.readByte(address);
+    this.checkResultZN(this.regs.A);
+    debugCatchOpName("*XAA");
+  }
+  private AHX(address: uint16){
+    // TODO: not defined.
+    debugCatchOpName("*AHX");
+  }
+  private TAS(address: uint16){
+    // TODO: not defined.
+    debugCatchOpName("*TAS");
+  }
+  private SHX(address: uint16){
+    // TODO: not defined.
+    debugCatchOpName("*SHX");
+  }
+  private SHY(address: uint16){
+    // TODO: not defined.
+    debugCatchOpName("*SHY");
+  }
+  private LAS(address: uint16){
+    // TODO: not defined.
+    debugCatchOpName("*LAS");
+  }
+  private AXS(address: uint16){
+    // TODO: not defined.
+    debugCatchOpName("*AXS");
   }
   /************************************************/
   /* Internal Helper.

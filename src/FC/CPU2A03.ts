@@ -1,7 +1,6 @@
-import { IBus } from "../Interface/Bus";
-import { Flags, ICPU, IRegs } from "../Interface/CPU";
 import { uint16, uint8 } from "../Interface/typedef";
 import { ADDR_MODE, debugCatchClocks, debugCatchCPURegs, debugCatchDataCode, debugCatchOpCode, debugCatchOpName, debugCatchRegs, debugCatchToLogFlie } from '../Interface/Debug';
+import { CPUBus } from "./CPUBus";
 
 enum InterruptVector {
   NMI = 0xFFFA,
@@ -13,7 +12,18 @@ enum MemAddress {
   STACK_BASE = 0x100,
 }
 
-export class Regs implements IRegs{
+export enum Flags {
+  C = 1 << 0, // Carry
+  Z = 1 << 1, // Zero
+  I = 1 << 2, // Interrupt Disable
+  D = 1 << 3, // Decimal
+  B = 1 << 4, // (No CPU effect: B flag)
+  U = 1 << 5, // (No CPU effect: always pushed as 1)
+  V = 1 << 6, // Overflow
+  N = 1 << 7, // Negative 
+}
+
+export class Regs {
   A = 0;
   X = 0;
   Y = 0;
@@ -22,8 +32,8 @@ export class Regs implements IRegs{
   P = 0;
 }
 
-export class CPU2A03 implements ICPU {
-  public bus!: IBus;
+export class CPU2A03{
+  public bus!: CPUBus;
 
   private deferCycles = 0;
   private clocks = 0;

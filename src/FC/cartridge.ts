@@ -1,12 +1,32 @@
-import { error } from "console";
-import { ICartridge } from "../Interface/Cartridge";
 import { IMapper } from "../Interface/Mapper";
-import { HEADER_INDEX, IROMInfo, Mirror } from "../Interface/ROMInfo";
 import { Mapper0 } from "./mapper0";
 import { checkBit } from "../Interface/typedef";
 
+export enum Mirror {
+  HORIZONTAL,
+  VERTRICAL,
+  FOUR_SCREEN,
+  SINGLE_SCREEN_LOWER_BANK,
+  SINGLE_SCREEN_UPPER_BANK,
+}
 
-export class Cartridge implements ICartridge {
+export enum HEADER_INDEX {
+  PRG = 4,
+  CHR = 5,
+  Flag1 = 6,
+  Flag2 = 7,
+}
+
+export interface IROMInfo {
+  prg: number; // 16KB unit
+  chr: number; // 8KB  unit
+  mapper: number; // mapper number
+  mirror: Mirror; // Mirror
+  hasBatteryBacked: boolean; // battery backed
+  isTrainer: boolean;
+}
+
+export class Cartridge {
   public readonly mapper: IMapper = {} as any;
   public readonly info: IROMInfo = {} as any;
 

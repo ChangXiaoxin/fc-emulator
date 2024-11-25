@@ -1,7 +1,7 @@
 import * as fs from 'fs';
 import { IBus } from './Bus';
-import { IRegs } from './CPU';
 import { uint16 } from './typedef';
+import { Regs } from '../FC/CPU2A03';
 export interface LOGS {
   PC: string;
   opCode: string;
@@ -87,8 +87,8 @@ var cpubus: IBus;
 export function debugCatchCPUBus(bus: IBus){
   cpubus = bus;
 }
-var cpuregs: IRegs;
-export function debugCatchCPURegs(regs: IRegs){
+var cpuregs: Regs;
+export function debugCatchCPURegs(regs: Regs){
   cpuregs = regs;
 }
 

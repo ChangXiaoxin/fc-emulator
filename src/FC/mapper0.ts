@@ -1,4 +1,3 @@
-import { write } from "fs";
 import { IMapper } from "../Interface/Mapper";
 import { uint16, uint8 } from "../Interface/typedef";
 

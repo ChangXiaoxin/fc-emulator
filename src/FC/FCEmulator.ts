@@ -20,4 +20,7 @@ export class FCEmulator implements IEmulator {
   public clock(): void {
     this.cpu.clock();
   }
+  public reset(): void {
+    this.cpu.reset();
+  }
 }

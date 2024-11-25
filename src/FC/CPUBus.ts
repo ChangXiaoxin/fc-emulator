@@ -1,9 +1,10 @@
-import { IBus } from "../Interface/Bus";
-import { ICartridge } from "../Interface/Cartridge";
+
 import { uint16, uint8 } from "../Interface/typedef";
+import { IBus } from "../Interface/Bus";
+import { Cartridge } from "./cartridge";
 
 export class CPUBus implements IBus {
-  public cartridge!: ICartridge;
+  public cartridge!: Cartridge;
 
   private readonly ram = new Uint8Array(2 * 1024).fill(0);
   

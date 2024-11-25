@@ -1,5 +1,5 @@
-import { IMapper } from "../Interface/Mapper";
-import { uint16, uint8 } from "../Interface/typedef";
+import { IMapper } from "../../Interface/Mapper";
+import { uint16, uint8 } from "../../Interface/typedef";
 
 export class Mapper0 implements IMapper {
   private readonly isMirrored: boolean;

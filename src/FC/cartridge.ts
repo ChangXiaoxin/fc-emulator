@@ -1,5 +1,5 @@
 import { IMapper } from "../Interface/Mapper";
-import { Mapper0 } from "./mapper0";
+import { Mapper0 } from "./mappers/mapper0";
 import { checkBit } from "../Interface/typedef";
 
 export enum Mirror {

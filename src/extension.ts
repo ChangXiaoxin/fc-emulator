@@ -41,6 +41,7 @@ export function activate(context: vscode.ExtensionContext) {
 		currentPanel.onDidDispose(
 		  () => {
 			currentPanel = undefined;
+			clearInterval(interval);
 		  }
 		);
 		  // Display a message box to the user
@@ -66,7 +67,6 @@ export function activate(context: vscode.ExtensionContext) {
 		image[1] = 0;
 		image[2] = 0;
 		image[3] = 255;
-		drawImage(image);
         let index = 0;
 		let color = 0;
         const updateImage = () => {
@@ -79,9 +79,17 @@ export function activate(context: vscode.ExtensionContext) {
 			color = color > 2 ? 0 : color;
 		    index = 0;
 		  }
-		  drawImage(image);
+		  let imgData = new Uint8Array(256*240*4).fill(0);
+		  for (var i=0;i<imgData.length;i+=4)
+			{
+			imgData[i+0]=image[0];
+			imgData[i+1]=image[1];
+			imgData[i+2]=image[2];
+			imgData[i+3]=image[3];
+			}
+		  drawImage(imgData);
 		};
-		setInterval(updateImage, 10);
+		const interval = setInterval(updateImage, 10);
 		while(1)
 		{
 		  fcEmulator.clock();

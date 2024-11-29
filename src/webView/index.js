@@ -10,14 +10,10 @@ window.addEventListener("message", event =>{
   if (message.imageData)
   {
     let imgData = ctx.createImageData(256, 240);
-    for (var i=0;i<imgData.data.length;i+=4)
-      {
-      imgData.data[i+0]=message.imageData[0];
-      imgData.data[i+1]=message.imageData[1];
-      imgData.data[i+2]=message.imageData[2];
-      imgData.data[i+3]=message.imageData[3];
-      }
-    ctx.putImageData(imgData,10,10);
+    for (var i=0;i<imgData.data.length;i++){
+      imgData.data[i]=message.imageData[i];
+    }
+    ctx.putImageData(imgData,0,0);
   }
 });
 

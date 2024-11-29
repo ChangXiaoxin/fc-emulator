@@ -63,10 +63,25 @@ export function activate(context: vscode.ExtensionContext) {
 		let fcEmulator = new FCEmulator(fc_data, fc_options, log_path);
 		let image = new Uint8Array(4);
 		image[0] = 0;
-		image[1] = 255;
-		image[2] = 255;
+		image[1] = 0;
+		image[2] = 0;
 		image[3] = 255;
 		drawImage(image);
+        let index = 0;
+		let color = 0;
+        const updateImage = () => {
+		  if (index < 255){
+		    index++;
+		    image[color] = index;
+		  }
+		  else{
+			color++;
+			color = color > 2 ? 0 : color;
+		    index = 0;
+		  }
+		  drawImage(image);
+		};
+		setInterval(updateImage, 10);
 		while(1)
 		{
 		  fcEmulator.clock();

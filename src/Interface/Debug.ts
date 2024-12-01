@@ -1,8 +1,8 @@
 import * as fs from 'fs';
 import { IBus } from './Bus';
-import { uint16 } from './typedef';
+import { uint16, uint8 } from './typedef';
 import { Regs } from '../FC/CPU2A03';
-import { drawColorPalettes, drawLogs } from '../FC/display';
+import { drawColorPalettes, drawLogs, drawPatternTables } from '../FC/display';
 
 const LOG_SIZE = 10;
 export interface LOGS {
@@ -100,9 +100,13 @@ function debugResetCUPLog(){
   };
 }
 
+let ppubus: IBus;
 let cpubus: IBus;
 export function debugCatchCPUBus(bus: IBus){
   cpubus = bus;
+}
+export function debugCatchPPUBus(bus: IBus){
+  ppubus = bus;
 }
 let cpuregs: Regs;
 export function debugCatchCPURegs(regs: Regs){
@@ -292,4 +296,30 @@ export function debugCatchDrawColorTable(ColorPalettes: any){
     palettes[i+3] = 0xFF;
   }
   drawColorPalettes(palettes);
+}
+
+export function debugCatchDrawPatternTables(ColorPalettes: any, index: uint8){
+  let patternTable = new Uint8Array(16*16*8*8).fill(0);
+  for (let i = 0; i < 16; i++){
+    for (let j = 0; j < 16; j++){
+      // Tiles
+      for (let h = 0; h < 8; h++){
+        let tileMSB = ppubus.readByte((index<<12) | ((i*16 + j)*16 + h + 8)); 
+        let tileLSB = ppubus.readByte((index<<12) | ((i*16 + j)*16 + h));
+        for (let w = 0; w < 8; w++){
+          patternTable[(i*16*8*8 + j*8) + h*16*8 + w] = ((tileMSB >> 8 & 0x01) << 1) | ((tileLSB >> 8) & 0x01);
+          tileMSB = tileMSB << 1;
+          tileLSB = tileLSB << 1;
+        }
+      }
+    }
+  }
+  let patternImage = new Uint8Array(16*16*8*8*4).fill(0);
+  for (let i = 0; i < patternImage.length; i+=4){
+    patternImage[i + 0] = 0xFF & (ColorPalettes[patternTable[i/4]]>>16);
+    patternImage[i + 1] = 0xFF & (ColorPalettes[patternTable[i/4]]>>8);
+    patternImage[i + 2] = 0xFF & (ColorPalettes[patternTable[i/4]]>>0);
+    patternImage[i + 3] = 0xFF;
+  }
+  drawPatternTables(patternImage, index);
 }

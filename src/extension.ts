@@ -6,11 +6,12 @@ import path from 'path';
 import { FCEmulator } from './FC/FCEmulator';
 import { IOptions } from "./Interface/Emulator";
 import { drawImage } from './FC/display';
-import { debugCatchCPUBus, debugCatchDrawColorTable, debugCatchDrawLog, debugCatchLogPath } from './Interface/Debug';
+import { debugCatchCPUBus, debugCatchDrawColorTable, debugCatchDrawLog, debugCatchDrawPatternTables, debugCatchLogPath, debugCatchPPUBus } from './Interface/Debug';
 
 let currentPanel: vscode.WebviewPanel | undefined = undefined;
 let running:boolean = false;
 let runstep:boolean = true;
+let refreshPatternTable:boolean = false;
 // This method is called when your extension is activated
 // Your extension is activated the very first time the command is executed
 export function activate(context: vscode.ExtensionContext) {
@@ -28,6 +29,9 @@ export function activate(context: vscode.ExtensionContext) {
   context.subscriptions.push(vscode.commands.registerCommand('fc-emulator.step', () => {
     runstep = true;
   }));
+  context.subscriptions.push(vscode.commands.registerCommand('fc-emulator.refreshPatternTable', () => {
+    refreshPatternTable = true;
+  }));
   context.subscriptions.push(vscode.commands.registerCommand('fc-emulator.RunFCEmulator', () => {
     // The code you place here will be executed every time your command is executed
     if (currentPanel){
@@ -40,7 +44,7 @@ export function activate(context: vscode.ExtensionContext) {
       vscode.ViewColumn.One,
       {
         enableScripts: true,
-      retainContextWhenHidden: true
+        retainContextWhenHidden: true
       }
       );
     }
@@ -54,8 +58,10 @@ export function activate(context: vscode.ExtensionContext) {
       currentPanel = undefined;
       clearInterval(intervalcpu);
       clearInterval(intervallog);
+      clearInterval(intervalcolortable);
       running = false;
-      runstep = false;
+      runstep = true;
+	  refreshPatternTable = false;
       }
     );
       // Display a message box to the user
@@ -115,8 +121,19 @@ export function activate(context: vscode.ExtensionContext) {
     };
     updateImage();
 
-    debugCatchDrawColorTable(fcEmulator.ppu.ColorTable);
     debugCatchCPUBus(fcEmulator.cpuBus);
+	debugCatchPPUBus(fcEmulator.ppuBus);
+	const updatePatternTable = () =>{
+		if(refreshPatternTable){
+			refreshPatternTable = false;
+			debugCatchDrawPatternTables(fcEmulator.ppu.ColorTable, 0x00);
+			debugCatchDrawPatternTables(fcEmulator.ppu.ColorTable, 0x01);
+		}
+	};
+    const intervalcolortable = setInterval(updatePatternTable, 1000);
+	debugCatchDrawPatternTables(fcEmulator.ppu.ColorTable, 0x00);
+	debugCatchDrawPatternTables(fcEmulator.ppu.ColorTable, 0x01);
+	debugCatchDrawColorTable(fcEmulator.ppu.ColorTable);
   }));
 }
 

@@ -61,6 +61,26 @@ window.addEventListener("message", event =>{
     ctx.fillText("$30", PALETTE_X, PALETTE_Y + 25 + PALETTE_HEIGTH*3);
     ctx.putImageData(paletteImage,PALETTE_X + 30, PALETTE_Y + 10);
   }
+  if (message.patternImage){
+    let paletteImage = ctx.createImageData(16*8, 16*8);
+    for(let i = 0; i < paletteImage.data.length; i++){
+      paletteImage.data[i] = message.patternImage[i];
+    }
+    ctx.font = "11px Courier New";
+    ctx.fillStyle = "white";
+    ctx.fillText("Pattern Table 1", PALETTE_X + PALETTE_WIDTH*18, PALETTE_Y);
+    ctx.putImageData(paletteImage,PALETTE_X + PALETTE_WIDTH*18, PALETTE_Y + 10);
+  }
+  if (message.patternImage2){
+    let paletteImage = ctx.createImageData(16*8, 16*8);
+    for(let i = 0; i < paletteImage.data.length; i++){
+      paletteImage.data[i] = message.patternImage2[i];
+    }
+    ctx.font = "11px Courier New";
+    ctx.fillStyle = "white";
+    ctx.fillText("Pattern Table 2", PALETTE_X + PALETTE_WIDTH*18 + 16*8 + 20, PALETTE_Y);
+    ctx.putImageData(paletteImage,PALETTE_X + PALETTE_WIDTH*18 + 16*8 + 20, PALETTE_Y + 10);
+  }
 });
 
 function init(){

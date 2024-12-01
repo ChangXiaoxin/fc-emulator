@@ -26,6 +26,10 @@
       {
         "command": "fc-emulator.step",
         "title": "FC Emulator: Step"
+      },
+      {
+        "command": "fc-emulator.refreshPatternTable",
+        "title": "FC Emulator: Refresh Pattern Table"
       }
     ]
   },

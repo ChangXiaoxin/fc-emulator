@@ -1,4 +1,4 @@
-import { debugCatchCPUBus } from "../Interface/Debug";
+import { debugCatchCPUBus, debugCatchDrawColorTable } from "../Interface/Debug";
 import { IEmulator, IOptions } from "../Interface/Emulator";
 import { Cartridge } from "./cartridge";
 import { CPU2A03 } from "./CPU2A03";
@@ -17,16 +17,16 @@ export class FCEmulator implements IEmulator {
 
     const cartridge = new Cartridge(fcData, new Uint8Array(8 * 1024));
   
+    this.ppuBus = new PPUBus();
+    this.ppuBus.cartridge = cartridge;
+    this.ppu = new PPU2C02(this.ppuBus);
+    
     this.cpuBus = new CPUBus();
     this.cpuBus.cartridge = cartridge;
-    this.cpu = new CPU2A03(this.cpuBus);
-    
-    this.ppuBus = new PPUBus();
-    this.ppu = new PPU2C02();
-    this.ppuBus.cartridge = cartridge;
-    this.ppu.bus = this.ppuBus;
-    
     this.cpuBus.ppu = this.ppu;
+    this.cpu = new CPU2A03(this.cpuBus);
+
+    debugCatchDrawColorTable(this.ppu.ColorTable);
     debugCatchCPUBus(this.cpuBus);
   }
 

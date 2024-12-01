@@ -35,7 +35,7 @@ export class Regs {
 export class CPU2A03{
   public bus!: CPUBus;
 
-  private deferCycles = 0;
+  public deferCycles = 0;
   private clocks = 0;
   private readonly regs = new Regs();
 

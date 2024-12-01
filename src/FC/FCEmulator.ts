@@ -12,9 +12,10 @@ export class FCEmulator implements IEmulator {
   ppuBus:PPUBus;
   ppu: PPU2C02;
   clocks: number;
-  constructor(fcData: Uint8Array, options?: IOptions){
+  option: IOptions;
+  constructor(fcData: Uint8Array, options: IOptions){
     this.clocks = 0;
-
+    this.option = options;
     const cartridge = new Cartridge(fcData, new Uint8Array(8 * 1024));
   
     this.ppuBus = new PPUBus();
@@ -25,6 +26,19 @@ export class FCEmulator implements IEmulator {
     this.cpuBus.cartridge = cartridge;
     this.cpuBus.ppu = this.ppu;
     this.cpu = new CPU2A03(this.cpuBus);
+
+    const updateImage = () => {
+		  let imgData = new Uint8Array(256*240*4).fill(0);
+		  for (var i=0;i<imgData.length;i+=4)
+			{
+			imgData[i+0]=0;
+			imgData[i+1]=0;
+			imgData[i+2]=0;
+			imgData[i+3]=255;
+			}
+		  this.option.onFrame(imgData);
+		};
+    updateImage();
 
     debugCatchDrawColorTable(this.ppu.ColorTable);
     debugCatchCPUBus(this.cpuBus);

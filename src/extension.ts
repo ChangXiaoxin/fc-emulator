@@ -50,7 +50,6 @@ export function activate(context: vscode.ExtensionContext) {
 		currentPanel.onDidDispose(
 		  () => {
 			currentPanel = undefined;
-			clearInterval(interval);
 			clearInterval(intervalcpu);
 			running = false;
 			runstep = false;
@@ -64,9 +63,8 @@ export function activate(context: vscode.ExtensionContext) {
 		  onSample: (volume: number) => void{
 
 		  },
-		  onFrame: (frame: Uint8Array) => void{
-
-		  }, // [r,g,b, r,g,b, ...] 256*240*3 = 184320 bytes;
+		  onFrame: (frame: Uint8Array) => 
+			drawImage(frame),
 		};
 		const rom_path = path.join(context.extensionPath, 'src', 'test', 'nestest.nes');
 		var fc_data = fs.readFileSync(rom_path);
@@ -76,46 +74,18 @@ export function activate(context: vscode.ExtensionContext) {
 		debugCatchLogPath(log_path);
 
 		let fcEmulator = new FCEmulator(fc_data, fc_options);
-		let image = new Uint8Array(4);
-		image[0] = 0;
-		image[1] = 0;
-		image[2] = 0;
-		image[3] = 255;
-        let index = 0;
-		let color = 0;
-        const updateImage = () => {
-		  if (index < 255){
-		    index++;
-		    image[color] = index;
-		  }
-		  else{
-			color++;
-			color = color > 2 ? 0 : color;
-		    index = 0;
-		  }
-		  let imgData = new Uint8Array(256*240*4).fill(0);
-		  for (var i=0;i<imgData.length;i+=4)
-			{
-			imgData[i+0]=image[0];
-			imgData[i+1]=image[1];
-			imgData[i+2]=image[2];
-			imgData[i+3]=image[3];
-			}
-		  drawImage(imgData);
-		};
 		const runEmulator = () =>{
 		  if(running)
 		  {
 			fcEmulator.clock();
 		  }
 		  else if(runstep){
-			fcEmulator.clock();
-			if(fcEmulator.clocks%3===0){
+			if(fcEmulator.clocks !== 0 && fcEmulator.clocks%3 === 0 && fcEmulator.cpu.deferCycles === 0){
 			  runstep = false;
 			}
+			fcEmulator.clock();
 		  }
 		};
-		const interval = setInterval(updateImage, 10);
 		const intervalcpu = setInterval(runEmulator, 10);
 	}));
 }

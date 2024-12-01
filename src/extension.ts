@@ -10,7 +10,7 @@ import { debugCatchCPUBus, debugCatchDrawColorTable, debugCatchDrawLog, debugCat
 
 let currentPanel: vscode.WebviewPanel | undefined = undefined;
 let running:boolean = false;
-let runstep:boolean = false;
+let runstep:boolean = true;
 // This method is called when your extension is activated
 // Your extension is activated the very first time the command is executed
 export function activate(context: vscode.ExtensionContext) {

@@ -11,15 +11,18 @@ export class FCEmulator implements IEmulator {
   cpu:CPU2A03;
   ppuBus:PPUBus;
   ppu: PPU2C02;
-  constructor(fcData: Uint8Array, options?: IOptions, userData?: any){
+  clocks: any;
+  constructor(fcData: Uint8Array, options?: IOptions){
+    this.clocks = 0;
+
     const cartridge = new Cartridge(fcData, new Uint8Array(8 * 1024));
   
     this.cpuBus = new CPUBus();
     this.cpuBus.cartridge = cartridge;
-    this.cpu = new CPU2A03(this.cpuBus, userData);
+    this.cpu = new CPU2A03(this.cpuBus);
     
     this.ppuBus = new PPUBus();
-    this.ppu = new PPU2C02(userData);
+    this.ppu = new PPU2C02();
     this.ppuBus.cartridge = cartridge;
     this.ppu.bus = this.ppuBus;
     
@@ -28,9 +31,11 @@ export class FCEmulator implements IEmulator {
   }
 
   public clock(): void {
-    this.cpu.clock();
-    this.ppu.clock();
-    this.ppu.clock();
+    this.clocks++;
+    if (this.clocks%3 === 0)
+    {
+      this.cpu.clock();
+    }
     this.ppu.clock();
   }
   public reset(): void {

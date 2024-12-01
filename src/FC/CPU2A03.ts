@@ -38,13 +38,10 @@ export class CPU2A03{
   private deferCycles = 0;
   private clocks = 0;
   private readonly regs = new Regs();
-  // Debug log
-  private userData?: any;
 
-  constructor(cpubus: CPUBus, userdata?: any){
+  constructor(cpubus: CPUBus){
     debugCatchCPURegs(this.regs);
     this.bus = cpubus;
-    this.userData = userdata;
 
     this.regs.A = 0;
     this.regs.X = 0;
@@ -1576,7 +1573,7 @@ export class CPU2A03{
         throw new Error(`Invalid opcode: ${opcode.toString(16).toUpperCase()}`);
     }
     // Debug log
-    debugCatchToLogFlie(this.userData);
+    debugCatchToLogFlie();
   }
 
   private addCycles(cycle: number){

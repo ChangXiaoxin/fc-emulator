@@ -47,7 +47,8 @@ export var logTemplate = (
 export function zeroFill(str: string, num: number): string{
   return str.padStart(num, "0");  
 }
-var cpulog:LOGS = {
+let logpath = "";
+let cpulog:LOGS = {
   PC: '',
   opCode: '',
   opName: '',
@@ -64,7 +65,7 @@ var cpulog:LOGS = {
   CYC: ''
 };
 
-function debugRestCUPLog(){
+function debugResetCUPLog(){
   cpulog = {
     PC: '',
     opCode: '',
@@ -83,11 +84,11 @@ function debugRestCUPLog(){
   };
 }
 
-var cpubus: IBus;
+let cpubus: IBus;
 export function debugCatchCPUBus(bus: IBus){
   cpubus = bus;
 }
-var cpuregs: Regs;
+let cpuregs: Regs;
 export function debugCatchCPURegs(regs: Regs){
   cpuregs = regs;
 }
@@ -243,8 +244,12 @@ export function debugCatchOpName(opName: any)
   debugCatchExtendedDataContent();
 }
 
-export function debugCatchToLogFlie(path: string){
+export function debugCatchToLogFlie(){
   let logContent = logTemplate(cpulog);
-  fs.appendFileSync(path, logContent);
-  debugRestCUPLog();
+  fs.appendFileSync(logpath, logContent);
+  debugResetCUPLog();
+}
+
+export function debugCatchLogPath(path: string){
+  logpath = path;
 }

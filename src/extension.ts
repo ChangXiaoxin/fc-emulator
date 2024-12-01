@@ -6,6 +6,7 @@ import path from 'path';
 import { FCEmulator } from './FC/FCEmulator';
 import { IOptions } from "./Interface/Emulator";
 import { drawImage } from './FC/display';
+import { debugCatchLogPath } from './Interface/Debug';
 
 let currentPanel: vscode.WebviewPanel | undefined = undefined;
 // This method is called when your extension is activated
@@ -61,7 +62,9 @@ export function activate(context: vscode.ExtensionContext) {
 		// Debug log
 		const log_path = path.join(context.extensionPath, 'src', 'test', 'run.log');
         fs.writeFileSync(log_path, "");
-		let fcEmulator = new FCEmulator(fc_data, fc_options, log_path);
+		debugCatchLogPath(log_path);
+
+		let fcEmulator = new FCEmulator(fc_data, fc_options);
 		let image = new Uint8Array(4);
 		image[0] = 0;
 		image[1] = 0;

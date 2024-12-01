@@ -1,5 +1,5 @@
 import { uint16, uint8 } from "../Interface/typedef";
-import { ADDR_MODE, debugCatchClocks, debugCatchCPURegs, debugCatchDataCode, debugCatchOpCode, debugCatchOpName, debugCatchRegs, debugCatchToLogFlie } from '../Interface/Debug';
+import { ADDR_MODE, debugCatchClocks, debugCatchCPURegs, debugCatchDataCode, debugCatchOpCode, debugCatchOpName, debugCatchRegs, debugCatchToLogFile, debugCatchToLogs } from '../Interface/Debug';
 import { CPUBus } from "./CPUBus";
 
 enum InterruptVector {
@@ -51,7 +51,8 @@ export class CPU2A03{
     this.regs.S = 0xFD;
     this.regs.P = 0x24; // I,U === 1
     this.deferCycles = 0;
-    this.clocks = 6;
+    this.clocks = 0;
+    // this.clocks = 6;
   }
 
   public reset(): void {
@@ -59,7 +60,6 @@ export class CPU2A03{
     this.regs.X = 0; //unchanged
     this.regs.Y = 0; //unchanged
     this.regs.PC = this.bus.readWord(InterruptVector.RESET);
-    // this.regs.PC = 0xC000;
     this.regs.S -= 3;
     this.regs.P |= 0x24; // I,U === 1
     
@@ -1573,7 +1573,8 @@ export class CPU2A03{
         throw new Error(`Invalid opcode: ${opcode.toString(16).toUpperCase()}`);
     }
     // Debug log
-    debugCatchToLogFlie();
+    debugCatchToLogs();
+    // debugCatchToLogFile();
   }
 
   private addCycles(cycle: number){

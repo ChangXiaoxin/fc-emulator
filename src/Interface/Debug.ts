@@ -2,6 +2,9 @@ import * as fs from 'fs';
 import { IBus } from './Bus';
 import { uint16 } from './typedef';
 import { Regs } from '../FC/CPU2A03';
+import { drawLogs } from '../FC/display';
+
+const LOG_SIZE = 10;
 export interface LOGS {
   PC: string;
   opCode: string;
@@ -44,6 +47,17 @@ export var logTemplate = (
 " ".padStart(8-logs.PPU.length) + `CYC:${logs.CYC}
 `;
 
+// reg log
+export let regsTemplate = (
+  logs:LOGS
+) =>
+`PC:${logs.PC} A:${logs.A} X:${logs.X} Y:${logs.Y} P:${logs.P} SP:${logs.SP}`;
+export let opcodeTemplate = (
+  logs:LOGS
+) =>
+`${logs.PC}  ${logs.opCode} ${logs.dataCode}` + " ".padStart(10-logs.dataCode.length-logs.opName.length) +
+`${logs.opName} ${logs.dataContent}`;
+
 export function zeroFill(str: string, num: number): string{
   return str.padStart(num, "0");  
 }
@@ -64,6 +78,8 @@ let cpulog:LOGS = {
   PPU: '',
   CYC: ''
 };
+
+let logs: string[] = new Array(LOG_SIZE + 1);
 
 function debugResetCUPLog(){
   cpulog = {
@@ -244,9 +260,19 @@ export function debugCatchOpName(opName: any)
   debugCatchExtendedDataContent();
 }
 
-export function debugCatchToLogFlie(){
+export function debugCatchToLogFile(){
   let logContent = logTemplate(cpulog);
   fs.appendFileSync(logpath, logContent);
+  debugResetCUPLog();
+}
+
+export function debugCatchToLogs(){
+  logs[LOG_SIZE] = regsTemplate(cpulog);
+  for(let i = 0; i < LOG_SIZE-1; i++){
+    logs[i] = logs[i+1];
+  }
+  logs[LOG_SIZE-1] = opcodeTemplate(cpulog);
+  drawLogs(logs);
   debugResetCUPLog();
 }
 

@@ -11,7 +11,7 @@ export class FCEmulator implements IEmulator {
   cpu:CPU2A03;
   ppuBus:PPUBus;
   ppu: PPU2C02;
-  clocks: any;
+  clocks: number;
   constructor(fcData: Uint8Array, options?: IOptions){
     this.clocks = 0;
 
@@ -31,7 +31,7 @@ export class FCEmulator implements IEmulator {
   }
 
   public clock(): void {
-    this.clocks++;
+    this.clocks += 1;
     if (this.clocks%3 === 0)
     {
       this.cpu.clock();

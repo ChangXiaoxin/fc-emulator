@@ -18,6 +18,14 @@
       {
         "command": "fc-emulator.RunFCEmulator",
         "title": "Run FC Emulator"
+      },
+      {
+        "command": "fc-emulator.pause",
+        "title": "FC Emulator: Pause/Resume"
+      },
+      {
+        "command": "fc-emulator.step",
+        "title": "FC Emulator: Step"
       }
     ]
   },

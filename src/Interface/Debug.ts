@@ -283,9 +283,9 @@ export function debugCatchLogPath(path: string){
 export function debugCatchDrawColorTable(ColorPalettes: any){
   let palettes = new Uint8Array(16*4*4).fill(0);
   for (let i = 0; i < palettes.length; i+=4){
-    palettes[i+2] = 0xFF & (ColorPalettes[i/4]>>16);
+    palettes[i+0] = 0xFF & (ColorPalettes[i/4]>>16);
     palettes[i+1] = 0xFF & (ColorPalettes[i/4]>>8);
-    palettes[i+0] = 0xFF & ColorPalettes[i/4];
+    palettes[i+2] = 0xFF & ColorPalettes[i/4];
     palettes[i+3] = 0xFF;
   }
   drawColorPalettes(palettes);

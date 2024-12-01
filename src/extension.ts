@@ -75,6 +75,7 @@ export function activate(context: vscode.ExtensionContext) {
       onFrame: (frame: Uint8Array) =>
       drawImage(frame),
     };
+    // const rom_path = path.join(context.extensionPath, 'src', 'test', 'Super Mario Bros.nes');
     const rom_path = path.join(context.extensionPath, 'src', 'test', 'nestest.nes');
     var fc_data = fs.readFileSync(rom_path);
     // Debug log

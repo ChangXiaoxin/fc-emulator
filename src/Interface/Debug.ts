@@ -51,7 +51,7 @@ export var logTemplate = (
 export let regsTemplate = (
   logs:LOGS
 ) =>
-`PC:${logs.PC} A:${logs.A} X:${logs.X} Y:${logs.Y} P:${logs.P} SP:${logs.SP}`;
+`PC:${logs.PC} A:${logs.A} X:${logs.X} Y:${logs.Y} P:${logs.P} SP:${logs.SP} @${logs.CYC}`;
 export let opcodeTemplate = (
   logs:LOGS
 ) =>

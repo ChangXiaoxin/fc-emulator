@@ -9,7 +9,7 @@ const LOG_Y = 0;
 const PALETTE_WIDTH = 26;
 const PALETTE_HEIGTH = 26;
 const PALETTE_X = 0;
-const PALETTE_Y = 300;
+const PALETTE_Y = 290;
 const GAME_X = 90;
 const GAME_Y = 0;
 
@@ -52,12 +52,14 @@ window.addEventListener("message", event =>{
     }
     ctx.font = "11px Courier New";
     ctx.fillStyle = "white";
-    ctx.fillText("$00 $01 $02 $03 $04 $05 $06 $07 $08 $09 $0A $0B $0C $0D $0E $0F", 30, 290);
-    ctx.fillText("$00", PALETTE_X, PALETTE_Y + 15);
-    ctx.fillText("$10", PALETTE_X, PALETTE_Y + 15 + 27);
-    ctx.fillText("$20", PALETTE_X, PALETTE_Y + 15 + 27*2);
-    ctx.fillText("$30", PALETTE_X, PALETTE_Y + 15 + 27*3);
-    ctx.putImageData(paletteImage,PALETTE_X + 30, PALETTE_Y);
+    for (let i = 0; i < 16; i++){
+      ctx.fillText("$"+ i.toString(16).padStart(2, "0").toUpperCase(), PALETTE_X + 30 + PALETTE_WIDTH*i, PALETTE_Y);
+    }
+    ctx.fillText("$00", PALETTE_X, PALETTE_Y + 25);
+    ctx.fillText("$10", PALETTE_X, PALETTE_Y + 25 + PALETTE_HEIGTH);
+    ctx.fillText("$20", PALETTE_X, PALETTE_Y + 25 + PALETTE_HEIGTH*2);
+    ctx.fillText("$30", PALETTE_X, PALETTE_Y + 25 + PALETTE_HEIGTH*3);
+    ctx.putImageData(paletteImage,PALETTE_X + 30, PALETTE_Y + 10);
   }
 });
 

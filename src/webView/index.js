@@ -15,7 +15,6 @@ window.addEventListener("message", event =>{
     ctx.putImageData(imgData,0,20);
   }
   if (message.CPULOG){
-    // ctx.clearRect(260, 40, message.CPULOG[LOG_SIZE].length, 40);
     ctx.clearRect(260, 20, 400, 400);
     ctx.fillStyle = "green";
     ctx.fillRect(280, 228, 300, 18);

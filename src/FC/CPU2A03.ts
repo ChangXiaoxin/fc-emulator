@@ -41,16 +41,16 @@ export class CPU2A03{
   // Debug log
   private userData?: any;
 
-  constructor(userdata?: any){
+  constructor(cpubus: CPUBus, userdata?: any){
     debugCatchCPURegs(this.regs);
-
+    this.bus = cpubus;
     this.userData = userdata;
 
     this.regs.A = 0;
     this.regs.X = 0;
     this.regs.Y = 0;
-    // this.regs.PC = this.bus.readWord(InterruptVector.RESET);
-    this.regs.PC = 0xC000;
+    this.regs.PC = this.bus.readWord(InterruptVector.RESET);
+    // this.regs.PC = 0xC000;
     this.regs.S = 0xFD;
     this.regs.P = 0x24; // I,U === 1
     this.deferCycles = 0;
@@ -61,8 +61,8 @@ export class CPU2A03{
     this.regs.A = 0; //unchanged
     this.regs.X = 0; //unchanged
     this.regs.Y = 0; //unchanged
-    // this.regs.PC = this.bus.readWord(InterruptVector.RESET);
-    this.regs.PC = 0xC000;
+    this.regs.PC = this.bus.readWord(InterruptVector.RESET);
+    // this.regs.PC = 0xC000;
     this.regs.S -= 3;
     this.regs.P |= 0x24; // I,U === 1
     

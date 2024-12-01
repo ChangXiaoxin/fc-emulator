@@ -15,9 +15,8 @@ export class FCEmulator implements IEmulator {
     const cartridge = new Cartridge(fcData, new Uint8Array(8 * 1024));
   
     this.cpuBus = new CPUBus();
-    this.cpu = new CPU2A03(userData);
     this.cpuBus.cartridge = cartridge;
-    this.cpu.bus = this.cpuBus;
+    this.cpu = new CPU2A03(this.cpuBus, userData);
     
     this.ppuBus = new PPUBus();
     this.ppu = new PPU2C02(userData);
@@ -25,7 +24,6 @@ export class FCEmulator implements IEmulator {
     this.ppu.bus = this.ppuBus;
     
     this.cpuBus.ppu = this.ppu;
-
     debugCatchCPUBus(this.cpuBus);
   }
 

@@ -1,4 +1,3 @@
-import { debugCatchCPUBus, debugCatchDrawColorTable } from "../Interface/Debug";
 import { IEmulator, IOptions } from "../Interface/Emulator";
 import { Cartridge } from "./cartridge";
 import { CPU2A03 } from "./CPU2A03";
@@ -27,21 +26,7 @@ export class FCEmulator implements IEmulator {
     this.cpuBus.ppu = this.ppu;
     this.cpu = new CPU2A03(this.cpuBus);
 
-    const updateImage = () => {
-		  let imgData = new Uint8Array(256*240*4).fill(0);
-		  for (var i=0;i<imgData.length;i+=4)
-			{
-			imgData[i+0]=0;
-			imgData[i+1]=0;
-			imgData[i+2]=0;
-			imgData[i+3]=255;
-			}
-		  this.option.onFrame(imgData);
-		};
-    updateImage();
 
-    debugCatchDrawColorTable(this.ppu.ColorTable);
-    debugCatchCPUBus(this.cpuBus);
   }
 
   public clock(): void {

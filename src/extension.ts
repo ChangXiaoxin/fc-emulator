@@ -6,7 +6,7 @@ import path from 'path';
 import { FCEmulator } from './FC/FCEmulator';
 import { IOptions } from "./Interface/Emulator";
 import { drawImage } from './FC/display';
-import { debugCatchLogPath } from './Interface/Debug';
+import { debugCatchCPUBus, debugCatchDrawColorTable, debugCatchLogPath } from './Interface/Debug';
 
 let currentPanel: vscode.WebviewPanel | undefined = undefined;
 let running:boolean = false;
@@ -38,7 +38,8 @@ export function activate(context: vscode.ExtensionContext) {
 		  'FC Emulator',
 		  vscode.ViewColumn.One,
 		  {
-		    enableScripts: true
+		    enableScripts: true,
+			retainContextWhenHidden: true
 		  }
 		  );
 		}
@@ -87,6 +88,21 @@ export function activate(context: vscode.ExtensionContext) {
 		  }
 		};
 		const intervalcpu = setInterval(runEmulator, 10);
+
+		const updateImage = () => {
+		  let imgData = new Uint8Array(256*240*4).fill(0);
+		  for (var i=0;i<imgData.length;i+=4)
+		    {
+		    imgData[i+0]=0;
+		    imgData[i+1]=0;
+		    imgData[i+2]=0;
+		    imgData[i+3]=255;
+		    }
+		  fcEmulator.option.onFrame(imgData);
+		};
+		updateImage();
+		debugCatchDrawColorTable(fcEmulator.ppu.ColorTable);
+		debugCatchCPUBus(fcEmulator.cpuBus);
 	}));
 }
 

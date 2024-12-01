@@ -25,7 +25,7 @@ window.addEventListener("message", event =>{
     ctx.putImageData(imgData, GAME_X, GAME_Y + 20);
   }
   if (message.CPULOG){
-    ctx.clearRect(LOG_X, LOG_Y + 20, 400, 240);
+    ctx.clearRect(LOG_X, LOG_Y + 20, 480, 240);
     ctx.fillStyle = "green";
     ctx.fillRect(LOG_X + 20, LOG_Y + 228, 300, 18);
     ctx.font = "20px Courier New";

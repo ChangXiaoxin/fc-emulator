@@ -263,7 +263,7 @@ export function debugCatchOpName(opName: any)
 export function debugCatchToLogFile(){
   let logContent = logTemplate(cpulog);
   fs.appendFileSync(logpath, logContent);
-  debugResetCUPLog();
+  // debugResetCUPLog();
 }
 
 export function debugCatchToLogs(){
@@ -272,8 +272,11 @@ export function debugCatchToLogs(){
     logs[i] = logs[i+1];
   }
   logs[LOG_SIZE-1] = opcodeTemplate(cpulog);
-  drawLogs(logs);
   debugResetCUPLog();
+}
+
+export function debugCatchDrawLog(){
+  drawLogs(logs);
 }
 
 export function debugCatchLogPath(path: string){

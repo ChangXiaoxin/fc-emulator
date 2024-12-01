@@ -1573,8 +1573,8 @@ export class CPU2A03{
         throw new Error(`Invalid opcode: ${opcode.toString(16).toUpperCase()}`);
     }
     // Debug log
-    debugCatchToLogs();
     // debugCatchToLogFile();
+    debugCatchToLogs();
   }
 
   private addCycles(cycle: number){

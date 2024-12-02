@@ -6,7 +6,7 @@ import path from 'path';
 import { FCEmulator } from './FC/FCEmulator';
 import { IOptions } from "./Interface/Emulator";
 import { drawImage } from './FC/display';
-import { debugCatchCPUBus, debugCatchDrawColorTable, debugCatchDrawLog, debugCatchDrawPatternTables, debugCatchLogPath, debugCatchPPUBus } from './Interface/Debug';
+import { debugCatchCPUBus, debugCatchDrawColorTable, debugCatchDrawLog, debugCatchDrawPalette, debugCatchDrawPatternTables, debugCatchLogPath, debugCatchPPUBus } from './Interface/Debug';
 
 let currentPanel: vscode.WebviewPanel | undefined = undefined;
 let running:boolean = false;
@@ -57,9 +57,8 @@ export function activate(context: vscode.ExtensionContext) {
     currentPanel.onDidDispose(
       () => {
       currentPanel = undefined;
-      clearInterval(intervalcpu);
-      clearInterval(intervallog);
-      clearInterval(intervalcolortable);
+      clearInterval(intervalEmulator);
+      clearInterval(intervalPatternTable);
       running = false;
       runstep = true;
 	    refreshPatternTable = false;
@@ -92,7 +91,7 @@ export function activate(context: vscode.ExtensionContext) {
       else{
         runInterval = 17;
       }
-      let runclock = 29829;
+      let runclock = 320*262;
       while(runclock--){
         if(running)
         {
@@ -106,37 +105,22 @@ export function activate(context: vscode.ExtensionContext) {
           fcEmulator.clock();
         }
       }
-    };
-    const intervalcpu = setInterval(runEmulator, runInterval);
-
-    const updatelogs = () => {
+      debugCatchDrawPalette(fcEmulator.ppu.ColorTable);
       debugCatchDrawLog();
+      fcEmulator.option.onFrame(fcEmulator.ppu.displayOutput);
     };
-    const intervallog = setInterval(updatelogs, 16);
-
-    const updateImage = () => {
-      let imgData = new Uint8Array(256*240*4).fill(0);
-      for (var i=0;i<imgData.length;i+=4)
-        {
-        imgData[i+0]=0;
-        imgData[i+1]=0;
-        imgData[i+2]=0;
-        imgData[i+3]=255;
-        }
-      fcEmulator.option.onFrame(imgData);
-    };
-    updateImage();
+    const intervalEmulator = setInterval(runEmulator, runInterval);
 
     debugCatchCPUBus(fcEmulator.cpuBus);
-	debugCatchPPUBus(fcEmulator.ppuBus);
-	const updatePatternTable = () =>{
+	  debugCatchPPUBus(fcEmulator.ppuBus);
+	  const updatePatternTable = () =>{
 		if(refreshPatternTable){
 			refreshPatternTable = false;
 			debugCatchDrawPatternTables(fcEmulator.ppu.ColorTable, 0x00);
 			debugCatchDrawPatternTables(fcEmulator.ppu.ColorTable, 0x01);
 		}
 	};
-    const intervalcolortable = setInterval(updatePatternTable, 1000);
+  const intervalPatternTable = setInterval(updatePatternTable, 1000);
 	debugCatchDrawPatternTables(fcEmulator.ppu.ColorTable, 0x00);
 	debugCatchDrawPatternTables(fcEmulator.ppu.ColorTable, 0x01);
 	debugCatchDrawColorTable(fcEmulator.ppu.ColorTable);

@@ -68,6 +68,7 @@ export class CPU2A03{
   }
 
   public clock(): void {
+
     this.clocks++;
     if (this.deferCycles === 0){
       this.step();

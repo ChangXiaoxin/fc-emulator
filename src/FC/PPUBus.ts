@@ -27,7 +27,7 @@ export class PPUBus implements IBus {
     else{
       // Palettes
       let addr = address & 0x001F;
-      addr = (addr & 0x0003) === 0 ? addr & 0xFFF0 : addr;
+      addr = ((addr & 0x0003) === 0) ? (addr & 0x000F) : addr;
       this.Pram[addr] = data;
     }
   }
@@ -50,7 +50,7 @@ export class PPUBus implements IBus {
     else{
       // Palettes
       let addr = address & 0x001F;
-      addr = (addr & 0x0003) === 0 ? addr & 0xFFF0 : addr;
+      addr = ((addr & 0x0003) === 0) ? (addr & 0x000F) : addr;
       return this.Pram[addr];
     }
   }

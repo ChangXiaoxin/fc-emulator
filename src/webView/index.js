@@ -42,10 +42,11 @@ window.addEventListener("message", event =>{
       for (let j = 0; j < 16; j++){
         for (let h = 0; h < PALETTE_HEIGTH; h++){
           for(let w = 0; w < PALETTE_WIDTH; w++){
-            paletteImage.data[((i*16*PALETTE_HEIGTH + j + h*16)*PALETTE_WIDTH + w)*4 + 0] = message.ColorPalettes[(i*16+j)*4 + 0];
-            paletteImage.data[((i*16*PALETTE_HEIGTH + j + h*16)*PALETTE_WIDTH + w)*4 + 1] = message.ColorPalettes[(i*16+j)*4 + 1];
-            paletteImage.data[((i*16*PALETTE_HEIGTH + j + h*16)*PALETTE_WIDTH + w)*4 + 2] = message.ColorPalettes[(i*16+j)*4 + 2];
-            paletteImage.data[((i*16*PALETTE_HEIGTH + j + h*16)*PALETTE_WIDTH + w)*4 + 3] = message.ColorPalettes[(i*16+j)*4 + 3];
+            let edge = (h === 0) || (w === 0) || (h === (PALETTE_HEIGTH-1)) || (w === (PALETTE_WIDTH-1));
+            paletteImage.data[((i*16*PALETTE_HEIGTH + j + h*16)*PALETTE_WIDTH + w)*4 + 0] = edge ? 0 : message.ColorPalettes[(i*16+j)*4 + 0];
+            paletteImage.data[((i*16*PALETTE_HEIGTH + j + h*16)*PALETTE_WIDTH + w)*4 + 1] = edge ? 0 : message.ColorPalettes[(i*16+j)*4 + 1];
+            paletteImage.data[((i*16*PALETTE_HEIGTH + j + h*16)*PALETTE_WIDTH + w)*4 + 2] = edge ? 0 : message.ColorPalettes[(i*16+j)*4 + 2];
+            paletteImage.data[((i*16*PALETTE_HEIGTH + j + h*16)*PALETTE_WIDTH + w)*4 + 3] = edge ? 0 : message.ColorPalettes[(i*16+j)*4 + 3];
           }
         }
       }
@@ -61,6 +62,32 @@ window.addEventListener("message", event =>{
     ctx.fillText("$30", PALETTE_X, PALETTE_Y + 25 + PALETTE_HEIGTH*3);
     ctx.putImageData(paletteImage,PALETTE_X + 30, PALETTE_Y + 10);
   }
+  if (message.Palettes){
+    let paletteImage = ctx.createImageData(PALETTE_WIDTH * 16, PALETTE_HEIGTH * 4);
+    for (let i = 0; i < 2; i++){
+      for (let j = 0; j < 16; j++){
+        for (let h = 0; h < PALETTE_HEIGTH; h++){
+          for(let w = 0; w < PALETTE_WIDTH; w++){
+            let edge = (h === 0) || (w === 0) || (h === (PALETTE_HEIGTH-1)) || (w === (PALETTE_WIDTH-1));
+            paletteImage.data[((i*16*PALETTE_HEIGTH + j + h*16)*PALETTE_WIDTH + w)*4 + 0] = edge ? 0 : message.Palettes[(i*16+j)*4 + 0];
+            paletteImage.data[((i*16*PALETTE_HEIGTH + j + h*16)*PALETTE_WIDTH + w)*4 + 1] = edge ? 0 : message.Palettes[(i*16+j)*4 + 1];
+            paletteImage.data[((i*16*PALETTE_HEIGTH + j + h*16)*PALETTE_WIDTH + w)*4 + 2] = edge ? 0 : message.Palettes[(i*16+j)*4 + 2];
+            paletteImage.data[((i*16*PALETTE_HEIGTH + j + h*16)*PALETTE_WIDTH + w)*4 + 3] = edge ? 0 : message.Palettes[(i*16+j)*4 + 3];
+          }
+        }
+      }
+    }
+    ctx.clearRect(PALETTE_X, PALETTE_Y + 25 + PALETTE_HEIGTH*4, PALETTE_X + 30 + PALETTE_WIDTH*16, PALETTE_HEIGTH);
+    ctx.clearRect(PALETTE_X, PALETTE_Y + 25 + PALETTE_HEIGTH*5, 30, PALETTE_HEIGTH * 3);
+    ctx.font = "11px Courier New";
+    ctx.fillStyle = "white";
+    for (let i = 0; i < 16; i++){
+      ctx.fillText("$"+ i.toString(16).toUpperCase(), PALETTE_X + 30 + PALETTE_WIDTH*i, PALETTE_Y + 25 + PALETTE_HEIGTH*5);
+    }
+    ctx.fillText("$3F0", PALETTE_X, PALETTE_Y + 25 + PALETTE_HEIGTH*5 + 25);
+    ctx.fillText("$3F1", PALETTE_X, PALETTE_Y + 25 + PALETTE_HEIGTH*5 + 25 + PALETTE_HEIGTH);
+    ctx.putImageData(paletteImage,PALETTE_X + 30, PALETTE_Y + 25 + PALETTE_HEIGTH*5 + 10);
+  }
   if (message.patternImage){
     let paletteImage = ctx.createImageData(16*8, 16*8);
     for(let i = 0; i < paletteImage.data.length; i++){
@@ -68,7 +95,7 @@ window.addEventListener("message", event =>{
     }
     ctx.font = "11px Courier New";
     ctx.fillStyle = "white";
-    ctx.fillText("Pattern Table 1", PALETTE_X + PALETTE_WIDTH*18, PALETTE_Y);
+    ctx.fillText("Pattern Table 0", PALETTE_X + PALETTE_WIDTH*18, PALETTE_Y);
     ctx.putImageData(paletteImage,PALETTE_X + PALETTE_WIDTH*18, PALETTE_Y + 10);
   }
   if (message.patternImage2){
@@ -78,7 +105,7 @@ window.addEventListener("message", event =>{
     }
     ctx.font = "11px Courier New";
     ctx.fillStyle = "white";
-    ctx.fillText("Pattern Table 2", PALETTE_X + PALETTE_WIDTH*18 + 16*8 + 20, PALETTE_Y);
+    ctx.fillText("Pattern Table 1", PALETTE_X + PALETTE_WIDTH*18 + 16*8 + 20, PALETTE_Y);
     ctx.putImageData(paletteImage,PALETTE_X + PALETTE_WIDTH*18 + 16*8 + 20, PALETTE_Y + 10);
   }
 });

@@ -9,6 +9,12 @@ export function drawColorPalettes(palettes: Uint8Array){
   let panel = getCurrentPanel();
   panel?.webview.postMessage({ColorPalettes: palettes});
 }
+
+export function drawPalettes(palettes: Uint8Array){
+  let panel = getCurrentPanel();
+  panel?.webview.postMessage({Palettes: palettes});
+}
+
 export function drawPatternTables(palettes: Uint8Array, index: number){
   let panel = getCurrentPanel();
   if(index === 0x00){

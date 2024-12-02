@@ -2,7 +2,7 @@
 import { uint16, uint8 } from "../Interface/typedef";
 import { IBus } from "../Interface/Bus";
 import { Cartridge } from "./cartridge";
-import { PPU2C02, STATUSFlags } from "./PPU2C02";
+import { CTRLFlags, PPU2C02, STATUSFlags } from "./PPU2C02";
 export class CPUBus implements IBus {
   public cartridge!: Cartridge;
   public ppu!: PPU2C02;
@@ -48,6 +48,7 @@ export class CPUBus implements IBus {
           break;
         case 0x0007:
           this.ppu.bus.writeByte(this.ppu.regs.ADDR, data);
+          this.ppu.regs.ADDR += this.ppu.getCtrlFlag(CTRLFlags.I) ? 0x20 : 0x01;
           break;
         default:
           break;;
@@ -82,7 +83,6 @@ export class CPUBus implements IBus {
           memory = this.ppu.regs.MASK;
           break;
         case 0x0002:
-          this.ppu.setStatusFlag(STATUSFlags.V, true);  // hackin for debug
           memory = (this.ppu.regs.STATUS & 0xE0) | (this.ppu.dataBuffer & 0x1F);
           this.ppu.setStatusFlag(STATUSFlags.V, false);
           this.ppu.addressLatch = 0x00;
@@ -104,6 +104,7 @@ export class CPUBus implements IBus {
           if (this.ppu.regs.ADDR > 0x3F00){
             memory = this.ppu.dataBuffer;
           }
+          this.ppu.regs.ADDR += this.ppu.getCtrlFlag(CTRLFlags.I) ? 0x20 : 0x01;
           break;
         default:
           break;

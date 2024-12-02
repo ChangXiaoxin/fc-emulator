@@ -30,6 +30,11 @@ export class FCEmulator implements IEmulator {
   }
 
   public clock(): void {
+    if(this.ppu.nmiReq){
+      this.ppu.nmiReq = false;
+      this.cpu.nmi();
+    }
+
     this.clocks += 1;
     this.ppu.clock();
     if (this.clocks%3 === 0)
@@ -37,6 +42,7 @@ export class FCEmulator implements IEmulator {
       this.cpu.clock();
     }
   }
+
   public reset(): void {
     this.cpu.reset();
     this.ppu.reset();

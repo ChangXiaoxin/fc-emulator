@@ -50,14 +50,14 @@ export class PPU2C02{
                 0xB8BF00, 0x85D801, 0x5DE335, 0x45DE88, 0x49CAE3, 0x4E4E4E, 0x000000, 0x000000,
                 0xFFFFFF, 0xBFE0FF, 0xD1D3FF, 0xE6C9FF, 0xF7C3FF, 0xFFC4EE, 0xFFCBC9, 0xF7D7A9,
                 0xE6E397, 0xD1EE97, 0xBFF3A9, 0xB5F2C9, 0xB5EBEE, 0xB8B8B8, 0x000000, 0x000000];
-
+  public displayOutput:Uint8Array = new Uint8Array(256*240*4).fill(0x00);
   private clocks = 0;
   private scanline = 0;
   private cycles = 0;
-  public ppuAddress = 0x0000;
   public addressLatch = 0x00;
   public dataBuffer = 0x00;
   public regs = new PPUReg();
+  public nmiReq = false;
 
   constructor(ppubus:PPUBus){
     this.bus = ppubus;
@@ -86,12 +86,46 @@ export class PPU2C02{
     this.regs.DATA = 0x00;
     this.addressLatch = 0x00;
     this.dataBuffer = 0x00;
+    this.nmiReq = false;
   }
 
   public clock(): void {
     this.clocks++;
 
+    if (this.scanline === -1 && this.cycles === 1){
+      this.setStatusFlag(STATUSFlags.V, false);
+    }
+
+    if (this.scanline === 241 && this.cycles === 1){
+      this.setStatusFlag(STATUSFlags.V, true);
+      if (this.getCtrlFlag(CTRLFlags.V)){
+        this.nmiReq = true;
+      }
+    }
+
+    if(this.scanline < 240){
+      if(this.cycles < 256){
+        let piex = Math.random() > 0.5;
+        let index = piex ? 0x2D : 0x20;
+        this.displayOutput[(this.scanline*256 + this.cycles)*4 + 0] = 0xFF & (this.ColorTable[index]>>16);
+        this.displayOutput[(this.scanline*256 + this.cycles)*4 + 1] = 0xFF & (this.ColorTable[index]>>8);
+        this.displayOutput[(this.scanline*256 + this.cycles)*4 + 2] = 0xFF & (this.ColorTable[index]>>0);
+        this.displayOutput[(this.scanline*256 + this.cycles)*4 + 3] = 0xFF;
+      }
+    }
+    this.cycles++;
+
+
+    if (this.cycles >= 320){
+      this.scanline++;
+      this.cycles = 0;
+    }
+    if (this.scanline >= 261){
+      this.scanline = -1;
+    }
   }
+
+
   public setStatusFlag(flag: STATUSFlags, set: boolean){
     if (set){
       this.regs.STATUS |= flag;
@@ -99,6 +133,9 @@ export class PPU2C02{
     else{
       this.regs.STATUS &= ~flag;
     }
+  }
+  public getStatusFlag(flag: STATUSFlags){
+    return (this.regs.STATUS & flag) === flag;
   }
   public setMaskFlag(flag: MASKFlags, set: boolean){
     if (set){
@@ -108,6 +145,9 @@ export class PPU2C02{
       this.regs.MASK &= ~flag;
     }
   }
+  public getMaskFlag(flag: MASKFlags){
+    return (this.regs.MASK & flag) === flag;
+  }
   public setCtrlFlag(flag: CTRLFlags, set: boolean){
     if (set){
       this.regs.CTRL |= flag;
@@ -115,5 +155,8 @@ export class PPU2C02{
     else{
       this.regs.CTRL &= ~flag;
     }
+  }
+  public getCtrlFlag(flag: CTRLFlags){
+    return (this.regs.CTRL & flag) === flag;
   }
 }

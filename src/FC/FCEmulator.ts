@@ -31,11 +31,11 @@ export class FCEmulator implements IEmulator {
 
   public clock(): void {
     this.clocks += 1;
+    this.ppu.clock();
     if (this.clocks%3 === 0)
     {
       this.cpu.clock();
     }
-    this.ppu.clock();
   }
   public reset(): void {
     this.cpu.reset();

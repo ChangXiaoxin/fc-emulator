@@ -52,6 +52,8 @@ export class PPU2C02{
                 0xE6E397, 0xD1EE97, 0xBFF3A9, 0xB5F2C9, 0xB5EBEE, 0xB8B8B8, 0x000000, 0x000000];
 
   private clocks = 0;
+  private scanline = 0;
+  private cycles = 0;
   public ppuAddress = 0x0000;
   public addressLatch = 0x00;
   public dataBuffer = 0x00;
@@ -88,10 +90,7 @@ export class PPU2C02{
 
   public clock(): void {
     this.clocks++;
-    this.step();
-  }
-  public step():void {
-    
+
   }
   public setStatusFlag(flag: STATUSFlags, set: boolean){
     if (set){

@@ -79,7 +79,7 @@ let cpulog:LOGS = {
   CYC: ''
 };
 
-let logs: string[] = new Array(LOG_SIZE + 1);
+let logs: string[] = new Array(LOG_SIZE + 1).fill("----  -- -- --  --- ----");
 
 function debugResetCUPLog(){
   cpulog = {

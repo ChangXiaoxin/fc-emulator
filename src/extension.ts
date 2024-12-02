@@ -12,6 +12,7 @@ let currentPanel: vscode.WebviewPanel | undefined = undefined;
 let running:boolean = false;
 let runstep:boolean = true;
 let refreshPatternTable:boolean = false;
+let runInterval = 17;
 // This method is called when your extension is activated
 // Your extension is activated the very first time the command is executed
 export function activate(context: vscode.ExtensionContext) {
@@ -61,7 +62,7 @@ export function activate(context: vscode.ExtensionContext) {
       clearInterval(intervalcolortable);
       running = false;
       runstep = true;
-	  refreshPatternTable = false;
+	    refreshPatternTable = false;
       }
     );
       // Display a message box to the user
@@ -85,6 +86,12 @@ export function activate(context: vscode.ExtensionContext) {
 
     let fcEmulator = new FCEmulator(fc_data, fc_options);
     const runEmulator = () =>{
+      if (fcEmulator.clocks%3 === 0){
+        runInterval = 16;
+      }
+      else{
+        runInterval = 17;
+      }
       let runclock = 29829;
       while(runclock--){
         if(running)
@@ -94,15 +101,13 @@ export function activate(context: vscode.ExtensionContext) {
         else if(runstep){
           if(fcEmulator.clocks !== 0 && fcEmulator.clocks%3 === 0 && fcEmulator.cpu.deferCycles === 0){
             runstep = false;
+            runclock = 0;
           }
           fcEmulator.clock();
         }
-      else{
-        runclock = 0;
-      }
       }
     };
-    const intervalcpu = setInterval(runEmulator, 16);
+    const intervalcpu = setInterval(runEmulator, runInterval);
 
     const updatelogs = () => {
       debugCatchDrawLog();

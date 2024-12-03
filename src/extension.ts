@@ -13,6 +13,7 @@ let running:boolean = false;
 let runstep:boolean = true;
 let refreshPatternTable:boolean = false;
 let runInterval = 17;
+let palettesIndex = 0;
 // This method is called when your extension is activated
 // Your extension is activated the very first time the command is executed
 export function activate(context: vscode.ExtensionContext) {
@@ -32,6 +33,12 @@ export function activate(context: vscode.ExtensionContext) {
   }));
   context.subscriptions.push(vscode.commands.registerCommand('fc-emulator.refreshPatternTable', () => {
     refreshPatternTable = true;
+  }));
+  context.subscriptions.push(vscode.commands.registerCommand('fc-emulator.movePalettes', () => {
+    palettesIndex++;
+    if (palettesIndex > 7){
+      palettesIndex= 0;
+    }
   }));
   context.subscriptions.push(vscode.commands.registerCommand('fc-emulator.RunFCEmulator', () => {
     // The code you place here will be executed every time your command is executed
@@ -91,7 +98,7 @@ export function activate(context: vscode.ExtensionContext) {
       else{
         runInterval = 17;
       }
-      let runclock = 320*262;
+      let runclock = 341*262;
       while(runclock--){
         if(running)
         {
@@ -105,7 +112,9 @@ export function activate(context: vscode.ExtensionContext) {
           fcEmulator.clock();
         }
       }
-      debugCatchDrawPalette(fcEmulator.ppu.ColorTable);
+      debugCatchDrawPalette(fcEmulator.ppu.ColorTable, palettesIndex);
+      debugCatchDrawPatternTables(fcEmulator.ppu.ColorTable, 0x00, palettesIndex);
+      debugCatchDrawPatternTables(fcEmulator.ppu.ColorTable, 0x01, palettesIndex);
       debugCatchDrawLog();
       fcEmulator.option.onFrame(fcEmulator.ppu.displayOutput);
     };
@@ -116,13 +125,11 @@ export function activate(context: vscode.ExtensionContext) {
 	  const updatePatternTable = () =>{
 		if(refreshPatternTable){
 			refreshPatternTable = false;
-			debugCatchDrawPatternTables(fcEmulator.ppu.ColorTable, 0x00);
-			debugCatchDrawPatternTables(fcEmulator.ppu.ColorTable, 0x01);
+			debugCatchDrawPatternTables(fcEmulator.ppu.ColorTable, 0x00, palettesIndex);
+			debugCatchDrawPatternTables(fcEmulator.ppu.ColorTable, 0x01, palettesIndex);
 		}
 	};
   const intervalPatternTable = setInterval(updatePatternTable, 1000);
-	debugCatchDrawPatternTables(fcEmulator.ppu.ColorTable, 0x00);
-	debugCatchDrawPatternTables(fcEmulator.ppu.ColorTable, 0x01);
 	debugCatchDrawColorTable(fcEmulator.ppu.ColorTable);
   }));
 }

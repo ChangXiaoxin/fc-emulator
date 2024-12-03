@@ -300,7 +300,7 @@ export function debugCatchDrawColorTable(ColorPalettes: any){
   drawColorPalettes(palettes);
 }
 
-export function debugCatchDrawPatternTables(ColorPalettes: any, index: uint8){
+export function debugCatchDrawPatternTables(ColorPalettes: any, index: uint8, palettesIndex: uint8){
   let patternTable = new Uint8Array(16*16*8*8).fill(0);
   for (let i = 0; i < 16; i++){
     for (let j = 0; j < 16; j++){
@@ -309,7 +309,7 @@ export function debugCatchDrawPatternTables(ColorPalettes: any, index: uint8){
         let tileMSB = ppubus.readByte((index<<12) | ((i*16 + j)*16 + h + 8)); 
         let tileLSB = ppubus.readByte((index<<12) | ((i*16 + j)*16 + h));
         for (let w = 0; w < 8; w++){
-          patternTable[(i*16*8*8 + j*8) + h*16*8 + w] = ((tileMSB >> 8 & 0x01) << 1) | ((tileLSB >> 8) & 0x01);
+          patternTable[(i*16*8*8 + j*8) + h*16*8 + w] = 0x3F & ppubus.readByte(0x3F00 + palettesIndex*4 + ((tileMSB >> 8 & 0x01) << 1) + ((tileLSB >> 8) & 0x01));
           tileMSB = tileMSB << 1;
           tileLSB = tileLSB << 1;
         }
@@ -318,21 +318,22 @@ export function debugCatchDrawPatternTables(ColorPalettes: any, index: uint8){
   }
   let patternImage = new Uint8Array(16*16*8*8*4).fill(0);
   for (let i = 0; i < patternImage.length; i+=4){
-    patternImage[i + 0] = 0xFF & (ColorPalettes[patternTable[i/4]]>>16);
-    patternImage[i + 1] = 0xFF & (ColorPalettes[patternTable[i/4]]>>8);
-    patternImage[i + 2] = 0xFF & (ColorPalettes[patternTable[i/4]]>>0);
+    patternImage[i + 0] = 0xFF & (ColorPalettes[(patternTable[i/4])]>>16);
+    patternImage[i + 1] = 0xFF & (ColorPalettes[(patternTable[i/4])]>>8 );
+    patternImage[i + 2] = 0xFF & (ColorPalettes[(patternTable[i/4])]>>0 );
     patternImage[i + 3] = 0xFF;
   }
   drawPatternTables(patternImage, index);
 }
 
-export function debugCatchDrawPalette(ColorPalettes: any){
-  let palettes = new Uint8Array(32*4).fill(0);
+export function debugCatchDrawPalette(Palettes: any, index: uint8){
+  let palettes = new Uint8Array(32*4 + 1).fill(0);
   for (let i = 0; i < palettes.length; i+=4){
-    palettes[i + 0] = 0xFF & (ColorPalettes[0x3F & ppubus.readByte(0x3F00 + i/4)]>>16);
-    palettes[i + 1] = 0xFF & (ColorPalettes[0x3F & ppubus.readByte(0x3F00 + i/4)]>>8);
-    palettes[i + 2] = 0xFF & (ColorPalettes[0x3F & ppubus.readByte(0x3F00 + i/4)]>>0);
+    palettes[i + 0] = 0xFF & (Palettes[0x3F & ppubus.readByte(0x3F00 + i/4)]>>16);
+    palettes[i + 1] = 0xFF & (Palettes[0x3F & ppubus.readByte(0x3F00 + i/4)]>>8);
+    palettes[i + 2] = 0xFF & (Palettes[0x3F & ppubus.readByte(0x3F00 + i/4)]>>0);
     palettes[i + 3] = 0xFF;
   }
+  palettes[32*4] = index;
   drawPalettes(palettes);
 }

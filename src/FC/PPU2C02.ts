@@ -1,3 +1,4 @@
+import { sourceMapsEnabled } from "process";
 import { uint16, uint8 } from "../Interface/typedef";
 import { PPUBus } from "./PPUBus";
 
@@ -58,6 +59,7 @@ export class PPU2C02{
   public dataBuffer = 0x00;
   public regs = new PPUReg();
   public nmiReq = false;
+  public oddFrame = false;
 
   constructor(ppubus:PPUBus){
     this.bus = ppubus;
@@ -75,6 +77,7 @@ export class PPU2C02{
     this.regs.DATA = 0x00;
     this.addressLatch = 0x00;
     this.dataBuffer = 0x00;
+    this.oddFrame = false;
   }
 
   public reset(): void {
@@ -87,6 +90,7 @@ export class PPU2C02{
     this.addressLatch = 0x00;
     this.dataBuffer = 0x00;
     this.nmiReq = false;
+    this.oddFrame = false;
   }
 
   public clock(): void {
@@ -103,6 +107,10 @@ export class PPU2C02{
       }
     }
 
+    if (this.oddFrame && (this.scanline === 0) && (this.cycles === 0)){
+      this.cycles++;
+    }
+
     if(this.scanline < 240){
       if(this.cycles < 256){
         let piex = Math.random() > 0.5;
@@ -113,15 +121,15 @@ export class PPU2C02{
         this.displayOutput[(this.scanline*256 + this.cycles)*4 + 3] = 0xFF;
       }
     }
+
     this.cycles++;
-
-
-    if (this.cycles >= 320){
+    {if (this.cycles >= 341){
       this.scanline++;
       this.cycles = 0;
-    }
+    }}
     if (this.scanline >= 261){
       this.scanline = -1;
+      this.oddFrame = !this.oddFrame;
     }
   }
 

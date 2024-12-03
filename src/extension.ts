@@ -93,6 +93,9 @@ export function activate(context: vscode.ExtensionContext) {
 
     let fcEmulator = new FCEmulator(fc_data, fc_options);
     const runEmulator = () =>{
+      // hackin
+      fcEmulator.ppu.palettesIndex = palettesIndex;
+
       // 60 Hz
       if (fcEmulator.clocks%3 === 0){
         runInterval = 16;

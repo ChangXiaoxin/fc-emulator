@@ -60,6 +60,7 @@ export class PPU2C02{
   public regs = new PPUReg();
   public nmiReq = false;
   public oddFrame = false;
+  public palettesIndex = 0;
 
   constructor(ppubus:PPUBus){
     this.bus = ppubus;
@@ -132,10 +133,11 @@ export class PPU2C02{
         let tile_x = this.cycles%8;
         let tile_y = this.scanline%8;
         let address = tile_index_y*32 + tile_index_x;
-        let tile = this.bus.readByte(address);
+        // let tile = this.bus.readByte(0x2000 + address) + 16*16;
+        let tile = this.bus.readByte(0x2000 + address);
         let tileMSB = this.bus.readByte(tile*16 + tile_y + 8);
         let tileLSB = this.bus.readByte(tile*16 + tile_y);
-        let colorIndex = 0x3F & this.bus.readByte(0x3F00 + ((tileMSB >> (8 - tile_x) & 0x01) << 1) + ((tileLSB >> (8 - tile_x)) & 0x01));
+        let colorIndex = 0x3F & this.bus.readByte(0x3F00 + this.palettesIndex*4 + ((tileMSB >> (7 - tile_x) & 0x01) << 1) + ((tileLSB >> (7 - tile_x)) & 0x01));
 
         this.displayOutput[(this.scanline*256 + this.cycles)*4 + 0] = 0xFF & (this.ColorTable[colorIndex]>>16);
         this.displayOutput[(this.scanline*256 + this.cycles)*4 + 1] = 0xFF & (this.ColorTable[colorIndex]>>8);

@@ -131,10 +131,19 @@ function drawImageWithTile(image_w, image_h, tile_w, tile_h, image_in){
     for (let j = 0; j < image_w; j++){
       for (let h = 0; h < tile_h; h++){
         for(let w = 0; w < tile_w; w++){
-          image.data[((i*image_w*tile_h + j + h*image_w)*tile_w + w)*4 + 0] = image_in[(i*image_w+j)*4 + 0];
-          image.data[((i*image_w*tile_h + j + h*image_w)*tile_w + w)*4 + 1] = image_in[(i*image_w+j)*4 + 1];
-          image.data[((i*image_w*tile_h + j + h*image_w)*tile_w + w)*4 + 2] = image_in[(i*image_w+j)*4 + 2];
-          image.data[((i*image_w*tile_h + j + h*image_w)*tile_w + w)*4 + 3] = image_in[(i*image_w+j)*4 + 3];
+          if (h === 0 && (w === tile_w-1)){
+            // Don't draw the pixel on the top right of the tile.
+            image.data[((i*image_w*tile_h + j + h*image_w)*tile_w + w)*4 + 0] = 0x00;
+            image.data[((i*image_w*tile_h + j + h*image_w)*tile_w + w)*4 + 1] = 0x00;
+            image.data[((i*image_w*tile_h + j + h*image_w)*tile_w + w)*4 + 2] = 0x00;
+            image.data[((i*image_w*tile_h + j + h*image_w)*tile_w + w)*4 + 3] = 0x00;
+          }
+          else{
+            image.data[((i*image_w*tile_h + j + h*image_w)*tile_w + w)*4 + 0] = image_in[(i*image_w+j)*4 + 0];
+            image.data[((i*image_w*tile_h + j + h*image_w)*tile_w + w)*4 + 1] = image_in[(i*image_w+j)*4 + 1];
+            image.data[((i*image_w*tile_h + j + h*image_w)*tile_w + w)*4 + 2] = image_in[(i*image_w+j)*4 + 2];
+            image.data[((i*image_w*tile_h + j + h*image_w)*tile_w + w)*4 + 3] = image_in[(i*image_w+j)*4 + 3];
+          }
         }
       }
     }

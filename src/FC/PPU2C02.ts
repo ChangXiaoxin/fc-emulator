@@ -107,18 +107,50 @@ export class PPU2C02{
       }
     }
 
-    if (this.oddFrame && (this.scanline === 0) && (this.cycles === 0)){
-      this.cycles++;
+    if ((this.getMaskFlag(MASKFlags.b) || this.getMaskFlag(MASKFlags.s))&& this.oddFrame && (this.scanline === -1) && (this.cycles === 340)){
+      // skip to 0, 0 when rendering enabled.
+      this.scanline = 0;
+      this.cycles = 0;
     }
 
-    if(this.scanline < 240){
-      if(this.cycles < 256){
-        let piex = Math.random() > 0.5;
-        let index = piex ? 0x2D : 0x20;
-        this.displayOutput[(this.scanline*256 + this.cycles)*4 + 0] = 0xFF & (this.ColorTable[index]>>16);
-        this.displayOutput[(this.scanline*256 + this.cycles)*4 + 1] = 0xFF & (this.ColorTable[index]>>8);
-        this.displayOutput[(this.scanline*256 + this.cycles)*4 + 2] = 0xFF & (this.ColorTable[index]>>0);
+    let colorGet = false;
+    if((this.scanline >= 0) && (this.scanline < 240)){
+      if((this.cycles >= 0) && (this.cycles < 256)){
+        switch (this.cycles % 8){
+          case 1:
+            break;
+          case 3:
+            break;
+          case 5:
+            break;
+          case 7:
+            break;
+        }
+
+        let tile_index_x = Math.floor(this.cycles/8);
+        let tile_index_y = Math.floor(this.scanline/8);
+        let tile_x = this.cycles%8;
+        let tile_y = this.scanline%8;
+        let address = tile_index_y*32 + tile_index_x;
+        let tile = this.bus.readByte(address);
+        let tileMSB = this.bus.readByte(tile*16 + tile_y + 8);
+        let tileLSB = this.bus.readByte(tile*16 + tile_y);
+        let colorIndex = 0x3F & this.bus.readByte(0x3F00 + ((tileMSB >> (8 - tile_x) & 0x01) << 1) + ((tileLSB >> (8 - tile_x)) & 0x01));
+
+        this.displayOutput[(this.scanline*256 + this.cycles)*4 + 0] = 0xFF & (this.ColorTable[colorIndex]>>16);
+        this.displayOutput[(this.scanline*256 + this.cycles)*4 + 1] = 0xFF & (this.ColorTable[colorIndex]>>8);
+        this.displayOutput[(this.scanline*256 + this.cycles)*4 + 2] = 0xFF & (this.ColorTable[colorIndex]>>0);
         this.displayOutput[(this.scanline*256 + this.cycles)*4 + 3] = 0xFF;
+        colorGet = true;
+
+        if (!colorGet){
+          let piex = Math.random() > 0.5;
+          let index = piex ? 0x2D : 0x20;
+          this.displayOutput[(this.scanline*256 + this.cycles)*4 + 0] = 0xFF & (this.ColorTable[index]>>16);
+          this.displayOutput[(this.scanline*256 + this.cycles)*4 + 1] = 0xFF & (this.ColorTable[index]>>8);
+          this.displayOutput[(this.scanline*256 + this.cycles)*4 + 2] = 0xFF & (this.ColorTable[index]>>0);
+          this.displayOutput[(this.scanline*256 + this.cycles)*4 + 3] = 0xFF;
+        }
       }
     }
 

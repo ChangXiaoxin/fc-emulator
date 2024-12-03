@@ -306,10 +306,10 @@ export function debugCatchDrawPatternTables(ColorPalettes: any, index: uint8, pa
     for (let j = 0; j < 16; j++){
       // Tiles
       for (let h = 0; h < 8; h++){
-        let tileMSB = ppubus.readByte((index<<12) | ((i*16 + j)*16 + h + 8)); 
+        let tileMSB = ppubus.readByte((index<<12) | ((i*16 + j)*16 + h + 8));
         let tileLSB = ppubus.readByte((index<<12) | ((i*16 + j)*16 + h));
         for (let w = 0; w < 8; w++){
-          patternTable[(i*16*8*8 + j*8) + h*16*8 + w] = 0x3F & ppubus.readByte(0x3F00 + palettesIndex*4 + ((tileMSB >> 8 & 0x01) << 1) + ((tileLSB >> 8) & 0x01));
+          patternTable[(i*16*8*8 + j*8) + h*16*8 + w] = 0x3F & ppubus.readByte(0x3F00 + palettesIndex*4 + ((tileMSB >> 7 & 0x01) << 1) + ((tileLSB >> 7) & 0x01));
           tileMSB = tileMSB << 1;
           tileLSB = tileLSB << 1;
         }

@@ -7,6 +7,7 @@ import { FCEmulator } from './FC/FCEmulator';
 import { IOptions } from "./Interface/Emulator";
 import { drawImage } from './FC/display';
 import { debugCatchCPUBus, debugCatchDrawColorTable, debugCatchDrawLog, debugCatchDrawPalette, debugCatchDrawPatternTables, debugCatchLogPath, debugCatchPPUBus } from './Interface/Debug';
+import { MASKFlags, PPU2C02 } from './FC/PPU2C02';
 
 let currentPanel: vscode.WebviewPanel | undefined = undefined;
 let running:boolean = false;
@@ -92,13 +93,19 @@ export function activate(context: vscode.ExtensionContext) {
 
     let fcEmulator = new FCEmulator(fc_data, fc_options);
     const runEmulator = () =>{
+      // 60 Hz
       if (fcEmulator.clocks%3 === 0){
         runInterval = 16;
       }
       else{
         runInterval = 17;
       }
+
+      // clocks for 1 frame
       let runclock = 341*262;
+      if((fcEmulator.ppu.getMaskFlag(MASKFlags.b) || fcEmulator.ppu.getMaskFlag(MASKFlags.s))&& fcEmulator.ppu.oddFrame ){
+        runclock--;
+      }
       while(runclock--){
         if(running)
         {
@@ -112,11 +119,13 @@ export function activate(context: vscode.ExtensionContext) {
           fcEmulator.clock();
         }
       }
+      fcEmulator.option.onFrame(fcEmulator.ppu.displayOutput);
+
+      // draw debug information.
       debugCatchDrawPalette(fcEmulator.ppu.ColorTable, palettesIndex);
       debugCatchDrawPatternTables(fcEmulator.ppu.ColorTable, 0x00, palettesIndex);
       debugCatchDrawPatternTables(fcEmulator.ppu.ColorTable, 0x01, palettesIndex);
       debugCatchDrawLog();
-      fcEmulator.option.onFrame(fcEmulator.ppu.displayOutput);
     };
     const intervalEmulator = setInterval(runEmulator, runInterval);
 

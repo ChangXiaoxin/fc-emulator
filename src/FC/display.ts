@@ -24,6 +24,10 @@ export function drawPatternTables(palettes: Uint8Array, index: number){
     panel?.webview.postMessage({patternImage2: palettes});
   }
 }
+export function drawNameTables(palettes: Uint8Array){
+  let panel = getCurrentPanel();
+  panel?.webview.postMessage({nameTable: palettes});
+}
 export function drawLogs(logs:string[]){
   let panel = getCurrentPanel();
   panel?.webview.postMessage({CPULOG: logs});

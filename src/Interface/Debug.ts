@@ -2,7 +2,7 @@ import * as fs from 'fs';
 import { IBus } from './Bus';
 import { uint16, uint8 } from './typedef';
 import { Regs } from '../FC/CPU2A03';
-import { drawColorPalettes, drawLogs, drawPalettes, drawPatternTables } from '../FC/display';
+import { drawColorPalettes, drawLogs, drawNameTables, drawPalettes, drawPatternTables } from '../FC/display';
 
 const LOG_SIZE = 10;
 export interface LOGS {
@@ -326,6 +326,40 @@ export function debugCatchDrawPatternTables(ColorPalettes: any, index: uint8, pa
   drawPatternTables(patternImage, index);
 }
 
+export function debugCatchDrawNameTables(ColorPalettes: any, nametableY: uint8, nametableX: uint8){
+  let nameTableImage = new Uint8Array(256*240*4 + 1).fill(0);
+  for (let scanline = 0; scanline < 240; scanline++){
+    for (let cycles = 0; cycles < 256; cycles++){
+      let coarseX = Math.floor(cycles/8);
+      let coarseY = Math.floor(scanline/8);
+      let fine_x = cycles%8;
+      let fine_y = scanline%8;
+      let loopy =  (fine_y<<12) | (nametableY<<11) | (nametableX<<10) | (coarseY<<5) | (coarseX);
+      // let tile = ppubus.readByte(0x2000 | (loopy & 0x0FFF)) + 16*16;
+      let tile = ppubus.readByte(0x2000 | (loopy & 0x0FFF));
+      let tileMSB = ppubus.readByte(tile*16 + fine_y + 8);
+      let tileLSB = ppubus.readByte(tile*16 + fine_y);
+      let bgTileAttrbi = ppubus.readByte(0x23C0 | (nametableY << 11)
+                                                | (nametableX << 10)
+                                                | ((coarseY >> 2) << 3)
+                                                | (coarseX >> 2));
+      if ((coarseY & 0x02) > 0){
+        bgTileAttrbi >>= 4;
+      }
+      if ((coarseX & 0x02) > 0){
+        bgTileAttrbi >>= 2;
+      }
+      bgTileAttrbi &= 0x03;
+      let colorIndex = 0x3F & ppubus.readByte(0x3F00 + bgTileAttrbi*4 + ((tileMSB >> (7 - fine_x) & 0x01) << 1) + ((tileLSB >> (7 - fine_x)) & 0x01));
+      nameTableImage[(scanline*256 + cycles)*4 + 0] = 0xFF & (ColorPalettes[colorIndex]>>16);
+      nameTableImage[(scanline*256 + cycles)*4 + 1] = 0xFF & (ColorPalettes[colorIndex]>>8);
+      nameTableImage[(scanline*256 + cycles)*4 + 2] = 0xFF & (ColorPalettes[colorIndex]>>0);
+      nameTableImage[(scanline*256 + cycles)*4 + 3] = 0xFF;
+    }
+  }
+  nameTableImage[256*240*4] = (nametableY<<1) + nametableX;
+  drawNameTables(nameTableImage);
+}
 export function debugCatchDrawPalette(Palettes: any, index: uint8){
   let palettes = new Uint8Array(32*4 + 1).fill(0);
   for (let i = 0; i < palettes.length; i+=4){

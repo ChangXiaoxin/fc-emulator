@@ -6,7 +6,7 @@ import path from 'path';
 import { FCEmulator } from './FC/FCEmulator';
 import { IOptions } from "./Interface/Emulator";
 import { drawImage } from './FC/display';
-import { debugCatchCPUBus, debugCatchDrawColorTable, debugCatchDrawLog, debugCatchDrawPalette, debugCatchDrawPatternTables, debugCatchLogPath, debugCatchPPUBus } from './Interface/Debug';
+import { debugCatchCPUBus, debugCatchDrawColorTable, debugCatchDrawLog, debugCatchDrawNameTables, debugCatchDrawPalette, debugCatchDrawPatternTables, debugCatchLogPath, debugCatchPPUBus } from './Interface/Debug';
 import { MASKFlags, PPU2C02 } from './FC/PPU2C02';
 
 let currentPanel: vscode.WebviewPanel | undefined = undefined;
@@ -84,8 +84,8 @@ export function activate(context: vscode.ExtensionContext) {
       drawImage(frame),
     };
     // const rom_path = path.join(context.extensionPath, 'src', 'test', 'Super Mario Bros.nes');
-    const rom_path = path.join(context.extensionPath, 'src', 'test', '(J) Ice Climber.nes');
-    // const rom_path = path.join(context.extensionPath, 'src', 'test', 'nestest.nes');
+    // const rom_path = path.join(context.extensionPath, 'src', 'test', '(J) Ice Climber.nes');
+    const rom_path = path.join(context.extensionPath, 'src', 'test', 'nestest.nes');
     var fc_data = fs.readFileSync(rom_path);
     // Debug log
     const log_path = path.join(context.extensionPath, 'src', 'test', 'run.log');
@@ -130,6 +130,10 @@ export function activate(context: vscode.ExtensionContext) {
       debugCatchDrawPatternTables(fcEmulator.ppu.ColorTable, 0x00, palettesIndex);
       debugCatchDrawPatternTables(fcEmulator.ppu.ColorTable, 0x01, palettesIndex);
       debugCatchDrawLog();
+      debugCatchDrawNameTables(fcEmulator.ppu.ColorTable, 0, 0);
+      debugCatchDrawNameTables(fcEmulator.ppu.ColorTable, 0, 1);
+      debugCatchDrawNameTables(fcEmulator.ppu.ColorTable, 1, 0);
+      debugCatchDrawNameTables(fcEmulator.ppu.ColorTable, 1, 1);
     };
     const intervalEmulator = setInterval(runEmulator, runInterval);
 

@@ -10,6 +10,7 @@ export class CPUBus implements IBus {
   private readonly ram = new Uint8Array(2 * 1024).fill(0);
   
   public writeByte(address: uint16, data: uint8): void {
+    data = data & 0xFF;
     if (address < 0x2000){
       // RAM
       this.ram[address & 0x07FF] = data;
@@ -49,7 +50,7 @@ export class CPUBus implements IBus {
           break;
         case 0x0006:
           if (this.ppu.addressLatch === 0x00){
-            this.ppu.tramAddr.setloopy((this.ppu.tramAddr.getloopy() & 0x00FF) | (data << 8));
+            this.ppu.tramAddr.setloopy(((this.ppu.tramAddr.getloopy() & 0x00FF) | (data << 8)) & 0x7FFF);
             this.ppu.addressLatch = 0x01;
           }
           else{

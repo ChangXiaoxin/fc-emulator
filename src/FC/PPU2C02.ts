@@ -160,6 +160,16 @@ export class PPU2C02{
 
     this.clocks++;
 
+    if (this.scanline === -1){
+      if (this.cycles === 1){
+        this.setStatusFlag(STATUSFlags.V, false);
+      }
+      else if ((this.isRendering()) && this.oddFrame && (this.cycles === 340)){
+        // skip to 0, 0 when rendering enabled.
+        this.scanline = 0;
+        this.cycles = 0;
+      }
+    }
 
     if((this.scanline >= -1) && (this.scanline < 240)){
 
@@ -213,16 +223,8 @@ export class PPU2C02{
         }
       }
       if (this.scanline === -1){
-        if (this.cycles === 1){
-          this.setStatusFlag(STATUSFlags.V, false);
-        }
-        else if ((this.cycles >= 280) && (this.cycles < 305)){
+        if ((this.cycles >= 280) && (this.cycles < 305)){
           this.transAddressY();
-        }
-        else if ((this.isRendering()) && this.oddFrame && (this.cycles === 340)){
-          // skip to 0, 0 when rendering enabled.
-          this.scanline = 0;
-          this.cycles = 0;
         }
       }
     }
@@ -266,13 +268,13 @@ export class PPU2C02{
       this.oddFrame = !this.oddFrame;
       this.frameDone = true;
     }
-
   }
+
   public increaseScrollX(){
     if (this.isRendering()){
       if (this.vramAddr.coarseX === 31){
         this.vramAddr.coarseX = 0;
-        this.vramAddr.nametableX = ~this.vramAddr.nametableX;
+        this.vramAddr.nametableX = !this.vramAddr.nametableX;
       }
       else{
         this.vramAddr.coarseX++;
@@ -288,7 +290,7 @@ export class PPU2C02{
         this.vramAddr.fineY = 0;
         if (this.vramAddr.coarseY === 29){
           this.vramAddr.coarseY = 0;
-          this.vramAddr.nametableY = ~this.vramAddr.nametableY;
+          this.vramAddr.nametableY = !this.vramAddr.nametableY;
         }
         else if (this.vramAddr.coarseY === 31){
           this.vramAddr.coarseY = 0;

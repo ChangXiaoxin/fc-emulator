@@ -4,6 +4,9 @@ Implement the FC Emulator in VS code extension.
 
 **STILL IN PROGRESS...**
 
+![preview](./pic/preview.png)
+
+
 ---
 
 ## Following extension guidelines

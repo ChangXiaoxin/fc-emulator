@@ -40,8 +40,15 @@ export class PPUBus implements IBus {
     else if (address < 0x3F00){
       // Name Tables VRAM
       if (this.cartridge.info.mirror === Mirror.HORIZONTAL){
-        let addr = (address & 0x0BFF);
-        return this.vram[addr | (addr & 0x0800 >> 1)];
+        if (address >= 0x2800){
+          address = 0x27FF&address;
+        }
+        else if (address >= 0x2400){
+          address = 0x23FF&address;
+        }
+        let addr = (address & 0x07FF);
+        return this.vram[addr];
+        // return this.vram[addr | (addr & 0x0800 >> 1)];
       }
       else if (this.cartridge.info.mirror === Mirror.VERTRICAL){
         return this.vram[address & 0x07FF];

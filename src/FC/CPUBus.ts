@@ -20,6 +20,8 @@ export class CPUBus implements IBus {
       switch (address){
         case 0x0000:
           this.ppu.regs.CTRL = data;
+          this.ppu.tramAddr.nametableX = this.ppu.getCtrlFlag(CTRLFlags.n) ? 0x01 : 0x00;
+          this.ppu.tramAddr.nametableY = this.ppu.getCtrlFlag(CTRLFlags.N) ? 0x01 : 0x00;
           break;
         case 0x0001:
           this.ppu.regs.MASK = data;
@@ -34,21 +36,31 @@ export class CPUBus implements IBus {
           this.ppu.regs.OAMDATA = data;
           break;
         case 0x0005:
-          this.ppu.regs.SCROLL = data;
-          break;
-        case 0x0006:
           if (this.ppu.addressLatch === 0x00){
-            this.ppu.regs.ADDR = (this.ppu.regs.ADDR & 0x00FF) | (data << 8);
+            this.ppu.fineX = data & 0x07;
+            this.ppu.tramAddr.coarseX = data >> 3;
             this.ppu.addressLatch = 0x01;
           }
           else{
-            this.ppu.regs.ADDR = (this.ppu.regs.ADDR & 0xFF00) | data;
+            this.ppu.tramAddr.fineY = data & 0x07;
+            this.ppu.tramAddr.coarseY = data >> 3;
+            this.ppu.addressLatch = 0x00;
+          }
+          break;
+        case 0x0006:
+          if (this.ppu.addressLatch === 0x00){
+            this.ppu.tramAddr.setloopy((this.ppu.tramAddr.getloopy() & 0x00FF) | (data << 8));
+            this.ppu.addressLatch = 0x01;
+          }
+          else{
+            this.ppu.tramAddr.setloopy((this.ppu.tramAddr.getloopy() & 0xFF00) | data);
+            this.ppu.vramAddr.setloopy(this.ppu.tramAddr.getloopy());
             this.ppu.addressLatch = 0x00;
           }
           break;
         case 0x0007:
-          this.ppu.bus.writeByte(this.ppu.regs.ADDR, data);
-          this.ppu.regs.ADDR += this.ppu.getCtrlFlag(CTRLFlags.I) ? 0x20 : 0x01;
+          this.ppu.bus.writeByte(this.ppu.vramAddr.getloopy(), data);
+          this.ppu.vramAddr.setloopy(this.ppu.vramAddr.getloopy() + (this.ppu.getCtrlFlag(CTRLFlags.I) ? 0x20 : 0x01));
           break;
         default:
           break;;
@@ -67,7 +79,7 @@ export class CPUBus implements IBus {
     }
   }
   public readByte(address: uint16): uint8 {
-    let memory = 0xFF;
+    let memory = 0x00;
     if (address < 0x2000){
       // RAM
       memory = this.ram[address & 0x07FF];
@@ -94,17 +106,16 @@ export class CPUBus implements IBus {
           memory = this.ppu.regs.OAMDATA;
           break;
         case 0x0005:
-          memory = this.ppu.regs.SCROLL;
           break;
         case 0x0006:
           break;
         case 0x0007:
           memory = this.ppu.dataBuffer;
-          this.ppu.dataBuffer = this.ppu.bus.readByte(this.ppu.regs.ADDR);
-          if (this.ppu.regs.ADDR > 0x3F00){
+          this.ppu.dataBuffer = this.ppu.bus.readByte(this.ppu.vramAddr.getloopy());
+          if (this.ppu.vramAddr.getloopy() > 0x3F00){
             memory = this.ppu.dataBuffer;
           }
-          this.ppu.regs.ADDR += this.ppu.getCtrlFlag(CTRLFlags.I) ? 0x20 : 0x01;
+          this.ppu.vramAddr.setloopy(this.ppu.vramAddr.getloopy() + (this.ppu.getCtrlFlag(CTRLFlags.I) ? 0x20 : 0x01));
           break;
         default:
           break;

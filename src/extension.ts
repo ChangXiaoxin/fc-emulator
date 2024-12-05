@@ -84,7 +84,8 @@ export function activate(context: vscode.ExtensionContext) {
       drawImage(frame),
     };
     // const rom_path = path.join(context.extensionPath, 'src', 'test', 'Super Mario Bros.nes');
-    const rom_path = path.join(context.extensionPath, 'src', 'test', 'nestest.nes');
+    const rom_path = path.join(context.extensionPath, 'src', 'test', '(J) Ice Climber.nes');
+    // const rom_path = path.join(context.extensionPath, 'src', 'test', 'nestest.nes');
     var fc_data = fs.readFileSync(rom_path);
     // Debug log
     const log_path = path.join(context.extensionPath, 'src', 'test', 'run.log');
@@ -106,7 +107,7 @@ export function activate(context: vscode.ExtensionContext) {
 
       // clocks for 1 frame
       let runclock = 341*262;
-      if((fcEmulator.ppu.getMaskFlag(MASKFlags.b) || fcEmulator.ppu.getMaskFlag(MASKFlags.s))&& fcEmulator.ppu.oddFrame ){
+      if((fcEmulator.ppu.isRendering())&& fcEmulator.ppu.oddFrame){
         runclock--;
       }
       while(runclock--){

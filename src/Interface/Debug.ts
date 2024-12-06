@@ -3,6 +3,7 @@ import { IBus } from './Bus';
 import { uint16, uint8 } from './typedef';
 import { Regs } from '../FC/CPU2A03';
 import { drawColorPalettes, drawLogs, drawNameTables, drawPalettes, drawPatternTables } from '../FC/display';
+import { LOOPYREG } from '../FC/PPU2C02';
 
 const LOG_SIZE = 10;
 export interface LOGS {
@@ -326,17 +327,18 @@ export function debugCatchDrawPatternTables(ColorPalettes: any, index: uint8, pa
   drawPatternTables(patternImage, index);
 }
 
-export function debugCatchDrawNameTables(ColorPalettes: any, nametableY: uint8, nametableX: uint8){
+export function debugCatchDrawNameTables(ColorPalettes: any, nametableY: uint8, nametableX: uint8, loopyreg: LOOPYREG, fineX: uint8){
   let nameTableImage = new Uint8Array(256*240*4 + 1).fill(0);
+
   for (let scanline = 0; scanline < 240; scanline++){
     for (let cycles = 0; cycles < 256; cycles++){
-      let coarseX = Math.floor(cycles/8);
-      let coarseY = Math.floor(scanline/8);
+      let coarseX = cycles>>3;
+      let coarseY = scanline>>3;
       let fine_x = cycles%8;
       let fine_y = scanline%8;
       let loopy =  (fine_y<<12) | (nametableY<<11) | (nametableX<<10) | (coarseY<<5) | (coarseX);
-      // let tile = ppubus.readByte(0x2000 | (loopy & 0x0FFF)) + 16*16;
-      let tile = ppubus.readByte(0x2000 | (loopy & 0x0FFF));
+      let tile = ppubus.readByte(0x2000 | (loopy & 0x0FFF)) + 16*16;
+      // let tile = ppubus.readByte(0x2000 | (loopy & 0x0FFF));
       let tileMSB = ppubus.readByte(tile*16 + fine_y + 8);
       let tileLSB = ppubus.readByte(tile*16 + fine_y);
       let bgTileAttrbi = ppubus.readByte(0x23C0 | (nametableY << 11)
@@ -357,6 +359,120 @@ export function debugCatchDrawNameTables(ColorPalettes: any, nametableY: uint8, 
       nameTableImage[(scanline*256 + cycles)*4 + 3] = 0xFF;
     }
   }
+
+
+  //      tileLU ◸-----------◹ tileRU
+  //             |            |
+  //             |   Screen   |
+  //             |            |
+  //      tileLD ◺-----------◿ tileRD
+  let tileLU = new LOOPYREG();
+  let tileRU = new LOOPYREG();
+  let tileLD = new LOOPYREG();
+  let tileRD = new LOOPYREG();
+  copyLoopyReg(tileLU, loopyreg);
+  copyLoopyReg(tileRU, loopyreg);
+  copyLoopyReg(tileLD, loopyreg);
+  copyLoopyReg(tileRD, loopyreg);
+  let tileLUFineX = fineX;
+  let tileRUFineX = fineX;
+  let tileLDFineX = fineX;
+  let tileRDFineX = fineX;
+
+  // if ((loopyreg.coarseX === 0) && (tileRUFineX === 0)){
+  //   tileRU.coarseX = 31;
+  //   tileRUFineX = 7;
+  // }
+  // else{
+    tileRU.nametableX = tileRU.nametableX?0:1;
+  // }
+  // if ((loopyreg.coarseY === 0) && (loopyreg.fineY === 0)){
+  //   tileLD.coarseY = 29;
+  //   tileLD.fineY = 7;
+  //   tileRU.coarseY = 29;
+  //   tileRU.fineY = 7;
+  // }
+  // else{
+    tileLD.nametableY = tileLD.nametableY?0:1;
+  // }
+  tileRD.nametableX = tileRU.nametableX;
+  tileRD.nametableY = tileLD.nametableY;
+  // tileRD.coarseX = tileRU.coarseX;
+  // tileRD.coarseY = tileLD.coarseY;
+  // tileRD.fineY = tileLD.fineY;
+  // tileRDFineX = tileRUFineX;
+  if (tileLU.nametableX === nametableX && tileLU.nametableY === nametableY){
+    let scanline = tileLU.coarseY*8 + tileLU.fineY;
+    let cycles = tileLU.coarseX*8 + tileLUFineX;
+    for(cycles; cycles < 256; cycles++){
+      nameTableImage[(scanline*256 + cycles)*4 + 0] = 0xFF;
+      nameTableImage[(scanline*256 + cycles)*4 + 1] = 0x00;
+      nameTableImage[(scanline*256 + cycles)*4 + 2] = 0x00;
+      nameTableImage[(scanline*256 + cycles)*4 + 3] = 0xAF;
+    }
+    scanline = tileLU.coarseY*8 + tileLU.fineY;
+    cycles = tileLU.coarseX*8 + tileLUFineX;
+    for(scanline; scanline < 240; scanline++){
+      nameTableImage[(scanline*256 + cycles)*4 + 0] = 0xFF;
+      nameTableImage[(scanline*256 + cycles)*4 + 1] = 0x00;
+      nameTableImage[(scanline*256 + cycles)*4 + 2] = 0x00;
+      nameTableImage[(scanline*256 + cycles)*4 + 3] = 0xAF;
+    }
+  }
+  if (tileRU.nametableX === nametableX && tileRU.nametableY === nametableY){
+    let scanline = tileRU.coarseY*8 + tileRU.fineY;
+    let cycles = tileRU.coarseX*8 + tileRUFineX;
+    for(scanline; scanline < 256; scanline++){
+      nameTableImage[(scanline*256 + cycles)*4 + 0] = 0xFF;
+      nameTableImage[(scanline*256 + cycles)*4 + 1] = 0x00;
+      nameTableImage[(scanline*256 + cycles)*4 + 2] = 0x00;
+      nameTableImage[(scanline*256 + cycles)*4 + 3] = 0xAF;
+    }
+    scanline = tileRU.coarseY*8 + tileRU.fineY;
+    cycles = 0;
+    for(cycles; cycles < tileRU.coarseX*8 + tileRUFineX; cycles++){
+      nameTableImage[(scanline*256 + cycles)*4 + 0] = 0xFF;
+      nameTableImage[(scanline*256 + cycles)*4 + 1] = 0x00;
+      nameTableImage[(scanline*256 + cycles)*4 + 2] = 0x00;
+      nameTableImage[(scanline*256 + cycles)*4 + 3] = 0xAF;
+    }
+  }
+  if (tileLD.nametableX === nametableX && tileLD.nametableY === nametableY){
+    let scanline = 0;
+    let cycles = tileLD.coarseX*8 + tileLDFineX;
+    for(scanline; scanline < tileLD.coarseY*8 + tileLD.fineY; scanline++){
+      nameTableImage[(scanline*256 + cycles)*4 + 0] = 0xFF;
+      nameTableImage[(scanline*256 + cycles)*4 + 1] = 0x00;
+      nameTableImage[(scanline*256 + cycles)*4 + 2] = 0x00;
+      nameTableImage[(scanline*256 + cycles)*4 + 3] = 0xAF;
+    }
+    scanline = tileLD.coarseY*8 + tileLD.fineY;
+    cycles = tileLD.coarseX*8 + tileLDFineX;
+    for(cycles; cycles < 256; cycles++){
+      nameTableImage[(scanline*256 + cycles)*4 + 0] = 0xFF;
+      nameTableImage[(scanline*256 + cycles)*4 + 1] = 0x00;
+      nameTableImage[(scanline*256 + cycles)*4 + 2] = 0x00;
+      nameTableImage[(scanline*256 + cycles)*4 + 3] = 0xAF;
+    }
+  }
+  if (tileRD.nametableX === nametableX && tileRD.nametableY === nametableY){
+    let scanline = tileRD.coarseY*8 + tileRD.fineY;
+    let cycles = 0;
+    for(cycles; cycles < tileRD.coarseX*8 + tileRDFineX; cycles++){
+      nameTableImage[(scanline*256 + cycles)*4 + 0] = 0xFF;
+      nameTableImage[(scanline*256 + cycles)*4 + 1] = 0x00;
+      nameTableImage[(scanline*256 + cycles)*4 + 2] = 0x00;
+      nameTableImage[(scanline*256 + cycles)*4 + 3] = 0xAF;
+    }
+    cycles = tileRD.coarseX*8 + tileRDFineX;
+    scanline = 0;
+    for(scanline; scanline < tileRD.coarseY*8 + tileRD.fineY; scanline++){
+      nameTableImage[(scanline*256 + cycles)*4 + 0] = 0xFF;
+      nameTableImage[(scanline*256 + cycles)*4 + 1] = 0x00;
+      nameTableImage[(scanline*256 + cycles)*4 + 2] = 0x00;
+      nameTableImage[(scanline*256 + cycles)*4 + 3] = 0xAF;
+    }
+  }
   nameTableImage[256*240*4] = (nametableY<<1) + nametableX;
   drawNameTables(nameTableImage);
 }
@@ -370,4 +486,12 @@ export function debugCatchDrawPalette(Palettes: any, index: uint8){
   }
   palettes[32*4] = index;
   drawPalettes(palettes);
+}
+
+export function copyLoopyReg(dst:LOOPYREG, src:LOOPYREG){
+  dst.nametableX = src.nametableX;
+  dst.nametableY = src.nametableY;
+  dst.coarseX = src.coarseX;
+  dst.coarseY = src.coarseY;
+  dst.fineY = src.fineY;
 }

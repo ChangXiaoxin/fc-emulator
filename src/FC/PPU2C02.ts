@@ -96,7 +96,6 @@ export class PPU2C02{
   public fineX = 0x00;
   public nmiReq = false;
   public oddFrame = false;
-  public palettesIndex = 0;
   public bgTileId:uint8 = 0x00;
   public bgTileAttrbi:uint8 = 0x00;
   public bgTileLsb:uint8 = 0x00;

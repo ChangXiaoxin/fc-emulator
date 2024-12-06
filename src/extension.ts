@@ -85,6 +85,7 @@ export function activate(context: vscode.ExtensionContext) {
     };
     // const rom_path = path.join(context.extensionPath, 'src', 'test', 'Super Mario Bros.nes');
     // const rom_path = path.join(context.extensionPath, 'src', 'test', '(J) Ice Climber.nes');
+    // const rom_path = path.join(context.extensionPath, 'src', 'test', '(Ch) Tank 1990.nes');
     const rom_path = path.join(context.extensionPath, 'src', 'test', 'nestest.nes');
     var fc_data = fs.readFileSync(rom_path);
     // Debug log
@@ -94,9 +95,6 @@ export function activate(context: vscode.ExtensionContext) {
 
     let fcEmulator = new FCEmulator(fc_data, fc_options);
     const runEmulator = () =>{
-      // hackin
-      fcEmulator.ppu.palettesIndex = palettesIndex;
-
       // 60 Hz
       if (fcEmulator.clocks%3 === 0){
         runInterval = 16;
@@ -130,10 +128,10 @@ export function activate(context: vscode.ExtensionContext) {
       debugCatchDrawPatternTables(fcEmulator.ppu.ColorTable, 0x00, palettesIndex);
       debugCatchDrawPatternTables(fcEmulator.ppu.ColorTable, 0x01, palettesIndex);
       debugCatchDrawLog();
-      debugCatchDrawNameTables(fcEmulator.ppu.ColorTable, 0, 0);
-      debugCatchDrawNameTables(fcEmulator.ppu.ColorTable, 0, 1);
-      debugCatchDrawNameTables(fcEmulator.ppu.ColorTable, 1, 0);
-      debugCatchDrawNameTables(fcEmulator.ppu.ColorTable, 1, 1);
+      debugCatchDrawNameTables(fcEmulator.ppu.ColorTable, 0, 0, fcEmulator.ppu.tramAddr, fcEmulator.ppu.fineX);
+      debugCatchDrawNameTables(fcEmulator.ppu.ColorTable, 0, 1, fcEmulator.ppu.tramAddr, fcEmulator.ppu.fineX);
+      debugCatchDrawNameTables(fcEmulator.ppu.ColorTable, 1, 0, fcEmulator.ppu.tramAddr, fcEmulator.ppu.fineX);
+      debugCatchDrawNameTables(fcEmulator.ppu.ColorTable, 1, 1, fcEmulator.ppu.tramAddr, fcEmulator.ppu.fineX);
     };
     const intervalEmulator = setInterval(runEmulator, runInterval);
 

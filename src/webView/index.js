@@ -80,7 +80,7 @@ window.addEventListener("message", event =>{
     for (let i = 0; i < 2; i++){
       for (let j = 0; j < 16; j++){
         if((i * 16 + j)/4 >= message.Palettes[16*2*4] && (i * 16 + j)/4 < (message.Palettes[16*2*4]+1)){
-          border = 0xFF;
+          border = 0xCF;
         }
         else{
           border = 0x00;

@@ -66,10 +66,12 @@ window.addEventListener("message", event =>{
         for (let h = 0; h < COLOR_PALETTE_HEIGTH; h++){
           for(let w = 0; w < COLOR_PALETTE_WIDTH; w++){
             let edge = (h === 0) || (w === 0) || (h === (COLOR_PALETTE_HEIGTH-1)) || (w === (COLOR_PALETTE_WIDTH-1));
-            paletteImage.data[((i*16*COLOR_PALETTE_HEIGTH + j + h*16)*COLOR_PALETTE_WIDTH + w)*4 + 0] = edge ? 0 : message.ColorPalettes[(i*16+j)*4 + 0];
-            paletteImage.data[((i*16*COLOR_PALETTE_HEIGTH + j + h*16)*COLOR_PALETTE_WIDTH + w)*4 + 1] = edge ? 0 : message.ColorPalettes[(i*16+j)*4 + 1];
-            paletteImage.data[((i*16*COLOR_PALETTE_HEIGTH + j + h*16)*COLOR_PALETTE_WIDTH + w)*4 + 2] = edge ? 0 : message.ColorPalettes[(i*16+j)*4 + 2];
-            paletteImage.data[((i*16*COLOR_PALETTE_HEIGTH + j + h*16)*COLOR_PALETTE_WIDTH + w)*4 + 3] = edge ? 0 : message.ColorPalettes[(i*16+j)*4 + 3];
+            let paletteIndex = ((i*16*COLOR_PALETTE_HEIGTH + j + h*16)*COLOR_PALETTE_WIDTH + w)*4;
+            let colorIndex = (i*16+j)*4;
+            paletteImage.data[paletteIndex + 0] = edge ? 0 : message.ColorPalettes[colorIndex + 0];
+            paletteImage.data[paletteIndex + 1] = edge ? 0 : message.ColorPalettes[colorIndex + 1];
+            paletteImage.data[paletteIndex + 2] = edge ? 0 : message.ColorPalettes[colorIndex + 2];
+            paletteImage.data[paletteIndex + 3] = edge ? 0 : message.ColorPalettes[colorIndex + 3];
           }
         }
       }
@@ -91,7 +93,8 @@ window.addEventListener("message", event =>{
     let border = 0x00;
     for (let i = 0; i < 2; i++){
       for (let j = 0; j < 16; j++){
-        if((i * 16 + j)/4 >= message.Palettes[16*2*4] && (i * 16 + j)/4 < (message.Palettes[16*2*4]+1)){
+        let colorIndex = (i*16+j)*4;
+        if(((i * 16 + j)/4 >= message.Palettes[16*2*4]) && ((i * 16 + j)/4 < (message.Palettes[16*2*4]+1))){
           border = 0xCF;
         }
         else{
@@ -100,10 +103,11 @@ window.addEventListener("message", event =>{
         for (let h = 0; h < PALETTE_RAM_HEIGTH; h++){
           for(let w = 0; w < PALETTE_RAM_WIDTH; w++){
             let edge = (h === 0) || (w === 0) || (h === (PALETTE_RAM_HEIGTH-1)) || (w === (PALETTE_RAM_WIDTH-1));
-            paletteImage.data[((i*16*PALETTE_RAM_HEIGTH + j + h*16)*PALETTE_RAM_WIDTH + w)*4 + 0] = edge ? 0 : message.Palettes[(i*16+j)*4 + 0];
-            paletteImage.data[((i*16*PALETTE_RAM_HEIGTH + j + h*16)*PALETTE_RAM_WIDTH + w)*4 + 1] = edge ? border : message.Palettes[(i*16+j)*4 + 1];
-            paletteImage.data[((i*16*PALETTE_RAM_HEIGTH + j + h*16)*PALETTE_RAM_WIDTH + w)*4 + 2] = edge ? 0 : message.Palettes[(i*16+j)*4 + 2];
-            paletteImage.data[((i*16*PALETTE_RAM_HEIGTH + j + h*16)*PALETTE_RAM_WIDTH + w)*4 + 3] = edge ? border : message.Palettes[(i*16+j)*4 + 3];
+            let paletteIndex = ((i*16*PALETTE_RAM_HEIGTH + j + h*16)*PALETTE_RAM_WIDTH + w)*4;
+            paletteImage.data[paletteIndex + 0] = edge ? 0      : message.Palettes[colorIndex + 0];
+            paletteImage.data[paletteIndex + 1] = edge ? border : message.Palettes[colorIndex + 1];
+            paletteImage.data[paletteIndex + 2] = edge ? 0      : message.Palettes[colorIndex + 2];
+            paletteImage.data[paletteIndex + 3] = edge ? border : message.Palettes[colorIndex + 3];
           }
         }
       }
@@ -161,22 +165,24 @@ function drawImageWithTileCRT(image_w, image_h, tile_w, tile_h, image_in){
   let image = ctx.createImageData(image_w * tile_w, image_h * tile_h);
   for (let i = 0; i < image_h; i++){
     for (let j = 0; j < image_w; j++){
+      let imageInIndex = (i*image_w+j)*4;
       for (let h = 0; h < tile_h; h++){
         for(let w = 0; w < tile_w; w++){
           // if (h === 0 && (w === tile_w-1)){
+          let imageIndex = ((i*image_w*tile_h + j + h*image_w)*tile_w + w)*4;
           if (h === tile_h-1){
             // // Draw the pixel darker on the right bottom of the tile.
-            let sum = image_in[(i*image_w+j)*4 + 0] + image_in[(i*image_w+j)*4 + 1] + image_in[(i*image_w+j)*4 + 2];
-            image.data[((i*image_w*tile_h + j + h*image_w)*tile_w + w)*4 + 0] = image_in[(i*image_w+j)*4 + 0];
-            image.data[((i*image_w*tile_h + j + h*image_w)*tile_w + w)*4 + 1] = image_in[(i*image_w+j)*4 + 1];
-            image.data[((i*image_w*tile_h + j + h*image_w)*tile_w + w)*4 + 2] = image_in[(i*image_w+j)*4 + 2];
-            image.data[((i*image_w*tile_h + j + h*image_w)*tile_w + w)*4 + 3] = (sum === 0) ? 0xFF : 0x88;
+            let sum = image_in[imageInIndex + 0] + image_in[imageInIndex + 1] + image_in[imageInIndex + 2];
+            image.data[imageIndex + 0] = image_in[imageInIndex + 0];
+            image.data[imageIndex + 1] = image_in[imageInIndex + 1];
+            image.data[imageIndex + 2] = image_in[imageInIndex + 2];
+            image.data[imageIndex + 3] = (sum === 0) ? 0xFF : 0x88;
           }
           else{
-            image.data[((i*image_w*tile_h + j + h*image_w)*tile_w + w)*4 + 0] = image_in[(i*image_w+j)*4 + 0];
-            image.data[((i*image_w*tile_h + j + h*image_w)*tile_w + w)*4 + 1] = image_in[(i*image_w+j)*4 + 1];
-            image.data[((i*image_w*tile_h + j + h*image_w)*tile_w + w)*4 + 2] = image_in[(i*image_w+j)*4 + 2];
-            image.data[((i*image_w*tile_h + j + h*image_w)*tile_w + w)*4 + 3] = image_in[(i*image_w+j)*4 + 3];
+            image.data[imageIndex + 0] = image_in[imageInIndex + 0];
+            image.data[imageIndex + 1] = image_in[imageInIndex + 1];
+            image.data[imageIndex + 2] = image_in[imageInIndex + 2];
+            image.data[imageIndex + 3] = image_in[imageInIndex + 3];
           }
         }
       }
@@ -189,12 +195,14 @@ function drawImageWithTile(image_w, image_h, tile_w, tile_h, image_in){
   let image = ctx.createImageData(image_w * tile_w, image_h * tile_h);
   for (let i = 0; i < image_h; i++){
     for (let j = 0; j < image_w; j++){
+      let imageInIndex = (i*image_w+j)*4;
       for (let h = 0; h < tile_h; h++){
         for(let w = 0; w < tile_w; w++){
-          image.data[((i*image_w*tile_h + j + h*image_w)*tile_w + w)*4 + 0] = image_in[(i*image_w+j)*4 + 0];
-          image.data[((i*image_w*tile_h + j + h*image_w)*tile_w + w)*4 + 1] = image_in[(i*image_w+j)*4 + 1];
-          image.data[((i*image_w*tile_h + j + h*image_w)*tile_w + w)*4 + 2] = image_in[(i*image_w+j)*4 + 2];
-          image.data[((i*image_w*tile_h + j + h*image_w)*tile_w + w)*4 + 3] = image_in[(i*image_w+j)*4 + 3];
+          let imageIndex = ((i*image_w*tile_h + j + h*image_w)*tile_w + w)*4;
+          image.data[imageIndex + 0] = image_in[imageInIndex + 0];
+          image.data[imageIndex + 1] = image_in[imageInIndex + 1];
+          image.data[imageIndex + 2] = image_in[imageInIndex + 2];
+          image.data[imageIndex + 3] = image_in[imageInIndex + 3];
         }
       }
     }

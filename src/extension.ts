@@ -5,8 +5,9 @@ import * as fs from 'fs';
 import path from 'path';
 import { FCEmulator } from './FC/FCEmulator';
 import { IOptions } from "./Interface/Emulator";
-import { drawImage } from './FC/display';
+import { displayControllerInput, drawImage } from './FC/display';
 import { debugCatchCPUBus, debugCatchDrawColorTable, debugCatchDrawLog, debugCatchDrawNameTables, debugCatchDrawPalette, debugCatchDrawPatternTables, debugCatchLogPath, debugCatchPPUBus } from './Interface/Debug';
+import { getControllerInput } from './FC/controller';
 
 let currentPanel: vscode.WebviewPanel | undefined = undefined;
 let running:boolean = false;
@@ -71,6 +72,14 @@ export function activate(context: vscode.ExtensionContext) {
 	      refreshPatternTable = false;
       }
     );
+    // Handle messages from the webview
+    currentPanel.webview.onDidReceiveMessage(
+      message => {
+        getControllerInput(fcEmulator.controller, message.keypressed, message.keyreleased);
+      },
+      undefined,
+      context.subscriptions
+    );
       // Display a message box to the user
     vscode.window.showInformationMessage('Run FC Emulator from FC Emulator!');
 
@@ -121,7 +130,13 @@ export function activate(context: vscode.ExtensionContext) {
         }
       }
       fcEmulator.option.onFrame(fcEmulator.ppu.displayOutput);
-
+      let controllerinput = new Uint8Array(2).fill(0);
+      controllerinput[0] = 0x01;
+      controllerinput[1] = fcEmulator.controller.ctrlState[controllerinput[0]-1];
+      displayControllerInput(controllerinput);
+      controllerinput[0] = 0x02;
+      controllerinput[1] = fcEmulator.controller.ctrlState[controllerinput[0]-1];
+      displayControllerInput(controllerinput);
       // draw debug information.
       debugCatchDrawPalette(fcEmulator.ppu.ColorTable, palettesIndex);
       debugCatchDrawPatternTables(fcEmulator.ppu.ColorTable, 0x00, palettesIndex);

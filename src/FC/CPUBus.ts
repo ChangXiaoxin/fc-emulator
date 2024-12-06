@@ -3,10 +3,12 @@ import { uint16, uint8 } from "../Interface/typedef";
 import { IBus } from "../Interface/Bus";
 import { Cartridge } from "./cartridge";
 import { CTRLFlags, PPU2C02, STATUSFlags } from "./PPU2C02";
+import { Controller } from "./controller";
 export class CPUBus implements IBus {
   public cartridge!: Cartridge;
   public ppu!: PPU2C02;
-
+  public controller!: Controller;
+  public controllerState = new Uint8Array(2).fill(0);
   private readonly ram = new Uint8Array(2 * 1024).fill(0);
   
   public writeByte(address: uint16, data: uint8): void {
@@ -73,6 +75,10 @@ export class CPUBus implements IBus {
         this.ppu.regs.OAMDMA = data;
       }
       // IO Registers
+      if ((address >= 0x4016) && (address <= 0x4017)){
+        address &= 0x0001;
+        this.controllerState[address] = this.controller.ctrlState[address];
+      }
     }
     else{
       // Cartridge
@@ -128,7 +134,11 @@ export class CPUBus implements IBus {
         memory = this.ppu.regs.OAMDMA;
       }
       // IO Registers
-
+      if ((address >= 0x4016) && (address <= 0x4017)){
+        address &= 0x0001;
+        memory = (this.controllerState[address] & 0x80) > 0 ? 0x01 : 0x00;
+        this.controllerState[address] = (this.controllerState[address] << 1) & 0xFF;
+      }
     }
     else{
       // Cartridge

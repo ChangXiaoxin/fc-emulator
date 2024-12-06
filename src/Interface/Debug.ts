@@ -145,7 +145,7 @@ export function debugCatchExtendedDataContent(){
     }
     else{
       cpulog.addrMode = ADDR_MODE.IMM;  // Make sure only extend data content once.
-      cpulog.dataContent += " = " + zeroFill(((cpulog.address>0x2000) && (cpulog.address<0x4000))? "--": (cpubus.readByte(cpulog.address)).toString(16).toUpperCase(), 2);
+      cpulog.dataContent += " = " + zeroFill(((cpulog.address>0x2000) && (cpulog.address<0x4100))? "--": (cpubus.readByte(cpulog.address)).toString(16).toUpperCase(), 2);
     }
   }
   if (cpulog.opName === "SBC" && cpulog.opCode === "EB"){
@@ -178,7 +178,7 @@ export function debugCatchDataCode(address: uint16, addrMode: ADDR_MODE)
                       + zeroFill(((peekedaby>>8)&0xFF).toString(16).toUpperCase(), 2);;
       cpulog.dataContent = "$" + zeroFill((peekedaby).toString(16).toUpperCase(), 4) + ",Y @ "
                          + zeroFill((address).toString(16).toUpperCase(), 4) + " = "
-                         + zeroFill(((address>0x2000) && (address<0x4000))? "--": (cpubus.readByte(address)).toString(16).toUpperCase(), 2);
+                         + zeroFill(((address>0x2000) && (address<0x4100))? "--": (cpubus.readByte(address)).toString(16).toUpperCase(), 2);
       break;
     case ADDR_MODE.ABX:
       const peekedabx = cpubus.readWord(cpuregs.PC-2);
@@ -186,7 +186,7 @@ export function debugCatchDataCode(address: uint16, addrMode: ADDR_MODE)
                       + zeroFill(((peekedabx>>8)&0xFF).toString(16).toUpperCase(), 2);;
       cpulog.dataContent = "$" + zeroFill((peekedabx).toString(16).toUpperCase(), 4) + ",X @ "
                          + zeroFill((address).toString(16).toUpperCase(), 4) + " = "
-                         + zeroFill(((address>0x2000) && (address<0x4000))? "--": (cpubus.readByte(address)).toString(16).toUpperCase(), 2);
+                         + zeroFill(((address>0x2000) && (address<0x4100))? "--": (cpubus.readByte(address)).toString(16).toUpperCase(), 2);
       break;
     case ADDR_MODE.REL:
       if (address & 0x80){
@@ -198,21 +198,21 @@ export function debugCatchDataCode(address: uint16, addrMode: ADDR_MODE)
       break;
     case ADDR_MODE.ZP:
       cpulog.dataContent = "$" + zeroFill((address&0xFF).toString(16).toUpperCase(), 2) + " = "
-                         + zeroFill(((address>0x2000) && (address<0x4000))? "--": (cpubus.readByte(address)).toString(16).toUpperCase(), 2);
+                         + zeroFill(((address>0x2000) && (address<0x4100))? "--": (cpubus.readByte(address)).toString(16).toUpperCase(), 2);
       break;
     case ADDR_MODE.ZPX:
       const peekedzpx = cpubus.readByte(cpuregs.PC-1);
       cpulog.dataCode = zeroFill(peekedzpx.toString(16).toUpperCase(), 2);
       cpulog.dataContent = "$" + zeroFill(peekedzpx.toString(16).toUpperCase(), 2) + ",X @ "
                          + zeroFill((address).toString(16).toUpperCase(), 2) + " = "
-                         + zeroFill(((address>0x2000) && (address<0x4000))? "--": (cpubus.readByte(address)).toString(16).toUpperCase(), 2);
+                         + zeroFill(((address>0x2000) && (address<0x4100))? "--": (cpubus.readByte(address)).toString(16).toUpperCase(), 2);
       break;
     case ADDR_MODE.ZPY:
       const peekedzpy = cpubus.readByte(cpuregs.PC-1);
       cpulog.dataCode = zeroFill(peekedzpy.toString(16).toUpperCase(), 2);
       cpulog.dataContent = "$" + zeroFill(peekedzpy.toString(16).toUpperCase(), 2) + ",Y @ "
                          + zeroFill((address).toString(16).toUpperCase(), 2) + " = "
-                         + zeroFill(((address>0x2000) && (address<0x4000))? "--": (cpubus.readByte(address)).toString(16).toUpperCase(), 2);
+                         + zeroFill(((address>0x2000) && (address<0x4100))? "--": (cpubus.readByte(address)).toString(16).toUpperCase(), 2);
       break;
     case ADDR_MODE.IZX:
       const peeked = cpubus.readByte(cpuregs.PC-1);
@@ -221,7 +221,7 @@ export function debugCatchDataCode(address: uint16, addrMode: ADDR_MODE)
       cpulog.dataContent = "($" + peekedStr + ",X) @ "
                          + zeroFill(((peeked + cpuregs.X) & 0xFF).toString(16).toUpperCase(), 2) + " = "
                          + zeroFill((address).toString(16).toUpperCase(), 4) + " = "
-                         + zeroFill(((address>0x2000) && (address<0x4000))? "--": (cpubus.readByte(address)).toString(16).toUpperCase(), 2);
+                         + zeroFill(((address>0x2000) && (address<0x4100))? "--": (cpubus.readByte(address)).toString(16).toUpperCase(), 2);
       break;
     case ADDR_MODE.IZY:
       const peekedy = cpubus.readByte(cpuregs.PC-1);
@@ -232,11 +232,11 @@ export function debugCatchDataCode(address: uint16, addrMode: ADDR_MODE)
       cpulog.dataContent = "($" + peekedyStr + "),Y = "
                          + zeroFill((peeked2 | peeked3).toString(16).toUpperCase(), 4) + " @ "
                          + zeroFill((address).toString(16).toUpperCase(), 4) + " = "
-                         + zeroFill(((address>0x2000) && (address<0x4000))? "--": (cpubus.readByte(address)).toString(16).toUpperCase(), 2);
+                         + zeroFill(((address>0x2000) && (address<0x4100))? "--": (cpubus.readByte(address)).toString(16).toUpperCase(), 2);
       break;
     case ADDR_MODE.IND:
       let regspc = 0xFFFF;
-      if(!((address>0x2000) && (address<0x4000))){
+      if(!((address>0x2000) && (address<0x4100))){
         if ((address & 0x00FF) === 0x00FF){
           const address2 = address & 0xFF00;
           regspc = (cpubus.readByte(address2) << 8) | (cpubus.readByte(address)) & 0xFFFF;

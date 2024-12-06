@@ -1,5 +1,6 @@
 import { IEmulator, IOptions } from "../Interface/Emulator";
 import { Cartridge } from "./cartridge";
+import { Controller } from "./controller";
 import { CPU2A03 } from "./CPU2A03";
 import { CPUBus } from "./CPUBus";
 import { PPU2C02 } from "./PPU2C02";
@@ -12,6 +13,7 @@ export class FCEmulator implements IEmulator {
   ppu: PPU2C02;
   clocks: number;
   option: IOptions;
+  controller: Controller;
   constructor(fcData: Uint8Array, options: IOptions){
     this.clocks = 0;
     this.option = options;
@@ -20,8 +22,9 @@ export class FCEmulator implements IEmulator {
     this.ppuBus = new PPUBus();
     this.ppuBus.cartridge = cartridge;
     this.ppu = new PPU2C02(this.ppuBus);
-    
+    this.controller = new Controller();
     this.cpuBus = new CPUBus();
+    this.cpuBus.controller = this.controller;
     this.cpuBus.cartridge = cartridge;
     this.cpuBus.ppu = this.ppu;
     this.cpu = new CPU2A03(this.cpuBus);

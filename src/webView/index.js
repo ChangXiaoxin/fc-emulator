@@ -1,4 +1,5 @@
 
+const vscode = acquireVsCodeApi();
 const cvs = document.getElementById('cvs');
 cvs.width = 2000;
 cvs.height = 1200;
@@ -27,9 +28,20 @@ const NAME_TABLE_X = 1070;
 const NAME_TABLE_Y = GAME_Y;
 
 window.addEventListener('load', init);
+document.addEventListener("keydown", event =>{
+  vscode.postMessage({keypressed: event.code});
+});
+document.addEventListener("keyup", event =>{
+  vscode.postMessage({keyreleased: event.code});
+});
 window.addEventListener("message", event =>{
   const message = event.data;
-
+  if (message.controllerInput){
+    ctx.clearRect(PALETTE_TABLE_X + 120 + (message.controllerInput[0]-1) * (16*8*PALETTE_TABLE_TILE_X + 20), PALETTE_TABLE_Y - 10, 120, 12);
+    ctx.font = "12px Courier New";
+    ctx.fillStyle = "white";
+    ctx.fillText(message.controllerInput[1].toString(2), PALETTE_TABLE_X + 120 + (message.controllerInput[0]-1) * (16*8*PALETTE_TABLE_TILE_X + 20), PALETTE_TABLE_Y);
+  }
   if (message.imageData){
     let imgData = drawImageWithTileCRT(256, 240, GAME_TILE_X, GAME_TILE_Y, message.imageData);
     ctx.putImageData(imgData, GAME_X, GAME_Y);
@@ -158,7 +170,7 @@ function drawImageWithTileCRT(image_w, image_h, tile_w, tile_h, image_in){
             image.data[((i*image_w*tile_h + j + h*image_w)*tile_w + w)*4 + 0] = image_in[(i*image_w+j)*4 + 0];
             image.data[((i*image_w*tile_h + j + h*image_w)*tile_w + w)*4 + 1] = image_in[(i*image_w+j)*4 + 1];
             image.data[((i*image_w*tile_h + j + h*image_w)*tile_w + w)*4 + 2] = image_in[(i*image_w+j)*4 + 2];
-            image.data[((i*image_w*tile_h + j + h*image_w)*tile_w + w)*4 + 3] = (sum === 0) ? 0xFF : 0x4F;
+            image.data[((i*image_w*tile_h + j + h*image_w)*tile_w + w)*4 + 3] = (sum === 0) ? 0xFF : 0x88;
           }
           else{
             image.data[((i*image_w*tile_h + j + h*image_w)*tile_w + w)*4 + 0] = image_in[(i*image_w+j)*4 + 0];

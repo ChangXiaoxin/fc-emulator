@@ -25,8 +25,6 @@ export class FCEmulator implements IEmulator {
     this.cpuBus.cartridge = cartridge;
     this.cpuBus.ppu = this.ppu;
     this.cpu = new CPU2A03(this.cpuBus);
-
-
   }
 
   public clock(): void {

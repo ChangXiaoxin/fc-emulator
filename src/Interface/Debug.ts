@@ -366,111 +366,77 @@ export function debugCatchDrawNameTables(ColorPalettes: any, nametableY: uint8, 
   //             |   Screen   |
   //             |            |
   //      tileLD ◺-----------◿ tileRD
-  let tileLU = new LOOPYREG();
-  let tileRU = new LOOPYREG();
-  let tileLD = new LOOPYREG();
-  let tileRD = new LOOPYREG();
-  copyLoopyReg(tileLU, loopyreg);
-  copyLoopyReg(tileRU, loopyreg);
-  copyLoopyReg(tileLD, loopyreg);
-  copyLoopyReg(tileRD, loopyreg);
-  let tileLUFineX = fineX;
-  let tileRUFineX = fineX;
-  let tileLDFineX = fineX;
-  let tileRDFineX = fineX;
-
-  // if ((loopyreg.coarseX === 0) && (tileRUFineX === 0)){
-  //   tileRU.coarseX = 31;
-  //   tileRUFineX = 7;
-  // }
-  // else{
-    tileRU.nametableX = tileRU.nametableX?0:1;
-  // }
-  // if ((loopyreg.coarseY === 0) && (loopyreg.fineY === 0)){
-  //   tileLD.coarseY = 29;
-  //   tileLD.fineY = 7;
-  //   tileRU.coarseY = 29;
-  //   tileRU.fineY = 7;
-  // }
-  // else{
-    tileLD.nametableY = tileLD.nametableY?0:1;
-  // }
-  tileRD.nametableX = tileRU.nametableX;
-  tileRD.nametableY = tileLD.nametableY;
-  // tileRD.coarseX = tileRU.coarseX;
-  // tileRD.coarseY = tileLD.coarseY;
-  // tileRD.fineY = tileLD.fineY;
-  // tileRDFineX = tileRUFineX;
-  if (tileLU.nametableX === nametableX && tileLU.nametableY === nametableY){
-    let scanline = tileLU.coarseY*8 + tileLU.fineY;
-    let cycles = tileLU.coarseX*8 + tileLUFineX;
+  let scanlineY = loopyreg.coarseY*8 + loopyreg.fineY;
+  let cyclesX = loopyreg.coarseX*8 + fineX;
+  // tileLU
+  if ((loopyreg.nametableX === nametableX) && (loopyreg.nametableY === nametableY)){
+    let cycles = cyclesX;
     for(cycles; cycles < 256; cycles++){
-      nameTableImage[(scanline*256 + cycles)*4 + 0] = 0xFF;
-      nameTableImage[(scanline*256 + cycles)*4 + 1] = 0x00;
-      nameTableImage[(scanline*256 + cycles)*4 + 2] = 0x00;
-      nameTableImage[(scanline*256 + cycles)*4 + 3] = 0xAF;
+      nameTableImage[(scanlineY*256 + cycles)*4 + 0] = 0xFF;
+      nameTableImage[(scanlineY*256 + cycles)*4 + 1] = 0x00;
+      nameTableImage[(scanlineY*256 + cycles)*4 + 2] = 0x00;
+      nameTableImage[(scanlineY*256 + cycles)*4 + 3] = 0xAF;
     }
-    scanline = tileLU.coarseY*8 + tileLU.fineY;
-    cycles = tileLU.coarseX*8 + tileLUFineX;
+    let scanline = scanlineY;
     for(scanline; scanline < 240; scanline++){
-      nameTableImage[(scanline*256 + cycles)*4 + 0] = 0xFF;
-      nameTableImage[(scanline*256 + cycles)*4 + 1] = 0x00;
-      nameTableImage[(scanline*256 + cycles)*4 + 2] = 0x00;
-      nameTableImage[(scanline*256 + cycles)*4 + 3] = 0xAF;
+      nameTableImage[(scanline*256 + cyclesX)*4 + 0] = 0xFF;
+      nameTableImage[(scanline*256 + cyclesX)*4 + 1] = 0x00;
+      nameTableImage[(scanline*256 + cyclesX)*4 + 2] = 0x00;
+      nameTableImage[(scanline*256 + cyclesX)*4 + 3] = 0xAF;
     }
   }
-  if (tileRU.nametableX === nametableX && tileRU.nametableY === nametableY){
-    let scanline = tileRU.coarseY*8 + tileRU.fineY;
-    let cycles = tileRU.coarseX*8 + tileRUFineX;
+
+  // tileRU
+  if ((loopyreg.nametableX !== nametableX) && (loopyreg.nametableY === nametableY)){
+    let scanline = scanlineY;
     for(scanline; scanline < 256; scanline++){
-      nameTableImage[(scanline*256 + cycles)*4 + 0] = 0xFF;
-      nameTableImage[(scanline*256 + cycles)*4 + 1] = 0x00;
-      nameTableImage[(scanline*256 + cycles)*4 + 2] = 0x00;
-      nameTableImage[(scanline*256 + cycles)*4 + 3] = 0xAF;
+      nameTableImage[(scanline*256 + cyclesX)*4 + 0] = 0xFF;
+      nameTableImage[(scanline*256 + cyclesX)*4 + 1] = 0x00;
+      nameTableImage[(scanline*256 + cyclesX)*4 + 2] = 0x00;
+      nameTableImage[(scanline*256 + cyclesX)*4 + 3] = 0xAF;
     }
-    scanline = tileRU.coarseY*8 + tileRU.fineY;
-    cycles = 0;
-    for(cycles; cycles < tileRU.coarseX*8 + tileRUFineX; cycles++){
-      nameTableImage[(scanline*256 + cycles)*4 + 0] = 0xFF;
-      nameTableImage[(scanline*256 + cycles)*4 + 1] = 0x00;
-      nameTableImage[(scanline*256 + cycles)*4 + 2] = 0x00;
-      nameTableImage[(scanline*256 + cycles)*4 + 3] = 0xAF;
-    }
-  }
-  if (tileLD.nametableX === nametableX && tileLD.nametableY === nametableY){
-    let scanline = 0;
-    let cycles = tileLD.coarseX*8 + tileLDFineX;
-    for(scanline; scanline < tileLD.coarseY*8 + tileLD.fineY; scanline++){
-      nameTableImage[(scanline*256 + cycles)*4 + 0] = 0xFF;
-      nameTableImage[(scanline*256 + cycles)*4 + 1] = 0x00;
-      nameTableImage[(scanline*256 + cycles)*4 + 2] = 0x00;
-      nameTableImage[(scanline*256 + cycles)*4 + 3] = 0xAF;
-    }
-    scanline = tileLD.coarseY*8 + tileLD.fineY;
-    cycles = tileLD.coarseX*8 + tileLDFineX;
-    for(cycles; cycles < 256; cycles++){
-      nameTableImage[(scanline*256 + cycles)*4 + 0] = 0xFF;
-      nameTableImage[(scanline*256 + cycles)*4 + 1] = 0x00;
-      nameTableImage[(scanline*256 + cycles)*4 + 2] = 0x00;
-      nameTableImage[(scanline*256 + cycles)*4 + 3] = 0xAF;
-    }
-  }
-  if (tileRD.nametableX === nametableX && tileRD.nametableY === nametableY){
-    let scanline = tileRD.coarseY*8 + tileRD.fineY;
     let cycles = 0;
-    for(cycles; cycles < tileRD.coarseX*8 + tileRDFineX; cycles++){
-      nameTableImage[(scanline*256 + cycles)*4 + 0] = 0xFF;
-      nameTableImage[(scanline*256 + cycles)*4 + 1] = 0x00;
-      nameTableImage[(scanline*256 + cycles)*4 + 2] = 0x00;
-      nameTableImage[(scanline*256 + cycles)*4 + 3] = 0xAF;
+    for(cycles; cycles < cyclesX; cycles++){
+      nameTableImage[(scanlineY*256 + cycles)*4 + 0] = 0xFF;
+      nameTableImage[(scanlineY*256 + cycles)*4 + 1] = 0x00;
+      nameTableImage[(scanlineY*256 + cycles)*4 + 2] = 0x00;
+      nameTableImage[(scanlineY*256 + cycles)*4 + 3] = 0xAF;
     }
-    cycles = tileRD.coarseX*8 + tileRDFineX;
-    scanline = 0;
-    for(scanline; scanline < tileRD.coarseY*8 + tileRD.fineY; scanline++){
-      nameTableImage[(scanline*256 + cycles)*4 + 0] = 0xFF;
-      nameTableImage[(scanline*256 + cycles)*4 + 1] = 0x00;
-      nameTableImage[(scanline*256 + cycles)*4 + 2] = 0x00;
-      nameTableImage[(scanline*256 + cycles)*4 + 3] = 0xAF;
+  }
+
+  // tileLD
+  if ((loopyreg.nametableX === nametableX) && (loopyreg.nametableY !== nametableY)){
+    let scanline = 0;
+    for(scanline; scanline < scanlineY; scanline++){
+      nameTableImage[(scanline*256 + cyclesX)*4 + 0] = 0xFF;
+      nameTableImage[(scanline*256 + cyclesX)*4 + 1] = 0x00;
+      nameTableImage[(scanline*256 + cyclesX)*4 + 2] = 0x00;
+      nameTableImage[(scanline*256 + cyclesX)*4 + 3] = 0xAF;
+    }
+    let cycles = cyclesX;
+    for(cycles; cycles < 256; cycles++){
+      nameTableImage[(scanlineY*256 + cycles)*4 + 0] = 0xFF;
+      nameTableImage[(scanlineY*256 + cycles)*4 + 1] = 0x00;
+      nameTableImage[(scanlineY*256 + cycles)*4 + 2] = 0x00;
+      nameTableImage[(scanlineY*256 + cycles)*4 + 3] = 0xAF;
+    }
+  }
+
+  // tileRD
+  if (loopyreg.nametableX !== nametableX && loopyreg.nametableY !== nametableY){
+    let cycles = 0;
+    for(cycles; cycles < cyclesX; cycles++){
+      nameTableImage[(scanlineY*256 + cycles)*4 + 0] = 0xFF;
+      nameTableImage[(scanlineY*256 + cycles)*4 + 1] = 0x00;
+      nameTableImage[(scanlineY*256 + cycles)*4 + 2] = 0x00;
+      nameTableImage[(scanlineY*256 + cycles)*4 + 3] = 0xAF;
+    }
+    let scanline = 0;
+    for(scanline; scanline < scanlineY; scanline++){
+      nameTableImage[(scanline*256 + cyclesX)*4 + 0] = 0xFF;
+      nameTableImage[(scanline*256 + cyclesX)*4 + 1] = 0x00;
+      nameTableImage[(scanline*256 + cyclesX)*4 + 2] = 0x00;
+      nameTableImage[(scanline*256 + cyclesX)*4 + 3] = 0xAF;
     }
   }
   nameTableImage[256*240*4] = (nametableY<<1) + nametableX;

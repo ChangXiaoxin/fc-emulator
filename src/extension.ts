@@ -7,7 +7,6 @@ import { FCEmulator } from './FC/FCEmulator';
 import { IOptions } from "./Interface/Emulator";
 import { drawImage } from './FC/display';
 import { debugCatchCPUBus, debugCatchDrawColorTable, debugCatchDrawLog, debugCatchDrawNameTables, debugCatchDrawPalette, debugCatchDrawPatternTables, debugCatchLogPath, debugCatchPPUBus } from './Interface/Debug';
-import { MASKFlags, PPU2C02 } from './FC/PPU2C02';
 
 let currentPanel: vscode.WebviewPanel | undefined = undefined;
 let running:boolean = false;
@@ -64,12 +63,12 @@ export function activate(context: vscode.ExtensionContext) {
     currentPanel.webview.html = fs.readFileSync(realPath).toString().replace('SOURCE_PATH_PLACEHOLDER', realJsPath as any);
     currentPanel.onDidDispose(
       () => {
-      currentPanel = undefined;
-      clearInterval(intervalEmulator);
-      clearInterval(intervalPatternTable);
-      running = false;
-      runstep = true;
-	    refreshPatternTable = false;
+        currentPanel = undefined;
+        clearInterval(intervalEmulator);
+        clearInterval(intervalPatternTable);
+        running = false;
+        runstep = true;
+	      refreshPatternTable = false;
       }
     );
       // Display a message box to the user

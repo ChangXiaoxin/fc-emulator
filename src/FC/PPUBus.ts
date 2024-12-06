@@ -17,18 +17,8 @@ export class PPUBus implements IBus {
     else if (address < 0x3000){
       // Name Tables VRAM
       if (this.cartridge.info.mirror === Mirror.HORIZONTAL){
-        if (address >= 0x2C00){
-          address = address - 0x800;
-        }
-        else if (address >= 0x2800){
-          address = address - 0x400;
-        }
-        else if (address >= 0x2400){
-          address = address - 0x400;
-        }
-        this.vram[address & 0x07FF] = data;
-        // let addr = address | ((address & 0x0400) >> 1);
-        // this.vram[addr & 0x07FF] = data;
+        let addr = (address & (~0x0400)) | ((address & 0x0800) >> 1);
+        this.vram[addr & 0x07FF] = data;
       }
       else if (this.cartridge.info.mirror === Mirror.VERTRICAL){
         this.vram[address & 0x07FF] = data;
@@ -50,18 +40,8 @@ export class PPUBus implements IBus {
     else if (address < 0x3F00){
       // Name Tables VRAM
       if (this.cartridge.info.mirror === Mirror.HORIZONTAL){
-        if (address >= 0x2C00){
-          address = address - 0x800;
-        }
-        else if (address >= 0x2800){
-          address = address - 0x400;
-        }
-        else if (address >= 0x2400){
-          address = address - 0x400;
-        }
-        return this.vram[(address & 0x07FF)];
-        // let addr = address | ((address & 0x0400) >> 1);
-        // return this.vram[addr & 0x07FF];
+        let addr = (address & (~0x0400)) | ((address & 0x0800) >> 1);
+        return this.vram[addr & 0x07FF];
       }
       else if (this.cartridge.info.mirror === Mirror.VERTRICAL){
         return this.vram[address & 0x07FF];

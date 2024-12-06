@@ -17,7 +17,7 @@ export class PPUBus implements IBus {
     else if (address < 0x3000){
       // Name Tables VRAM
       if (this.cartridge.info.mirror === Mirror.HORIZONTAL){
-        let addr = (address & (~0x0400)) | ((address & 0x0800) >> 1);
+        let addr = (address & (~0x0C00)) | ((address & 0x0800) >> 1);
         this.vram[addr & 0x07FF] = data;
       }
       else if (this.cartridge.info.mirror === Mirror.VERTRICAL){
@@ -40,7 +40,7 @@ export class PPUBus implements IBus {
     else if (address < 0x3F00){
       // Name Tables VRAM
       if (this.cartridge.info.mirror === Mirror.HORIZONTAL){
-        let addr = (address & (~0x0400)) | ((address & 0x0800) >> 1);
+        let addr = (address & (~0x0C00)) | ((address & 0x0800) >> 1);
         return this.vram[addr & 0x07FF];
       }
       else if (this.cartridge.info.mirror === Mirror.VERTRICAL){

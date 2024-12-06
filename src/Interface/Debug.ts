@@ -294,8 +294,8 @@ export function debugCatchDrawColorTable(ColorPalettes: any){
   let palettes = new Uint8Array(16*4*4).fill(0);
   for (let i = 0; i < palettes.length; i+=4){
     palettes[i+0] = 0xFF & (ColorPalettes[i/4]>>16);
-    palettes[i+1] = 0xFF & (ColorPalettes[i/4]>>8);
-    palettes[i+2] = 0xFF & ColorPalettes[i/4];
+    palettes[i+1] = 0xFF & (ColorPalettes[i/4]>>8 );
+    palettes[i+2] = 0xFF & (ColorPalettes[i/4]>>0 );
     palettes[i+3] = 0xFF;
   }
   drawColorPalettes(palettes);
@@ -353,10 +353,11 @@ export function debugCatchDrawNameTables(ColorPalettes: any, nametableY: uint8, 
       }
       bgTileAttrbi &= 0x03;
       let colorIndex = 0x3F & ppubus.readByte(0x3F00 + bgTileAttrbi*4 + ((tileMSB >> (7 - fine_x) & 0x01) << 1) + ((tileLSB >> (7 - fine_x)) & 0x01));
-      nameTableImage[(scanline*256 + cycles)*4 + 0] = 0xFF & (ColorPalettes[colorIndex]>>16);
-      nameTableImage[(scanline*256 + cycles)*4 + 1] = 0xFF & (ColorPalettes[colorIndex]>>8);
-      nameTableImage[(scanline*256 + cycles)*4 + 2] = 0xFF & (ColorPalettes[colorIndex]>>0);
-      nameTableImage[(scanline*256 + cycles)*4 + 3] = 0xFF;
+      let imageIndex = (scanline*256 + cycles)*4;
+      nameTableImage[imageIndex + 0] = 0xFF & (ColorPalettes[colorIndex]>>16);
+      nameTableImage[imageIndex + 1] = 0xFF & (ColorPalettes[colorIndex]>>8);
+      nameTableImage[imageIndex + 2] = 0xFF & (ColorPalettes[colorIndex]>>0);
+      nameTableImage[imageIndex + 3] = 0xFF;
     }
   }
 
@@ -372,17 +373,19 @@ export function debugCatchDrawNameTables(ColorPalettes: any, nametableY: uint8, 
   if ((loopyreg.nametableX === nametableX) && (loopyreg.nametableY === nametableY)){
     let cycles = cyclesX;
     for(cycles; cycles < 256; cycles++){
-      nameTableImage[(scanlineY*256 + cycles)*4 + 0] = 0xFF;
-      nameTableImage[(scanlineY*256 + cycles)*4 + 1] = 0x00;
-      nameTableImage[(scanlineY*256 + cycles)*4 + 2] = 0x00;
-      nameTableImage[(scanlineY*256 + cycles)*4 + 3] = 0xAF;
+      let imageIndex = (scanlineY*256 + cycles)*4;
+      nameTableImage[imageIndex + 0] = 0xFF;
+      nameTableImage[imageIndex + 1] = 0x00;
+      nameTableImage[imageIndex + 2] = 0x00;
+      nameTableImage[imageIndex + 3] = 0xAF;
     }
     let scanline = scanlineY;
     for(scanline; scanline < 240; scanline++){
-      nameTableImage[(scanline*256 + cyclesX)*4 + 0] = 0xFF;
-      nameTableImage[(scanline*256 + cyclesX)*4 + 1] = 0x00;
-      nameTableImage[(scanline*256 + cyclesX)*4 + 2] = 0x00;
-      nameTableImage[(scanline*256 + cyclesX)*4 + 3] = 0xAF;
+      let imageIndex = (scanline*256 + cyclesX)*4;
+      nameTableImage[imageIndex + 0] = 0xFF;
+      nameTableImage[imageIndex + 1] = 0x00;
+      nameTableImage[imageIndex + 2] = 0x00;
+      nameTableImage[imageIndex + 3] = 0xAF;
     }
   }
 
@@ -390,17 +393,19 @@ export function debugCatchDrawNameTables(ColorPalettes: any, nametableY: uint8, 
   if ((loopyreg.nametableX !== nametableX) && (loopyreg.nametableY === nametableY)){
     let scanline = scanlineY;
     for(scanline; scanline < 256; scanline++){
-      nameTableImage[(scanline*256 + cyclesX)*4 + 0] = 0xFF;
-      nameTableImage[(scanline*256 + cyclesX)*4 + 1] = 0x00;
-      nameTableImage[(scanline*256 + cyclesX)*4 + 2] = 0x00;
-      nameTableImage[(scanline*256 + cyclesX)*4 + 3] = 0xAF;
+      let imageIndex = (scanline*256 + cyclesX)*4;
+      nameTableImage[imageIndex + 0] = 0xFF;
+      nameTableImage[imageIndex + 1] = 0x00;
+      nameTableImage[imageIndex + 2] = 0x00;
+      nameTableImage[imageIndex + 3] = 0xAF;
     }
     let cycles = 0;
     for(cycles; cycles < cyclesX; cycles++){
-      nameTableImage[(scanlineY*256 + cycles)*4 + 0] = 0xFF;
-      nameTableImage[(scanlineY*256 + cycles)*4 + 1] = 0x00;
-      nameTableImage[(scanlineY*256 + cycles)*4 + 2] = 0x00;
-      nameTableImage[(scanlineY*256 + cycles)*4 + 3] = 0xAF;
+      let imageIndex = (scanlineY*256 + cycles)*4;
+      nameTableImage[imageIndex + 0] = 0xFF;
+      nameTableImage[imageIndex + 1] = 0x00;
+      nameTableImage[imageIndex + 2] = 0x00;
+      nameTableImage[imageIndex + 3] = 0xAF;
     }
   }
 
@@ -408,17 +413,19 @@ export function debugCatchDrawNameTables(ColorPalettes: any, nametableY: uint8, 
   if ((loopyreg.nametableX === nametableX) && (loopyreg.nametableY !== nametableY)){
     let scanline = 0;
     for(scanline; scanline < scanlineY; scanline++){
-      nameTableImage[(scanline*256 + cyclesX)*4 + 0] = 0xFF;
-      nameTableImage[(scanline*256 + cyclesX)*4 + 1] = 0x00;
-      nameTableImage[(scanline*256 + cyclesX)*4 + 2] = 0x00;
-      nameTableImage[(scanline*256 + cyclesX)*4 + 3] = 0xAF;
+      let imageIndex = (scanline*256 + cyclesX)*4;
+      nameTableImage[imageIndex + 0] = 0xFF;
+      nameTableImage[imageIndex + 1] = 0x00;
+      nameTableImage[imageIndex + 2] = 0x00;
+      nameTableImage[imageIndex + 3] = 0xAF;
     }
     let cycles = cyclesX;
     for(cycles; cycles < 256; cycles++){
-      nameTableImage[(scanlineY*256 + cycles)*4 + 0] = 0xFF;
-      nameTableImage[(scanlineY*256 + cycles)*4 + 1] = 0x00;
-      nameTableImage[(scanlineY*256 + cycles)*4 + 2] = 0x00;
-      nameTableImage[(scanlineY*256 + cycles)*4 + 3] = 0xAF;
+      let imageIndex = (scanlineY*256 + cycles)*4;
+      nameTableImage[imageIndex + 0] = 0xFF;
+      nameTableImage[imageIndex + 1] = 0x00;
+      nameTableImage[imageIndex + 2] = 0x00;
+      nameTableImage[imageIndex + 3] = 0xAF;
     }
   }
 
@@ -426,17 +433,19 @@ export function debugCatchDrawNameTables(ColorPalettes: any, nametableY: uint8, 
   if (loopyreg.nametableX !== nametableX && loopyreg.nametableY !== nametableY){
     let cycles = 0;
     for(cycles; cycles < cyclesX; cycles++){
-      nameTableImage[(scanlineY*256 + cycles)*4 + 0] = 0xFF;
-      nameTableImage[(scanlineY*256 + cycles)*4 + 1] = 0x00;
-      nameTableImage[(scanlineY*256 + cycles)*4 + 2] = 0x00;
-      nameTableImage[(scanlineY*256 + cycles)*4 + 3] = 0xAF;
+      let imageIndex = (scanlineY*256 + cycles)*4;
+      nameTableImage[imageIndex + 0] = 0xFF;
+      nameTableImage[imageIndex + 1] = 0x00;
+      nameTableImage[imageIndex + 2] = 0x00;
+      nameTableImage[imageIndex + 3] = 0xAF;
     }
     let scanline = 0;
     for(scanline; scanline < scanlineY; scanline++){
-      nameTableImage[(scanline*256 + cyclesX)*4 + 0] = 0xFF;
-      nameTableImage[(scanline*256 + cyclesX)*4 + 1] = 0x00;
-      nameTableImage[(scanline*256 + cyclesX)*4 + 2] = 0x00;
-      nameTableImage[(scanline*256 + cyclesX)*4 + 3] = 0xAF;
+      let imageIndex = (scanline*256 + cyclesX)*4;
+      nameTableImage[imageIndex + 0] = 0xFF;
+      nameTableImage[imageIndex + 1] = 0x00;
+      nameTableImage[imageIndex + 2] = 0x00;
+      nameTableImage[imageIndex + 3] = 0xAF;
     }
   }
   nameTableImage[256*240*4] = (nametableY<<1) + nametableX;
@@ -445,9 +454,10 @@ export function debugCatchDrawNameTables(ColorPalettes: any, nametableY: uint8, 
 export function debugCatchDrawPalette(Palettes: any, index: uint8){
   let palettes = new Uint8Array(32*4 + 1).fill(0);
   for (let i = 0; i < palettes.length; i+=4){
-    palettes[i + 0] = 0xFF & (Palettes[0x3F & ppubus.readByte(0x3F00 + i/4)]>>16);
-    palettes[i + 1] = 0xFF & (Palettes[0x3F & ppubus.readByte(0x3F00 + i/4)]>>8);
-    palettes[i + 2] = 0xFF & (Palettes[0x3F & ppubus.readByte(0x3F00 + i/4)]>>0);
+    let colorIndex = 0x3F & ppubus.readByte(0x3F00 + i/4);
+    palettes[i + 0] = 0xFF & (Palettes[colorIndex]>>16);
+    palettes[i + 1] = 0xFF & (Palettes[colorIndex]>>8 );
+    palettes[i + 2] = 0xFF & (Palettes[colorIndex]>>0 );
     palettes[i + 3] = 0xFF;
   }
   palettes[32*4] = index;

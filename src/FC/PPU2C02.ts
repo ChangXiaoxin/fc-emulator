@@ -244,10 +244,11 @@ export class PPU2C02{
     if ( (this.scanline >= 0 && this.scanline < 240)
       && ((this.cycles > 0) && (this.cycles < 257))){
       let colorIndex = 0x3F & this.bus.readByte(0x3F00 + bgPalette*4 + bgPixel);
-      this.displayOutput[(this.scanline*256 + this.cycles - 1)*4 + 0] = 0xFF & (this.ColorTable[colorIndex]>>16);
-      this.displayOutput[(this.scanline*256 + this.cycles - 1)*4 + 1] = 0xFF & (this.ColorTable[colorIndex]>>8);
-      this.displayOutput[(this.scanline*256 + this.cycles - 1)*4 + 2] = 0xFF & (this.ColorTable[colorIndex]>>0);
-      this.displayOutput[(this.scanline*256 + this.cycles - 1)*4 + 3] = 0xFF;
+      let outputIndex = (this.scanline*256 + this.cycles - 1)*4;
+      this.displayOutput[outputIndex + 0] = 0xFF & (this.ColorTable[colorIndex]>>16);
+      this.displayOutput[outputIndex + 1] = 0xFF & (this.ColorTable[colorIndex]>>8);
+      this.displayOutput[outputIndex + 2] = 0xFF & (this.ColorTable[colorIndex]>>0);
+      this.displayOutput[outputIndex + 3] = 0xFF;
     }
 
     if (this.scanline === 241 && this.cycles === 1){

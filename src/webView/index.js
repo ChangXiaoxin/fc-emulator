@@ -36,30 +36,42 @@ document.addEventListener("keyup", event =>{
 });
 window.addEventListener("message", event =>{
   const message = event.data;
-  if (message.controllerInput){
-    ctx.clearRect(PALETTE_TABLE_X + 120 + (message.controllerInput[0]-1) * (16*8*PALETTE_TABLE_TILE_X + 20), PALETTE_TABLE_Y - 10, 120, 12);
-    ctx.font = "12px Courier New";
-    ctx.fillStyle = "white";
-    ctx.fillText(message.controllerInput[1].toString(2), PALETTE_TABLE_X + 120 + (message.controllerInput[0]-1) * (16*8*PALETTE_TABLE_TILE_X + 20), PALETTE_TABLE_Y);
-  }
-  if (message.imageData){
-    let imgData = drawImageWithTileCRT(256, 240, GAME_TILE_X, GAME_TILE_Y, message.imageData);
+  handleGameVideo(message.imageData);
+  handleCPURunLog(message.CPULOG);
+  handleColorPalettes(message.ColorPalettes);
+  handlePalettes(message.Palettes);
+  handlePatternImage(message.patternImage);
+  handlePatternImage2(message.patternImage2);
+  handleNameTable(message.nameTable);
+  handleControllerInput(message.controllerInput);
+  handleOAMData(message.oamData);
+
+});
+
+function handleGameVideo(imageData){
+  if (imageData){
+    let imgData = drawImageWithTileCRT(256, 240, GAME_TILE_X, GAME_TILE_Y, imageData);
     ctx.putImageData(imgData, GAME_X, GAME_Y);
   }
-  if (message.CPULOG){
+}
+
+function handleCPURunLog(cpulog){
+  if (cpulog){
     ctx.clearRect(LOG_X, LOG_Y + 20, 550, 220);
     ctx.fillStyle = "green";
     ctx.fillRect(LOG_X + 20, LOG_Y + 228 - 15, 300, 18);
     ctx.font = "20px Courier New";
     ctx.fillStyle = "white";
-    ctx.fillText(message.CPULOG[LOG_SIZE], LOG_X, LOG_Y + 40);
+    ctx.fillText(cpulog[LOG_SIZE], LOG_X, LOG_Y + 40);
     ctx.font = "16px Courier New";
     for (let i = 0; i < LOG_SIZE; i++){
-      ctx.fillText(message.CPULOG[i], LOG_X + 20, LOG_Y + 80 - 15 + 18*i);
+      ctx.fillText(cpulog[i], LOG_X + 20, LOG_Y + 80 - 15 + 18*i);
     }
   }
+}
 
-  if (message.ColorPalettes){
+function handleColorPalettes(ColorPalettes){
+  if (ColorPalettes){
     let paletteImage = ctx.createImageData(COLOR_PALETTE_WIDTH * 16, COLOR_PALETTE_HEIGTH * 4);
     for (let i = 0; i < 4; i++){
       for (let j = 0; j < 16; j++){
@@ -68,10 +80,10 @@ window.addEventListener("message", event =>{
             let edge = (h === 0) || (w === 0) || (h === (COLOR_PALETTE_HEIGTH-1)) || (w === (COLOR_PALETTE_WIDTH-1));
             let paletteIndex = ((i*16*COLOR_PALETTE_HEIGTH + j + h*16)*COLOR_PALETTE_WIDTH + w)*4;
             let colorIndex = (i*16+j)*4;
-            paletteImage.data[paletteIndex + 0] = edge ? 0 : message.ColorPalettes[colorIndex + 0];
-            paletteImage.data[paletteIndex + 1] = edge ? 0 : message.ColorPalettes[colorIndex + 1];
-            paletteImage.data[paletteIndex + 2] = edge ? 0 : message.ColorPalettes[colorIndex + 2];
-            paletteImage.data[paletteIndex + 3] = edge ? 0 : message.ColorPalettes[colorIndex + 3];
+            paletteImage.data[paletteIndex + 0] = edge ? 0 : ColorPalettes[colorIndex + 0];
+            paletteImage.data[paletteIndex + 1] = edge ? 0 : ColorPalettes[colorIndex + 1];
+            paletteImage.data[paletteIndex + 2] = edge ? 0 : ColorPalettes[colorIndex + 2];
+            paletteImage.data[paletteIndex + 3] = edge ? 0 : ColorPalettes[colorIndex + 3];
           }
         }
       }
@@ -87,14 +99,16 @@ window.addEventListener("message", event =>{
     ctx.fillText("$30", COLOR_PALETTE_X, COLOR_PALETTE_Y + 20 + COLOR_PALETTE_HEIGTH*3);
     ctx.putImageData(paletteImage,COLOR_PALETTE_X + 25, COLOR_PALETTE_Y + 5);
   }
+}
 
-  if (message.Palettes){
+function handlePalettes(Palettes){
+  if (Palettes){
     let paletteImage = ctx.createImageData(PALETTE_RAM_WIDTH * 16, PALETTE_RAM_HEIGTH * 4);
     let border = 0x00;
     for (let i = 0; i < 2; i++){
       for (let j = 0; j < 16; j++){
         let colorIndex = (i*16+j)*4;
-        if(((i * 16 + j)/4 >= message.Palettes[16*2*4]) && ((i * 16 + j)/4 < (message.Palettes[16*2*4]+1))){
+        if(((i * 16 + j)/4 >= Palettes[16*2*4]) && ((i * 16 + j)/4 < (Palettes[16*2*4]+1))){
           border = 0xCF;
         }
         else{
@@ -104,10 +118,10 @@ window.addEventListener("message", event =>{
           for(let w = 0; w < PALETTE_RAM_WIDTH; w++){
             let edge = (h === 0) || (w === 0) || (h === (PALETTE_RAM_HEIGTH-1)) || (w === (PALETTE_RAM_WIDTH-1));
             let paletteIndex = ((i*16*PALETTE_RAM_HEIGTH + j + h*16)*PALETTE_RAM_WIDTH + w)*4;
-            paletteImage.data[paletteIndex + 0] = edge ? 0      : message.Palettes[colorIndex + 0];
-            paletteImage.data[paletteIndex + 1] = edge ? border : message.Palettes[colorIndex + 1];
-            paletteImage.data[paletteIndex + 2] = edge ? 0      : message.Palettes[colorIndex + 2];
-            paletteImage.data[paletteIndex + 3] = edge ? border : message.Palettes[colorIndex + 3];
+            paletteImage.data[paletteIndex + 0] = edge ? 0      : Palettes[colorIndex + 0];
+            paletteImage.data[paletteIndex + 1] = edge ? border : Palettes[colorIndex + 1];
+            paletteImage.data[paletteIndex + 2] = edge ? 0      : Palettes[colorIndex + 2];
+            paletteImage.data[paletteIndex + 3] = edge ? border : Palettes[colorIndex + 3];
           }
         }
       }
@@ -123,28 +137,34 @@ window.addEventListener("message", event =>{
     ctx.fillText("$3F10", PALETTE_RAM_X, PALETTE_RAM_Y + PALETTE_RAM_HEIGTH + 25 + PALETTE_RAM_HEIGTH);
     ctx.putImageData(paletteImage, PALETTE_RAM_X + 40, PALETTE_RAM_Y + PALETTE_RAM_HEIGTH + 10);
   }
+}
 
-  if (message.patternImage){
-    let paletteImage = drawImageWithTileCRT(16*8, 16*8, PALETTE_TABLE_TILE_X, PALETTE_TABLE_TILE_Y, message.patternImage);
+function handlePatternImage(patternImage) {
+  if (patternImage){
+    let paletteImage = drawImageWithTileCRT(16*8, 16*8, PALETTE_TABLE_TILE_X, PALETTE_TABLE_TILE_Y, patternImage);
     ctx.clearRect(PALETTE_TABLE_X, PALETTE_TABLE_Y - 10, 120, 12);
     ctx.font = "12px Courier New";
     ctx.fillStyle = "white";
     ctx.fillText("Pattern Table 0", PALETTE_TABLE_X, PALETTE_TABLE_Y);
     ctx.putImageData(paletteImage,PALETTE_TABLE_X, PALETTE_TABLE_Y + 5);
   }
+}
 
-  if (message.patternImage2){
-    let paletteImage = drawImageWithTileCRT(16*8, 16*8, PALETTE_TABLE_TILE_X, PALETTE_TABLE_TILE_Y, message.patternImage2);
+function handlePatternImage2(patternImage2) {
+  if (patternImage2){
+    let paletteImage = drawImageWithTileCRT(16*8, 16*8, PALETTE_TABLE_TILE_X, PALETTE_TABLE_TILE_Y, patternImage2);
     ctx.clearRect(PALETTE_TABLE_X + 16*8*PALETTE_TABLE_TILE_X + 20, PALETTE_TABLE_Y - 10, 120, 12);
     ctx.font = "12px Courier New";
     ctx.fillStyle = "white";
     ctx.fillText("Pattern Table 1", PALETTE_TABLE_X + 16*8*PALETTE_TABLE_TILE_X + 20, PALETTE_TABLE_Y);
     ctx.putImageData(paletteImage, PALETTE_TABLE_X + 16*8*PALETTE_TABLE_TILE_X + 20, PALETTE_TABLE_Y + 5);
   }
+}
 
-  if (message.nameTable){
-    let paletteImage = drawImageWithTile(256, 240, 1, 1, message.nameTable);
-    switch (message.nameTable[256*240*4]){
+function handleNameTable(nameTable) {
+  if (nameTable){
+    let paletteImage = drawImageWithTile(256, 240, 1, 1, nameTable);
+    switch (nameTable[256*240*4]){
       case 0:
         ctx.putImageData(paletteImage, NAME_TABLE_X, NAME_TABLE_Y);
         break;
@@ -159,7 +179,24 @@ window.addEventListener("message", event =>{
         break;
     }
   }
-});
+}
+
+function handleControllerInput(controllerInput) {
+  if (controllerInput){
+    ctx.clearRect(PALETTE_TABLE_X + 120 + (controllerInput[0]-1) * (16*8*PALETTE_TABLE_TILE_X + 20), PALETTE_TABLE_Y - 10, 120, 12);
+    ctx.font = "12px Courier New";
+    ctx.fillStyle = "white";
+    ctx.fillText(controllerInput[1].toString(2), PALETTE_TABLE_X + 120 + (controllerInput[0]-1) * (16*8*PALETTE_TABLE_TILE_X + 20), PALETTE_TABLE_Y);
+  }
+}
+
+function handleOAMData(oamData) {
+  if (oamData){
+    for (let index = 0; index < 64*4; index+=4) {
+      
+    }
+  }
+}
 
 function drawImageWithTileCRT(image_w, image_h, tile_w, tile_h, image_in){
   let image = ctx.createImageData(image_w * tile_w, image_h * tile_h);

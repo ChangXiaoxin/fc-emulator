@@ -67,11 +67,17 @@ export class PPUReg {
   MASK: uint8;
   STATUS: uint8;
   OAMADDR: uint8;
-  OAMDATA: uint8;
-  // SCROLL: uint16;
-  // ADDR: uint16;
+  OAMDATA!: Uint8Array;
   DATA: uint8;
   OAMDMA: uint8;
+}
+
+export enum OAMINDEX {
+  Y = 0,
+  ID,
+  ATTRIBUTE,
+  X,
+  SIZE,
 }
 
 export class PPU2C02{
@@ -84,7 +90,7 @@ export class PPU2C02{
                 0xB8BF00, 0x85D801, 0x5DE335, 0x45DE88, 0x49CAE3, 0x4E4E4E, 0x000000, 0x000000,
                 0xFFFFFF, 0xBFE0FF, 0xD1D3FF, 0xE6C9FF, 0xF7C3FF, 0xFFC4EE, 0xFFCBC9, 0xF7D7A9,
                 0xE6E397, 0xD1EE97, 0xBFF3A9, 0xB5F2C9, 0xB5EBEE, 0xB8B8B8, 0x000000, 0x000000];
-  public displayOutput:Uint8Array = new Uint8Array(256*240*4).fill(0x00);
+  public displayOutput: Uint8Array = new Uint8Array(256*240*4).fill(0x00);
   private clocks = 0;
   private scanline = 0;
   private cycles = 0;
@@ -115,10 +121,8 @@ export class PPU2C02{
     this.regs.MASK = 0x00;
     this.regs.STATUS = 0x00;
     this.regs.OAMADDR = 0x00;
-    this.regs.OAMDATA = 0x00;
+    this.regs.OAMDATA = new Uint8Array(64*OAMINDEX.SIZE).fill(0);
     this.regs.OAMDMA = 0x00;
-    // this.regs.SCROLL = 0x0000;
-    // this.regs.ADDR = 0x0000;
     this.regs.DATA = 0x00;
     this.addressLatch = 0x00;
     this.dataBuffer = 0x00;
@@ -130,7 +134,6 @@ export class PPU2C02{
     this.regs.CTRL = 0x00;
     this.regs.MASK = 0x00;
     this.regs.STATUS = 0x00;
-    // this.regs.SCROLL = 0x0000;
     this.regs.DATA = 0x00;
     this.vramAddr.fineY = 0x00;
     this.vramAddr.coarseX = 0x00;

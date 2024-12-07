@@ -1,8 +1,12 @@
 import { getCurrentPanel } from "../extension";
-import { uint8 } from "../Interface/typedef";
 
 export function convertPixelImageToRGBImage(){
 
+}
+
+export function drawOAMData(OAMdata: Uint8Array) {
+  let panel = getCurrentPanel();
+  panel?.webview.postMessage({oamData: OAMdata});
 }
 
 export function displayControllerInput(input: Uint8Array){

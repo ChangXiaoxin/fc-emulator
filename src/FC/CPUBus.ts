@@ -5,6 +5,11 @@ import { Cartridge } from "./cartridge";
 import { CTRLFlags, PPU2C02, STATUSFlags } from "./PPU2C02";
 import { Controller } from "./controller";
 export class CPUBus implements IBus {
+  public DMAAddr: uint8 = 0x00;
+  public DMAPage: uint8 = 0x00;
+  public DMAData: uint8 = 0x00;
+  public DMAPupupu: boolean = false;
+  public DMAEmpty: boolean = true;
   public cartridge!: Cartridge;
   public ppu!: PPU2C02;
   public controller!: Controller;
@@ -36,7 +41,7 @@ export class CPUBus implements IBus {
           this.ppu.regs.OAMADDR = data;
           break;
         case 0x0004:
-          this.ppu.regs.OAMDATA = data;
+          this.ppu.regs.OAMDATA[this.ppu.regs.OAMADDR] = data;
           break;
         case 0x0005:
           if (this.ppu.addressLatch === 0x00){
@@ -73,6 +78,9 @@ export class CPUBus implements IBus {
       // PPU OAMDMA
       if (address === 0x4014){
         this.ppu.regs.OAMDMA = data;
+        this.DMAPage = data;
+        this.DMAAddr = 0x00;
+        this.DMAPupupu = true;
       }
       // IO Registers
       if ((address >= 0x4016) && (address <= 0x4017)){
@@ -107,10 +115,9 @@ export class CPUBus implements IBus {
           this.ppu.addressLatch = 0x00;
           break;
         case 0x0003:
-          memory = this.ppu.regs.OAMADDR;
           break;
         case 0x0004:
-          memory = this.ppu.regs.OAMDATA;
+          memory = this.ppu.regs.OAMDATA[this.ppu.regs.OAMADDR];
           break;
         case 0x0005:
           break;

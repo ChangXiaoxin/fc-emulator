@@ -6,7 +6,7 @@ import path from 'path';
 import { FCEmulator } from './FC/FCEmulator';
 import { IOptions } from "./Interface/Emulator";
 import { displayControllerInput, drawImage } from './FC/display';
-import { debugCatchCPUBus, debugCatchDrawColorTable, debugCatchDrawLog, debugCatchDrawNameTables, debugCatchDrawPalette, debugCatchDrawPatternTables, debugCatchLogPath, debugCatchPPUBus } from './Interface/Debug';
+import { debugCatchCPUBus, debugCatchDrawColorTable, debugCatchDrawLog, debugCatchDrawNameTables, debugCatchDrawPalette, debugCatchDrawPatternTables, debugCatchLogPath, debugCatchOAMData, debugCatchPPUBus } from './Interface/Debug';
 import { getControllerInput } from './FC/controller';
 
 let currentPanel: vscode.WebviewPanel | undefined = undefined;
@@ -93,8 +93,8 @@ export function activate(context: vscode.ExtensionContext) {
     };
     // const rom_path = path.join(context.extensionPath, 'src', 'test', 'Super Mario Bros.nes');
     // const rom_path = path.join(context.extensionPath, 'src', 'test', '(J) Ice Climber.nes');
-    // const rom_path = path.join(context.extensionPath, 'src', 'test', '(Ch) Tank 1990.nes');
-    const rom_path = path.join(context.extensionPath, 'src', 'test', 'nestest.nes');
+    const rom_path = path.join(context.extensionPath, 'src', 'test', '(Ch) Tank 1990.nes');
+    // const rom_path = path.join(context.extensionPath, 'src', 'test', 'nestest.nes');
     var fc_data = fs.readFileSync(rom_path);
     // Debug log
     const log_path = path.join(context.extensionPath, 'src', 'test', 'run.log');
@@ -142,6 +142,7 @@ export function activate(context: vscode.ExtensionContext) {
       debugCatchDrawPatternTables(fcEmulator.ppu.ColorTable, 0x00, palettesIndex);
       debugCatchDrawPatternTables(fcEmulator.ppu.ColorTable, 0x01, palettesIndex);
       debugCatchDrawLog();
+      debugCatchOAMData(fcEmulator.ppu.regs.OAMDATA);
       debugCatchDrawNameTables(fcEmulator.ppu.ColorTable, 0, 0, fcEmulator.ppu.tramAddr, fcEmulator.ppu.fineX);
       debugCatchDrawNameTables(fcEmulator.ppu.ColorTable, 0, 1, fcEmulator.ppu.tramAddr, fcEmulator.ppu.fineX);
       debugCatchDrawNameTables(fcEmulator.ppu.ColorTable, 1, 0, fcEmulator.ppu.tramAddr, fcEmulator.ppu.fineX);

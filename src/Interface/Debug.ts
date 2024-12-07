@@ -2,8 +2,8 @@ import * as fs from 'fs';
 import { IBus } from './Bus';
 import { uint16, uint8 } from './typedef';
 import { Regs } from '../FC/CPU2A03';
-import { drawColorPalettes, drawLogs, drawNameTables, drawPalettes, drawPatternTables } from '../FC/display';
-import { LOOPYREG } from '../FC/PPU2C02';
+import { drawColorPalettes, drawLogs, drawNameTables, drawOAMData, drawPalettes, drawPatternTables } from '../FC/display';
+import { LOOPYREG, PPUReg } from '../FC/PPU2C02';
 
 const LOG_SIZE = 10;
 export interface LOGS {
@@ -462,6 +462,10 @@ export function debugCatchDrawPalette(Palettes: any, index: uint8){
   }
   palettes[32*4] = index;
   drawPalettes(palettes);
+}
+
+export function debugCatchOAMData(OAMdata: Uint8Array) {
+  drawOAMData(OAMdata);
 }
 
 export function copyLoopyReg(dst:LOOPYREG, src:LOOPYREG){

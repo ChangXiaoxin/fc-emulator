@@ -10,6 +10,7 @@ import { debugCatchCPUBus, debugCatchDrawColorTable, debugCatchDrawLog, debugCat
 import { getControllerInput } from './FC/controller';
 
 let currentPanel: vscode.WebviewPanel | undefined = undefined;
+let currentFC: FCEmulator | undefined = undefined;
 let running:boolean = false;
 let runstep:boolean = true;
 let refreshPatternTable:boolean = false;
@@ -65,8 +66,8 @@ export function activate(context: vscode.ExtensionContext) {
     currentPanel.onDidDispose(
       () => {
         currentPanel = undefined;
+        currentFC = undefined;
         clearInterval(intervalEmulator);
-        clearInterval(intervalPatternTable);
         running = false;
         runstep = true;
 	      refreshPatternTable = false;
@@ -101,7 +102,10 @@ export function activate(context: vscode.ExtensionContext) {
     fs.writeFileSync(log_path, "");
     debugCatchLogPath(log_path);
 
-    let fcEmulator = new FCEmulator(fc_data, fc_options);
+    if (!currentFC){
+      currentFC = new FCEmulator(fc_data, fc_options);
+    }
+    let fcEmulator = currentFC;
     const runEmulator = () =>{
       // 60 Hz
       if (fcEmulator.clocks%3 === 0){
@@ -152,15 +156,7 @@ export function activate(context: vscode.ExtensionContext) {
 
     debugCatchCPUBus(fcEmulator.cpuBus);
 	  debugCatchPPUBus(fcEmulator.ppuBus);
-	  const updatePatternTable = () =>{
-		if(refreshPatternTable){
-			refreshPatternTable = false;
-			debugCatchDrawPatternTables(fcEmulator.ppu.ColorTable, 0x00, palettesIndex);
-			debugCatchDrawPatternTables(fcEmulator.ppu.ColorTable, 0x01, palettesIndex);
-		}
-	};
-  const intervalPatternTable = setInterval(updatePatternTable, 1000);
-	debugCatchDrawColorTable(fcEmulator.ppu.ColorTable);
+	  debugCatchDrawColorTable(fcEmulator.ppu.ColorTable);
   }));
 }
 

@@ -1,8 +1,8 @@
 
 const vscode = acquireVsCodeApi();
 const cvs = document.getElementById('cvs');
-cvs.width = 2000;
-cvs.height = 1200;
+cvs.width = 1600;
+cvs.height = 750;
 const ctx = cvs.getContext('2d');
 const LOG_SIZE = 10;
 const LOG_X = 520;
@@ -29,6 +29,8 @@ const NAME_TABLE_Y = GAME_Y;
 
 const OAM_X = NAME_TABLE_X;
 const OAM_Y = NAME_TABLE_Y + 20 + 240*2;
+
+const DISPLAY_CANVAS_RANGE = false;
 
 window.addEventListener('load', init);
 document.addEventListener("keydown", event =>{
@@ -75,8 +77,10 @@ function handleCPURunLog(cpulog){
 
 function handleColorPalettes(ColorPalettes){
   if (ColorPalettes){
-    // ctx.fillStyle = "red";
-    // ctx.fillRect(0, 0, cvs.width, cvs.height);
+    if(DISPLAY_CANVAS_RANGE){
+      ctx.fillStyle = "red";
+      ctx.fillRect(0, 0, cvs.width, cvs.height);
+    }
     let paletteImage = ctx.createImageData(COLOR_PALETTE_WIDTH * 16, COLOR_PALETTE_HEIGTH * 4);
     for (let i = 0; i < 4; i++){
       for (let j = 0; j < 16; j++){

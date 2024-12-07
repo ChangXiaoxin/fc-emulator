@@ -27,6 +27,9 @@ const PALETTE_TABLE_TILE_Y = 2;
 const NAME_TABLE_X = 1070;
 const NAME_TABLE_Y = GAME_Y;
 
+const OAM_X = NAME_TABLE_X;
+const OAM_Y = NAME_TABLE_Y + 20 + 240*2;
+
 window.addEventListener('load', init);
 document.addEventListener("keydown", event =>{
   vscode.postMessage({keypressed: event.code});
@@ -59,7 +62,7 @@ function handleCPURunLog(cpulog){
   if (cpulog){
     ctx.clearRect(LOG_X, LOG_Y + 20, 550, 220);
     ctx.fillStyle = "green";
-    ctx.fillRect(LOG_X + 20, LOG_Y + 228 - 15, 300, 18);
+    ctx.fillRect(LOG_X + 20, LOG_Y + 228 - 15, 350, 18);
     ctx.font = "20px Courier New";
     ctx.fillStyle = "white";
     ctx.fillText(cpulog[LOG_SIZE], LOG_X, LOG_Y + 40);
@@ -72,6 +75,8 @@ function handleCPURunLog(cpulog){
 
 function handleColorPalettes(ColorPalettes){
   if (ColorPalettes){
+    // ctx.fillStyle = "red";
+    // ctx.fillRect(0, 0, cvs.width, cvs.height);
     let paletteImage = ctx.createImageData(COLOR_PALETTE_WIDTH * 16, COLOR_PALETTE_HEIGTH * 4);
     for (let i = 0; i < 4; i++){
       for (let j = 0; j < 16; j++){
@@ -103,7 +108,7 @@ function handleColorPalettes(ColorPalettes){
 
 function handlePalettes(Palettes){
   if (Palettes){
-    let paletteImage = ctx.createImageData(PALETTE_RAM_WIDTH * 16, PALETTE_RAM_HEIGTH * 4);
+    let paletteImage = ctx.createImageData(PALETTE_RAM_WIDTH * 16, PALETTE_RAM_HEIGTH * 2);
     let border = 0x00;
     for (let i = 0; i < 2; i++){
       for (let j = 0; j < 16; j++){
@@ -126,8 +131,8 @@ function handlePalettes(Palettes){
         }
       }
     }
-    ctx.clearRect(PALETTE_RAM_X, PALETTE_RAM_Y, 30 + PALETTE_RAM_WIDTH*16, PALETTE_RAM_HEIGTH);
-    ctx.clearRect(PALETTE_RAM_X, PALETTE_RAM_Y + PALETTE_RAM_HEIGTH, 35, PALETTE_RAM_HEIGTH * 3);
+    ctx.clearRect(PALETTE_RAM_X, PALETTE_RAM_Y + 5, 30 + PALETTE_RAM_WIDTH*17, PALETTE_RAM_HEIGTH);
+    ctx.clearRect(PALETTE_RAM_X, PALETTE_RAM_Y + PALETTE_RAM_HEIGTH, 35, PALETTE_RAM_HEIGTH * 2);
     ctx.font = "11px Courier New";
     ctx.fillStyle = "white";
     for (let i = 0; i < 16; i++){
@@ -192,8 +197,29 @@ function handleControllerInput(controllerInput) {
 
 function handleOAMData(oamData) {
   if (oamData){
+    let x = 0;
+    let y = 0;
+    ctx.clearRect(OAM_X, OAM_Y-12, 512, 220);
+    ctx.font = "12px Courier New";
+    ctx.fillStyle = "white";
+    ctx.fillText("   |y   id  a   x   |y   id  a   x   |y   id  a   x   |y   id  a   x   ", OAM_X, OAM_Y);
+    ctx.fillText("---+----------------+----------------+----------------+----------------", OAM_X, OAM_Y+12);
     for (let index = 0; index < 64*4; index+=4) {
-      
+      if (x > 3){
+        x = 0;
+        y++;
+      }
+      if (y > 64/4){
+        y = 0;
+      }
+      if (x===0){
+        ctx.fillText((index>>2).toString(), OAM_X, OAM_Y + 12*(y+2));
+      }
+      ctx.fillText('|'+oamData[index + 0].toString(), OAM_X + 122*x + 22  , OAM_Y + 12*(y+2));
+      ctx.fillText(    oamData[index + 1].toString(), OAM_X + 122*x + 58  , OAM_Y + 12*(y+2));
+      ctx.fillText(    oamData[index + 2].toString(), OAM_X + 122*x + 87  , OAM_Y + 12*(y+2));
+      ctx.fillText(    oamData[index + 3].toString(), OAM_X + 122*x + 116 , OAM_Y + 12*(y+2));
+      x++;
     }
   }
 }

@@ -172,11 +172,12 @@ function drawImageWithTileCRT(image_w, image_h, tile_w, tile_h, image_in){
           let imageIndex = ((i*image_w*tile_h + j + h*image_w)*tile_w + w)*4;
           if (h === tile_h-1){
             // // Draw the pixel darker on the right bottom of the tile.
-            let sum = image_in[imageInIndex + 0] + image_in[imageInIndex + 1] + image_in[imageInIndex + 2];
+            // let sum = image_in[imageInIndex + 0] + image_in[imageInIndex + 1] + image_in[imageInIndex + 2];
             image.data[imageIndex + 0] = image_in[imageInIndex + 0];
             image.data[imageIndex + 1] = image_in[imageInIndex + 1];
             image.data[imageIndex + 2] = image_in[imageInIndex + 2];
-            image.data[imageIndex + 3] = (sum === 0) ? 0xFF : 0x88;
+            // image.data[imageIndex + 3] = (sum === 0) ? 0xFF : 0x88;
+            image.data[imageIndex + 3] = 0x8F;
           }
           else{
             image.data[imageIndex + 0] = image_in[imageInIndex + 0];

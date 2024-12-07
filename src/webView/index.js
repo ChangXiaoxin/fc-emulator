@@ -206,7 +206,7 @@ function handleOAMData(oamData) {
     ctx.clearRect(OAM_X, OAM_Y-12, 512, 220);
     ctx.font = "12px Courier New";
     ctx.fillStyle = "white";
-    ctx.fillText("   |y   id  a   x   |y   id  a   x   |y   id  a   x   |y   id  a   x   ", OAM_X, OAM_Y);
+    ctx.fillText("   |x   y   id  at  |x   y   id  at  |x   y   id  at  |x   y   id  at  ", OAM_X, OAM_Y);
     ctx.fillText("---+----------------+----------------+----------------+----------------", OAM_X, OAM_Y+12);
     for (let index = 0; index < 64*4; index+=4) {
       if (x > 3){
@@ -219,10 +219,10 @@ function handleOAMData(oamData) {
       if (x===0){
         ctx.fillText((index>>2).toString(), OAM_X, OAM_Y + 12*(y+2));
       }
-      ctx.fillText('|'+oamData[index + 0].toString(), OAM_X + 122*x + 22  , OAM_Y + 12*(y+2));
-      ctx.fillText(    oamData[index + 1].toString(), OAM_X + 122*x + 58  , OAM_Y + 12*(y+2));
-      ctx.fillText(    oamData[index + 2].toString(), OAM_X + 122*x + 87  , OAM_Y + 12*(y+2));
-      ctx.fillText(    oamData[index + 3].toString(), OAM_X + 122*x + 116 , OAM_Y + 12*(y+2));
+      ctx.fillText('|'+oamData[index + 3].toString(), OAM_X + 122*x + 22  , OAM_Y + 12*(y+2));
+      ctx.fillText(    oamData[index + 0].toString(), OAM_X + 122*x + 58  , OAM_Y + 12*(y+2));
+      ctx.fillText(    oamData[index + 1].toString(), OAM_X + 122*x + 87  , OAM_Y + 12*(y+2));
+      ctx.fillText(    oamData[index + 2].toString(), OAM_X + 122*x + 116 , OAM_Y + 12*(y+2));
       x++;
     }
   }

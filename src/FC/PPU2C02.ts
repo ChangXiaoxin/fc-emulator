@@ -169,22 +169,7 @@ export class PPU2C02{
 
     this.clocks++;
 
-    if (this.scanline === -1){
-      if (this.cycles === 1){
-        this.setStatusFlag(STATUSFlags.V, false);
-        this.setStatusFlag(STATUSFlags.O, false);
-        this.setStatusFlag(STATUSFlags.S, false);
-        for (let i = 0; i < 8; i++) {
-          this.spriteShifterPatternL[i] = 0x00;
-          this.spriteShifterPatternH[i] = 0x00;
-        }
-      }
-      else if ((this.isRendering()) && this.oddFrame && (this.cycles === 340)){
-        // skip to 0, 0 when rendering enabled.
-        this.scanline = 0;
-        this.cycles = 0;
-      }
-    }
+
 
     if((this.scanline >= -1) && (this.scanline < 240)){
 
@@ -431,12 +416,8 @@ export class PPU2C02{
     }
     /************************************************/
 
-    if (this.scanline === 241 && this.cycles === 1){
-      this.setStatusFlag(STATUSFlags.V, true);
-      if (this.getCtrlFlag(CTRLFlags.V)){
-        this.nmiReq = true;
-      }
-    }
+
+
 
     this.cycles++;
     if (this.cycles >= 341){
@@ -447,6 +428,28 @@ export class PPU2C02{
       this.scanline = -1;
       this.oddFrame = !this.oddFrame;
       this.frameDone = true;
+    }
+    if (this.scanline === 241 && this.cycles === 1){
+      this.setStatusFlag(STATUSFlags.V, true);
+      if (this.getCtrlFlag(CTRLFlags.V)){
+        this.nmiReq = true;
+      }
+    }
+    if (this.scanline === -1){
+      if (this.cycles === 1){
+        this.setStatusFlag(STATUSFlags.V, false);
+        this.setStatusFlag(STATUSFlags.O, false);
+        this.setStatusFlag(STATUSFlags.S, false);
+        for (let i = 0; i < 8; i++) {
+          this.spriteShifterPatternL[i] = 0x00;
+          this.spriteShifterPatternH[i] = 0x00;
+        }
+      }
+      else if ((this.isRendering()) && this.oddFrame && (this.cycles === 340)){
+        // skip to 0, 0 when rendering enabled.
+        this.scanline = 0;
+        this.cycles = 0;
+      }
     }
   }
 

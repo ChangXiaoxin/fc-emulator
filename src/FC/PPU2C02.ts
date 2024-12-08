@@ -265,7 +265,7 @@ export class PPU2C02{
               }
               this.spriteCount++;
             }
-            else {
+            else if (this.isRendering()){
               this.setStatusFlag(STATUSFlags.O, true);
             }
           }
@@ -405,8 +405,8 @@ export class PPU2C02{
       }
 
       if (this.spriteZeroFound && this.spriteZeroRendering) {
-        if (this.isRendering() && this.cycles < 158) {
-          if (!(this.getMaskFlag(MASKFlags.M) || this.getMaskFlag(MASKFlags.m))) {
+        if (this.isRendering() && this.cycles < 256) {
+          if (!(this.getMaskFlag(MASKFlags.M) && this.getMaskFlag(MASKFlags.m))) {
             if ((this.cycles>=9)){
               this.setStatusFlag(STATUSFlags.S, true);
             }

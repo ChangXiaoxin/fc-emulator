@@ -34,14 +34,15 @@ export class FCEmulator implements IEmulator {
 
   public clock(): void {
     this.ppu.clock();
-    if(this.ppu.nmiReq){
-      this.ppu.nmiReq = false;
-      this.cpu.nmi();
-    }
-
+    this.clocks += 1;
     if (this.clocks%3 === 0)
     {
-      if (this.cpuBus.DMAPupupu) {
+      if(this.ppu.nmiReq){
+        this.ppu.nmiReq = false;
+        this.cpu.nmi();
+        this.cpu.clock();
+      }
+      else if (this.cpuBus.DMAPupupu) {
         if (this.cpuBus.DMAEmpty) {
           if (this.clocks%2 === 1) {
             this.cpuBus.DMAEmpty = false;
@@ -65,7 +66,6 @@ export class FCEmulator implements IEmulator {
         this.cpu.clock();
       }
     }
-    this.clocks += 1;
   }
 
   public reset(): void {

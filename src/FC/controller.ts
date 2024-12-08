@@ -48,10 +48,10 @@ export function getControllerInput(controller: Controller, keypressed: string, k
         controller.setCtrlState(controllernum, CTRLBUTTON.START, true);
         break;
       case 'KeyJ':
-        controller.setCtrlState(controllernum, CTRLBUTTON.A, true);
+        controller.setCtrlState(controllernum, CTRLBUTTON.B, true);
         break;
       case 'KeyK':
-        controller.setCtrlState(controllernum, CTRLBUTTON.B, true);
+        controller.setCtrlState(controllernum, CTRLBUTTON.A, true);
         break;
     }
     switch (keyreleased) {
@@ -74,10 +74,10 @@ export function getControllerInput(controller: Controller, keypressed: string, k
         controller.setCtrlState(controllernum, CTRLBUTTON.START, false);
         break;
       case 'KeyJ':
-        controller.setCtrlState(controllernum, CTRLBUTTON.A, false);
+        controller.setCtrlState(controllernum, CTRLBUTTON.B, false);
         break;
       case 'KeyK':
-        controller.setCtrlState(controllernum, CTRLBUTTON.B, false);
+        controller.setCtrlState(controllernum, CTRLBUTTON.A, false);
         break;
     }
 }

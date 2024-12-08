@@ -11,9 +11,10 @@ import { getControllerInput } from './FC/controller';
 
 let currentPanel: vscode.WebviewPanel | undefined = undefined;
 let currentFC: FCEmulator | undefined = undefined;
+let currentTimer: any | undefined = undefined;
 let running:boolean = true;
 let runstep:boolean = true;
-let runInterval = 16;
+let runInterval = 15;
 let palettesIndex = 0;
 let dateLast = Date.now();
 // This method is called when your extension is activated
@@ -65,7 +66,7 @@ export function activate(context: vscode.ExtensionContext) {
       () => {
         currentPanel = undefined;
         currentFC = undefined;
-        clearInterval(intervalEmulator);
+        clearInterval(currentTimer);
         running = false;
         runstep = true;
       }
@@ -89,24 +90,24 @@ export function activate(context: vscode.ExtensionContext) {
       onFrame: (frame: Uint8Array) =>
       drawImage(frame),
     };
+    // const rom_path = path.join(context.extensionPath, 'src', 'testRom/ppu/rom_singles', '02-vbl_set_time.nes');
     const rom_path = path.join(context.extensionPath, 'src', 'test', 'Super Mario Bros.nes');
-    // const rom_path = path.join(context.extensionPath, 'src', 'test', '04.flip.nes');
     // const rom_path = path.join(context.extensionPath, 'src', 'test', '(J) Ice Climber.nes');
     // const rom_path = path.join(context.extensionPath, 'src', 'test', 'kung.nes');
     // const rom_path = path.join(context.extensionPath, 'src', 'test', '(Ch) Tank 1990.nes');
     // const rom_path = path.join(context.extensionPath, 'src', 'test', 'nestest.nes');
     var fc_data = fs.readFileSync(rom_path);
     // Debug log
-    const log_path = path.join(context.extensionPath, 'src', 'test', 'run.log');
-    fs.writeFileSync(log_path, "");
-    debugCatchLogPath(log_path);
+    // const log_path = path.join(context.extensionPath, 'src', 'test', 'run.log');
+    // fs.writeFileSync(log_path, "");
+    // debugCatchLogPath(log_path);
 
     if (!currentFC){
       currentFC = new FCEmulator(fc_data, fc_options);
 
       debugCatchCPUBus(currentFC.cpuBus);
       debugCatchPPUBus(currentFC.ppuBus);
-      debugCatchDrawColorTable(currentFC.ppu.ColorTable);
+      // debugCatchDrawColorTable(currentFC.ppu.ColorTable);
     }
     let fcEmulator = currentFC;
     const runEmulator = () =>{
@@ -123,40 +124,45 @@ export function activate(context: vscode.ExtensionContext) {
       // if((fcEmulator.ppu.isRendering())&& fcEmulator.ppu.oddFrame){
       //   runclock--;
       // }
-
+      let frame2 = false;
       if(running)
       {
         while((!fcEmulator.ppu.frameDone) && running){
+        // while (runclock--) {
           fcEmulator.clock();
+          // if((fcEmulator.ppu.frameDone) && (!frame2)){
+          //   frame2 = true;
+          //   fcEmulator.ppu.frameDone = false;
+          // }
         }
       }
-      else {
-        while(runstep){
-          if(fcEmulator.clocks !== 0 && fcEmulator.clocks%3 === 0 && fcEmulator.cpu.deferCycles === 0){
-            runstep = false;
-          }
-          fcEmulator.clock();
-        }
-      }
+      // else {
+      //   while(runstep){
+      //     if(fcEmulator.clocks !== 0 && fcEmulator.clocks%3 === 0 && fcEmulator.cpu.deferCycles === 0){
+      //       runstep = false;
+      //     }
+      //     fcEmulator.clock();
+      //   }
+      // }
       fcEmulator.ppu.frameDone = false;
       fcEmulator.option.onFrame(fcEmulator.ppu.displayOutput);
       // draw debug information.
-      debugCatchDrawLog();
-      let controllerinput = new Uint8Array(2).fill(0);
-      controllerinput[0] = 0x01;
-      controllerinput[1] = fcEmulator.controller.ctrlState[controllerinput[0]-1];
-      displayControllerInput(controllerinput);
-      controllerinput[0] = 0x02;
-      controllerinput[1] = fcEmulator.controller.ctrlState[controllerinput[0]-1];
-      displayControllerInput(controllerinput);
-      debugCatchDrawPalette(fcEmulator.ppu.ColorTable, palettesIndex);
-      debugCatchDrawPatternTables(fcEmulator.ppu.ColorTable, 0x00, palettesIndex);
-      debugCatchDrawPatternTables(fcEmulator.ppu.ColorTable, 0x01, palettesIndex);
-      debugCatchOAMData(fcEmulator.ppu.regs.OAMDATA);
-      debugCatchDrawNameTables(fcEmulator.ppu.ColorTable, 0, 0, fcEmulator.ppu.tramAddr, fcEmulator.ppu.fineX);
-      debugCatchDrawNameTables(fcEmulator.ppu.ColorTable, 0, 1, fcEmulator.ppu.tramAddr, fcEmulator.ppu.fineX);
-      debugCatchDrawNameTables(fcEmulator.ppu.ColorTable, 1, 0, fcEmulator.ppu.tramAddr, fcEmulator.ppu.fineX);
-      debugCatchDrawNameTables(fcEmulator.ppu.ColorTable, 1, 1, fcEmulator.ppu.tramAddr, fcEmulator.ppu.fineX);
+      // debugCatchDrawLog();
+      // let controllerinput = new Uint8Array(2).fill(0);
+      // controllerinput[0] = 0x01;
+      // controllerinput[1] = fcEmulator.controller.ctrlState[controllerinput[0]-1];
+      // displayControllerInput(controllerinput);
+      // controllerinput[0] = 0x02;
+      // controllerinput[1] = fcEmulator.controller.ctrlState[controllerinput[0]-1];
+      // displayControllerInput(controllerinput);
+      // debugCatchDrawPalette(fcEmulator.ppu.ColorTable, palettesIndex);
+      // debugCatchDrawPatternTables(fcEmulator.ppu.ColorTable, 0x00, palettesIndex);
+      // debugCatchDrawPatternTables(fcEmulator.ppu.ColorTable, 0x01, palettesIndex);
+      // debugCatchOAMData(fcEmulator.ppu.regs.OAMDATA);
+      // debugCatchDrawNameTables(fcEmulator.ppu.ColorTable, 0, 0, fcEmulator.ppu.tramAddr, fcEmulator.ppu.fineX);
+      // debugCatchDrawNameTables(fcEmulator.ppu.ColorTable, 0, 1, fcEmulator.ppu.tramAddr, fcEmulator.ppu.fineX);
+      // debugCatchDrawNameTables(fcEmulator.ppu.ColorTable, 1, 0, fcEmulator.ppu.tramAddr, fcEmulator.ppu.fineX);
+      // debugCatchDrawNameTables(fcEmulator.ppu.ColorTable, 1, 1, fcEmulator.ppu.tramAddr, fcEmulator.ppu.fineX);
 
       let dateInfo: number[] = new Array(2);
       let dateEnd = Date.now();
@@ -167,7 +173,9 @@ export function activate(context: vscode.ExtensionContext) {
       dateInfo[1] = framRate;
       debugCatchTime(dateInfo);
     };
-    const intervalEmulator = setInterval(runEmulator, runInterval);
+    if (!currentTimer) {
+      currentTimer = setInterval(runEmulator, runInterval);
+    }
   }));
 }
 

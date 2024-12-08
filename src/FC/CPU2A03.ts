@@ -1,5 +1,5 @@
 import { uint16, uint8 } from "../Interface/typedef";
-import { ADDR_MODE, debugCatchClocks, debugCatchCPURegs, debugCatchDataCode, debugCatchOpCode, debugCatchOpName, debugCatchRegs, debugCatchToLogFile, debugCatchToLogs } from '../Interface/Debug';
+//import { ADDR_MODE, //debugCatchClocks, //debugCatchCPURegs, //debugCatchDataCode, //debugCatchOpCode, //debugCatchOpName, //debugCatchRegs, //debugCatchToLogFile, //debugCatchToLogs } from '../Interface/Debug';
 import { CPUBus } from "./CPUBus";
 
 enum InterruptVector {
@@ -40,7 +40,7 @@ export class CPU2A03{
   private readonly regs = new Regs();
 
   constructor(cpubus: CPUBus){
-    debugCatchCPURegs(this.regs);
+    //debugCatchCPURegs(this.regs);
     this.bus = cpubus;
 
     this.regs.A = 0;
@@ -70,7 +70,7 @@ export class CPU2A03{
   public clock(): void {
 
     this.clocks++;
-    if (this.deferCycles === 0){
+    if (this.deferCycles <= 0){
       this.step();
     }
     this.deferCycles--;
@@ -129,11 +129,11 @@ export class CPU2A03{
   private step(): void {
     let address: uint16 = 0xF0000;
     // Debug log
-    debugCatchRegs();
-    debugCatchClocks(this.clocks);
+    //debugCatchRegs();
+    //debugCatchClocks(this.clocks);
 
     const opcode = this.bus.readByte(this.regs.PC++);
-    debugCatchOpCode(opcode);
+    //debugCatchOpCode(opcode);
     switch (opcode) {
       // row 0
       case 0x01:
@@ -1574,8 +1574,8 @@ export class CPU2A03{
         throw new Error(`Invalid opcode: ${opcode.toString(16).toUpperCase()}`);
     }
     // Debug log
-    // debugCatchToLogFile();
-    debugCatchToLogs();
+    // //debugCatchToLogFile();
+    //debugCatchToLogs();
   }
 
   private addCycles(cycle: number){
@@ -1589,7 +1589,7 @@ export class CPU2A03{
     // Absolute
     const address = this.bus.readWord(this.regs.PC);
     this.regs.PC += 2;
-    debugCatchDataCode(address, ADDR_MODE.ABS);
+    //debugCatchDataCode(address, ADDR_MODE.ABS);
     return address;
   }
   private aby(oops:boolean = false): uint16{
@@ -1602,7 +1602,7 @@ export class CPU2A03{
       this.addCycles(1);
     }
     this.regs.PC += 2;
-    debugCatchDataCode(address, ADDR_MODE.ABY);
+    //debugCatchDataCode(address, ADDR_MODE.ABY);
     return address;
   }
   private abx(oops:boolean = false): uint16{
@@ -1615,14 +1615,14 @@ export class CPU2A03{
       this.addCycles(1);
     }
     this.regs.PC += 2;
-    debugCatchDataCode(address, ADDR_MODE.ABX);
+    //debugCatchDataCode(address, ADDR_MODE.ABX);
     return address;
   }
   private imm(): uint16{
     // Immediate
     const address = this.regs.PC;
     this.regs.PC += 1;
-    debugCatchDataCode(this.bus.readByte(address), ADDR_MODE.IMM);
+    //debugCatchDataCode(this.bus.readByte(address), ADDR_MODE.IMM);
     return address;
   }
   private izx(): uint16{
@@ -1632,7 +1632,7 @@ export class CPU2A03{
     const peeked3 = this.bus.readByte((this.regs.X + peeked1 + 1) & 0xFF) << 8;
     const address = peeked3 | peeked2;
     this.regs.PC += 1;
-    debugCatchDataCode(address, ADDR_MODE.IZX);
+    //debugCatchDataCode(address, ADDR_MODE.IZX);
     return address;
   }
   private izy(oops:boolean = false): uint16{
@@ -1647,7 +1647,7 @@ export class CPU2A03{
       this.addCycles(1);
     }
     this.regs.PC += 1;
-    debugCatchDataCode(address, ADDR_MODE.IZY);
+    //debugCatchDataCode(address, ADDR_MODE.IZY);
     return address;
   }
   private ind(): uint16{
@@ -1670,35 +1670,35 @@ export class CPU2A03{
     else{
       address = this.bus.readWord(memory);
     }
-    debugCatchDataCode(memory, ADDR_MODE.IND);
+    //debugCatchDataCode(memory, ADDR_MODE.IND);
     return address;
   }
   private zp(): uint16{
     // Zero Page
     const address = this.bus.readByte(this.regs.PC) & 0xFF;
     this.regs.PC += 1;
-    debugCatchDataCode(address, ADDR_MODE.ZP);
+    //debugCatchDataCode(address, ADDR_MODE.ZP);
     return address;
   }
   private zpx(): uint16{
     // Zero page indexed
     const address = (this.bus.readByte(this.regs.PC) + this.regs.X) & 0xFF;
     this.regs.PC += 1;
-    debugCatchDataCode(address, ADDR_MODE.ZPX);
+    //debugCatchDataCode(address, ADDR_MODE.ZPX);
     return address;
   }
   private zpy(): uint16{
     // Zero page indexed
     const address = (this.bus.readByte(this.regs.PC) + this.regs.Y) & 0xFF;
     this.regs.PC += 1;
-    debugCatchDataCode(address, ADDR_MODE.ZPY);
+    //debugCatchDataCode(address, ADDR_MODE.ZPY);
     return address;
   }
   private rel(): uint8{
     // Relative
     const address = this.bus.readByte(this.regs.PC) & 0xFF;
     this.regs.PC += 1;
-    debugCatchDataCode(address, ADDR_MODE.REL);
+    //debugCatchDataCode(address, ADDR_MODE.REL);
     return address;
   }
 
@@ -1709,70 +1709,70 @@ export class CPU2A03{
 
   }
   private JMP(address: uint16){
-    debugCatchOpName("JMP");
+    //debugCatchOpName("JMP");
     this.regs.PC = address;
   }
   private LDX(address: uint16){
-    debugCatchOpName("LDX");
+    //debugCatchOpName("LDX");
     this.regs.X = this.bus.readByte(address);
     this.checkResultZN(this.regs.X);
   }
   private LDA(address: uint16){
-    debugCatchOpName("LDA");
+    //debugCatchOpName("LDA");
     this.regs.A = this.bus.readByte(address);
     this.checkResultZN(this.regs.A);
   }
   private LDY(address: uint16){
-    debugCatchOpName("LDY");
+    //debugCatchOpName("LDY");
     this.regs.Y = this.bus.readByte(address);
     this.checkResultZN(this.regs.Y);
   }
   private STX(address: uint16){
-    debugCatchOpName("STX");
+    //debugCatchOpName("STX");
     this.bus.writeByte(address, this.regs.X);
   }
   private STY(address: uint16){
-    debugCatchOpName("STY");
+    //debugCatchOpName("STY");
     this.bus.writeByte(address, this.regs.Y);
   }
   private STA(address: uint16){
-    debugCatchOpName("STA");
+    //debugCatchOpName("STA");
     this.bus.writeByte(address, this.regs.A);
   }
   private BIT(address: uint16){
-    debugCatchOpName("BIT");
+    //debugCatchOpName("BIT");
     var memory = this.bus.readByte(address);
     this.setFlag(Flags.Z, (this.regs.A & memory) === 0x00);
     this.setFlag(Flags.N, (memory & Flags.N) === Flags.N);
     this.setFlag(Flags.V, (memory & Flags.V) === Flags.V);
   }
   private JSR(address: uint16){
-    debugCatchOpName("JSR");
+    //debugCatchOpName("JSR");
     this.pushWord(this.regs.PC - 1);
     this.regs.PC = address;
   }
   private NOP(unoffical:boolean = false){
     // *NOP for unoffical opCode.
-    debugCatchOpName(unoffical? "*NOP" : "NOP");
+    //debugCatchOpName(unoffical? "*NOP" : "NOP");
   }
   private CLC(){
-    debugCatchOpName("CLC");
+    //debugCatchOpName("CLC");
     this.setFlag(Flags.C, false);
   }
   private CLD(){
-    debugCatchOpName("CLD");
+    //debugCatchOpName("CLD");
     this.setFlag(Flags.D, false);
   }
   private CLV(){
-    debugCatchOpName("CLV");
+    //debugCatchOpName("CLV");
     this.setFlag(Flags.V, false);
   }
   private SEC(){
-    debugCatchOpName("SEC");
+    //debugCatchOpName("SEC");
     this.setFlag(Flags.C, true);
   }
   private SEI(){
-    debugCatchOpName("SEI");
+    //debugCatchOpName("SEI");
     /* FIXME: The effect of changing this flag I is delayed 1 instruction.
      * SEI sets the interrupt disable flag, preventing the CPU from handling hardware IRQs.
      * The effect of changing this flag is delayed one instruction because the flag is
@@ -1781,7 +1781,7 @@ export class CPU2A03{
     this.setFlag(Flags.I, true);
   }
   private CLI(){
-    debugCatchOpName("CLI");
+    //debugCatchOpName("CLI");
     /* FIXME: The effect of changing this flag I is delayed 1 instruction.
      * CLI clears the interrupt disable flag, enabling the CPU to handle hardware IRQs.
      * The effect of changing this flag is delayed one instruction because the flag is
@@ -1791,24 +1791,24 @@ export class CPU2A03{
     this.setFlag(Flags.I, false);
   }
   private SED(){
-    debugCatchOpName("SED");
+    //debugCatchOpName("SED");
     this.setFlag(Flags.D, true);
   }
   private PHP(){
-    debugCatchOpName("PHP");
+    //debugCatchOpName("PHP");
     this.pushByte(this.regs.P | Flags.B | Flags.U);
   }
   private PHA(){
-    debugCatchOpName("PHA");
+    //debugCatchOpName("PHA");
     this.pushByte(this.regs.A);
   }
   private PLA(){
-    debugCatchOpName("PLA");
+    //debugCatchOpName("PLA");
     this.regs.A = this.popByte();
     this.checkResultZN(this.regs.A);
   }
   private PLP(){
-    debugCatchOpName("PLP");
+    //debugCatchOpName("PLP");
     let popedP = this.popByte();
     this.setFlag(Flags.C, (popedP & Flags.C) === Flags.C);
     this.setFlag(Flags.Z, (popedP & Flags.Z) === Flags.Z);
@@ -1819,12 +1819,12 @@ export class CPU2A03{
     this.setFlag(Flags.N, (popedP & Flags.N) === Flags.N);
   }
   private RTI(){
-    debugCatchOpName("RTI");
+    //debugCatchOpName("RTI");
     this.regs.P = (this.regs.P & 0x30) | (this.popByte() & 0xCF);
     this.regs.PC = this.popWord();
   }
   private LSR(address: uint16 = 0xF0000){
-    debugCatchOpName("LSR");
+    //debugCatchOpName("LSR");
     if (address === 0xF0000){
       this.setFlag(Flags.C, ((this.regs.A & 0x01) === 0x01));
       this.regs.A = 0xFF & (this.regs.A >> 1);
@@ -1839,7 +1839,7 @@ export class CPU2A03{
     }
   }
   private ASL(address: uint16 = 0xF0000){
-    debugCatchOpName("ASL");
+    //debugCatchOpName("ASL");
     if (address === 0xF0000){
       this.setFlag(Flags.C, ((this.regs.A & 0x80) === 0x80));
       this.regs.A = 0xFF & (this.regs.A << 1);
@@ -1854,7 +1854,7 @@ export class CPU2A03{
     }
   }
   private ROR(address: uint16 = 0xF0000){
-    debugCatchOpName("ROR");
+    //debugCatchOpName("ROR");
     if (address === 0xF0000){
       let flagC = this.isFlagSet(Flags.C);
       this.setFlag(Flags.C, ((this.regs.A & 0x01) === 0x01));
@@ -1877,7 +1877,7 @@ export class CPU2A03{
     }
   }
   private ROL(address: uint16 = 0xF0000){
-    debugCatchOpName("ROL");
+    //debugCatchOpName("ROL");
     if (address === 0xF0000){
       let flagC = this.isFlagSet(Flags.C);
       this.setFlag(Flags.C, ((this.regs.A & 0x80) === 0x80));
@@ -1900,12 +1900,12 @@ export class CPU2A03{
     }
   }
   private AND(address: uint16){
-    debugCatchOpName("AND");
+    //debugCatchOpName("AND");
     this.regs.A = this.regs.A & this.bus.readByte(address);
     this.checkResultZN(this.regs.A);
   }
   private ADC(address: uint16){
-    debugCatchOpName("ADC");
+    //debugCatchOpName("ADC");
     var flagC = this.isFlagSet(Flags.C) ? 1 : 0;
     var memory = this.bus.readByte(address);
     var result = this.regs.A + memory + flagC;
@@ -1915,7 +1915,7 @@ export class CPU2A03{
     this.checkResultZN(this.regs.A);
   }
   private SBC(address: uint16){
-    debugCatchOpName("SBC");
+    //debugCatchOpName("SBC");
     var flagC = this.isFlagSet(Flags.C) ? 1 : 0;
     var memory = this.bus.readByte(address);
     var result = this.regs.A + (~memory) + flagC;
@@ -1925,124 +1925,124 @@ export class CPU2A03{
     this.checkResultZN(this.regs.A);
   }
   private ORA(address: uint16){
-    debugCatchOpName("ORA");
+    //debugCatchOpName("ORA");
     this.regs.A |= this.bus.readByte(address);
     this.checkResultZN(this.regs.A);
   }
   private EOR(address: uint16){
-    debugCatchOpName("EOR");
+    //debugCatchOpName("EOR");
     this.regs.A ^= this.bus.readByte(address);
     this.checkResultZN(this.regs.A);
   }
   private CMP(address: uint16){
-    debugCatchOpName("CMP");
+    //debugCatchOpName("CMP");
     this.CMPHelper(this.regs.A, address);
   }
   private CPY(address: uint16){
-    debugCatchOpName("CPY");
+    //debugCatchOpName("CPY");
     this.CMPHelper(this.regs.Y, address);
   }
   private CPX(address: uint16){
-    debugCatchOpName("CPX");
+    //debugCatchOpName("CPX");
     this.CMPHelper(this.regs.X, address);
   }
   private INY(){
-    debugCatchOpName("INY");
+    //debugCatchOpName("INY");
     this.regs.Y = 0xFF & (this.regs.Y + 1);
     this.checkResultZN(this.regs.Y);
   }
   private INX(){
-    debugCatchOpName("INX");
+    //debugCatchOpName("INX");
     this.regs.X = 0xFF & (this.regs.X + 1);
     this.checkResultZN(this.regs.X);
   }
   private INC(address: uint16){
-    debugCatchOpName("INC");
+    //debugCatchOpName("INC");
     let memory = this.bus.readByte(address);
     memory = 0xFF & (memory + 1);
     this.bus.writeByte(address, memory);
     this.checkResultZN(memory);
   }
   private DEY(){
-    debugCatchOpName("DEY");
+    //debugCatchOpName("DEY");
     this.regs.Y = 0xFF & (this.regs.Y - 1);
     this.checkResultZN(this.regs.Y);
   }
   private DEX(){
-    debugCatchOpName("DEX");
+    //debugCatchOpName("DEX");
     this.regs.X = 0xFF & (this.regs.X - 1);
     this.checkResultZN(this.regs.X);
   }
   private DEC(address: uint16){
-    debugCatchOpName("DEC");
+    //debugCatchOpName("DEC");
     let memory = this.bus.readByte(address);
     memory = memory - 1;
     this.bus.writeByte(address, memory & 0xFF);
     this.checkResultZN(memory);
   }
   private TAY(){
-    debugCatchOpName("TAY");
+    //debugCatchOpName("TAY");
     this.regs.Y = this.regs.A;
     this.checkResultZN(this.regs.Y);
   }
   private TAX(){
-    debugCatchOpName("TAX");
+    //debugCatchOpName("TAX");
     this.regs.X = this.regs.A;
     this.checkResultZN(this.regs.X);
   }
   private TXA(){
-    debugCatchOpName("TXA");
+    //debugCatchOpName("TXA");
     this.regs.A = this.regs.X;
     this.checkResultZN(this.regs.A);
   }
   private TYA(){
-    debugCatchOpName("TYA");
+    //debugCatchOpName("TYA");
     this.regs.A = this.regs.Y;
     this.checkResultZN(this.regs.A);
   }
   private TSX(){
-    debugCatchOpName("TSX");
+    //debugCatchOpName("TSX");
     this.regs.X = this.regs.S;
     this.checkResultZN(this.regs.X);
   }
   private TXS(){
-    debugCatchOpName("TXS");
+    //debugCatchOpName("TXS");
     this.regs.S = this.regs.X;
   }
   private BCS(address: uint16){
-    debugCatchOpName("BCS");
+    //debugCatchOpName("BCS");
     this.branchHelper(this.isFlagSet(Flags.C), address);
   }
   private BCC(address: uint16){
-    debugCatchOpName("BCC");
+    //debugCatchOpName("BCC");
     this.branchHelper(!this.isFlagSet(Flags.C), address);
   }
   private BEQ(address: uint16){
-    debugCatchOpName("BEQ");
+    //debugCatchOpName("BEQ");
     this.branchHelper(this.isFlagSet(Flags.Z), address);
   }
   private BNE(address: uint16){
-    debugCatchOpName("BNE");
+    //debugCatchOpName("BNE");
     this.branchHelper(!this.isFlagSet(Flags.Z), address);
   }
   private BVS(address: uint16){
-    debugCatchOpName("BVS");
+    //debugCatchOpName("BVS");
     this.branchHelper(this.isFlagSet(Flags.V), address);
   }
   private BVC(address: uint16){
-    debugCatchOpName("BVC");
+    //debugCatchOpName("BVC");
     this.branchHelper(!this.isFlagSet(Flags.V), address);
   }
   private BPL(address: uint16){
-    debugCatchOpName("BPL");
+    //debugCatchOpName("BPL");
     this.branchHelper(!this.isFlagSet(Flags.N), address);
   }
   private BMI(address: uint16){
-    debugCatchOpName("BMI");
+    //debugCatchOpName("BMI");
     this.branchHelper(this.isFlagSet(Flags.N), address);
   }
   private RTS(){
-    debugCatchOpName("RTS");
+    //debugCatchOpName("RTS");
     this.regs.PC = this.popWord();
     this.regs.PC += 1;
   }
@@ -2053,53 +2053,53 @@ export class CPU2A03{
   private LAX(address: uint16){
     this.LDA(address);
     this.TAX();
-    debugCatchOpName("*LAX");  // put the end to catch the unoffical code *LAX.
+    //debugCatchOpName("*LAX");  // put the end to catch the unoffical code *LAX.
   }
   private SAX(address: uint16){
-    debugCatchOpName("*SAX");
+    //debugCatchOpName("*SAX");
     this.bus.writeByte(address, this.regs.A & this.regs.X);
   }
   private DCP(address: uint16){
     this.DEC(address);
     this.CMP(address);
-    debugCatchOpName("*DCP");
+    //debugCatchOpName("*DCP");
   }
   private ISC(address: uint16){
     this.INC(address);
     this.SBC(address);
-    debugCatchOpName("*ISC");
+    //debugCatchOpName("*ISC");
   }
   private SLO(address: uint16){
     this.ASL(address);
     this.ORA(address);
-    debugCatchOpName("*SLO");
+    //debugCatchOpName("*SLO");
   }
   private RLA(address: uint16){
     this.ROL(address);
     this.AND(address);
-    debugCatchOpName("*RLA");
+    //debugCatchOpName("*RLA");
   }
   private SRE(address: uint16){
     this.LSR(address);
     this.EOR(address);
-    debugCatchOpName("*SRE");
+    //debugCatchOpName("*SRE");
   }
   private RRA(address: uint16){
     this.ROR(address);
     this.ADC(address);
-    debugCatchOpName("*RRA");
+    //debugCatchOpName("*RRA");
   }
   private ANC(address: uint16){
     this.AND(address);
     this.setFlag(Flags.C, this.isFlagSet(Flags.N));
-    debugCatchOpName("*ANC");
+    //debugCatchOpName("*ANC");
   }
   private ALR(address: uint16){
     // Unfortunately, this instruction doesn't work reliably on at least
     // the UM6561AF-2 famiclone chip, and possibly others.
     this.AND(address);
     this.LSR();
-    debugCatchOpName("*ALR");
+    //debugCatchOpName("*ALR");
   }
   private ARR(address: uint16){
     this.AND(address);
@@ -2117,7 +2117,7 @@ export class CPU2A03{
     let bit6 = ((memory & 0x60) === 0x60);
     let bit5 = ((memory & 0x50) === 0x50);
     this.setFlag(Flags.V, bit5!==bit6);
-    debugCatchOpName("*ARR");
+    //debugCatchOpName("*ARR");
   }
   private XAA(address: uint16){
     // have unpredictable behaviour,
@@ -2125,31 +2125,31 @@ export class CPU2A03{
     // this.AND(address);
     this.regs.A = this.regs.X & this.regs.A & this.bus.readByte(address);
     this.checkResultZN(this.regs.A);
-    debugCatchOpName("*XAA");
+    //debugCatchOpName("*XAA");
   }
   private AHX(address: uint16){
     // TODO: not defined.
-    debugCatchOpName("*AHX");
+    //debugCatchOpName("*AHX");
   }
   private TAS(address: uint16){
     // TODO: not defined.
-    debugCatchOpName("*TAS");
+    //debugCatchOpName("*TAS");
   }
   private SHX(address: uint16){
     // TODO: not defined.
-    debugCatchOpName("*SHX");
+    //debugCatchOpName("*SHX");
   }
   private SHY(address: uint16){
     // TODO: not defined.
-    debugCatchOpName("*SHY");
+    //debugCatchOpName("*SHY");
   }
   private LAS(address: uint16){
     // TODO: not defined.
-    debugCatchOpName("*LAS");
+    //debugCatchOpName("*LAS");
   }
   private AXS(address: uint16){
     // TODO: not defined.
-    debugCatchOpName("*AXS");
+    //debugCatchOpName("*AXS");
   }
   /************************************************/
   /* Internal Helper.

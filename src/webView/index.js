@@ -1,8 +1,6 @@
 
 const vscode = acquireVsCodeApi();
 const cvs = document.getElementById('cvs');
-cvs.width = 1600;
-cvs.height = 750;
 const ctx = cvs.getContext('2d');
 const LOG_SIZE = 10;
 const LOG_X = 520;
@@ -17,8 +15,8 @@ const PALETTE_RAM_WIDTH = 30;
 const PALETTE_RAM_HEIGTH = 30;
 const GAME_X = 0;
 const GAME_Y = 30;
-const GAME_TILE_X = 2;
-const GAME_TILE_Y = 2;
+const GAME_TILE_X = 4;
+const GAME_TILE_Y = 4;
 const PALETTE_TABLE_X = 520;
 const PALETTE_TABLE_Y = 250;
 const PALETTE_TABLE_TILE_X = 2;
@@ -30,8 +28,11 @@ const NAME_TABLE_Y = GAME_Y;
 const OAM_X = NAME_TABLE_X;
 const OAM_Y = NAME_TABLE_Y + 20 + 240*2;
 
-const DATE_INFO_X = 470;
-const DATE_INFO_Y = 525;
+const DATE_INFO_X = 0;
+const DATE_INFO_Y = 12;
+
+cvs.width =(256 * GAME_TILE_X);
+cvs.height = (240 * GAME_TILE_Y) + 45 + 24;
 
 let frameRate = new Array(31).fill(0);
 let timeDiff = new Array(31).fill(0);
@@ -66,14 +67,14 @@ document.addEventListener("keyup", event =>{
 window.addEventListener("message", event =>{
   const message = event.data;
   handleGameVideo(message.imageData);
-  handleCPURunLog(message.CPULOG);
-  handleColorPalettes(message.ColorPalettes);
-  handlePalettes(message.Palettes);
-  handlePatternImage(message.patternImage);
-  handlePatternImage2(message.patternImage2);
-  handleNameTable(message.nameTable);
-  handleControllerInput(message.controllerInput);
-  handleOAMData(message.oamData);
+  // handleCPURunLog(message.CPULOG);
+  // handleColorPalettes(message.ColorPalettes);
+  // handlePalettes(message.Palettes);
+  // handlePatternImage(message.patternImage);
+  // handlePatternImage2(message.patternImage2);
+  // handleNameTable(message.nameTable);
+  // handleControllerInput(message.controllerInput);
+  // handleOAMData(message.oamData);
   handleDateInfo(message.dateInfo);
 });
 

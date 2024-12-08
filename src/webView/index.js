@@ -30,6 +30,30 @@ const NAME_TABLE_Y = GAME_Y;
 const OAM_X = NAME_TABLE_X;
 const OAM_Y = NAME_TABLE_Y + 20 + 240*2;
 
+const DATE_INFO_X = 470;
+const DATE_INFO_Y = 525;
+
+let frameRate = new Array(31).fill(0);
+let timeDiff = new Array(31).fill(0);
+
+function insertFrame(frame){
+  frameRate[30]-=frameRate[0];
+  for(let i = 0; i < 29; i++){
+    frameRate[i] = frameRate[i+1];
+  }
+  frameRate[29] = frame;
+  frameRate[30] += frame;
+}
+
+function insertTimeDiff(diff){
+  timeDiff[30]-=timeDiff[0];
+  for(let i = 0; i < 29; i++){
+    timeDiff[i] = timeDiff[i+1];
+  }
+  timeDiff[29] = diff;
+  timeDiff[30] += diff;
+}
+
 const DISPLAY_CANVAS_RANGE = false;
 
 window.addEventListener('load', init);
@@ -50,8 +74,20 @@ window.addEventListener("message", event =>{
   handleNameTable(message.nameTable);
   handleControllerInput(message.controllerInput);
   handleOAMData(message.oamData);
-
+  handleDateInfo(message.dateInfo);
 });
+
+function handleDateInfo(dateInfo){
+  if (dateInfo){
+    insertFrame(dateInfo[1]);
+    insertTimeDiff(dateInfo[0]);
+    ctx.clearRect(DATE_INFO_X, DATE_INFO_Y-12, 120, 30);
+    ctx.font = "12px Courier New";
+    ctx.fillStyle = "white";
+    ctx.fillText((timeDiff[30]/30).toFixed(2), DATE_INFO_X, DATE_INFO_Y);
+    ctx.fillText((frameRate[30]/30).toFixed(2), DATE_INFO_X, DATE_INFO_Y + 12);
+  }
+}
 
 function handleGameVideo(imageData){
   if (imageData){

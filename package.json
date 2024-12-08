@@ -28,10 +28,6 @@
         "title": "FC Emulator: Step"
       },
       {
-        "command": "fc-emulator.refreshPatternTable",
-        "title": "FC Emulator: Refresh Pattern Table"
-      },
-      {
         "command": "fc-emulator.movePalettes",
         "title": "FC Emulator: Move Used Pattern"
       }

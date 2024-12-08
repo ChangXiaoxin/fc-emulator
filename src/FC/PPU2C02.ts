@@ -111,6 +111,12 @@ export class PPU2C02{
   public bgShifterAttribL:uint16 = 0x0000;
   public bgShifterAttribH:uint16 = 0x0000;
   public frameDone = false;
+  public scanSprite: Uint8Array = new Uint8Array(8 * 4).fill(0);
+  public spriteCount: uint8 = 0;
+  public spriteShifterPatternL: Uint8Array = new Uint8Array(8).fill(0);
+  public spriteShifterPatternH: Uint8Array = new Uint8Array(8).fill(0);
+  public spriteZeroFound = false;
+  public spriteZeroRendering = false;
 
   constructor(ppubus:PPUBus){
     this.bus = ppubus;
@@ -121,12 +127,9 @@ export class PPU2C02{
     this.regs.MASK = 0x00;
     this.regs.STATUS = 0x00;
     this.regs.OAMADDR = 0x00;
-    this.regs.OAMDATA = new Uint8Array(64*OAMINDEX.SIZE).fill(0);
+    this.regs.OAMDATA = new Uint8Array(64*OAMINDEX.SIZE).fill(0xFF);
     this.regs.OAMDMA = 0x00;
     this.regs.DATA = 0x00;
-    this.addressLatch = 0x00;
-    this.dataBuffer = 0x00;
-    this.oddFrame = false;
   }
 
   public reset(): void {
@@ -154,17 +157,27 @@ export class PPU2C02{
     this.bgShifterPatternH = 0x0000;
     this.bgShifterAttribL = 0x0000;
     this.bgShifterAttribH = 0x0000;
+    this.scanSprite.fill(0);
+    this.spriteCount = 0;
+    this.spriteShifterPatternL.fill(0);
+    this.spriteShifterPatternH.fill(0);
+    this.spriteZeroFound = false;
+    this.spriteZeroRendering = false;
   }
 
   public clock(): void {
-
-    this.frameDone = false;
 
     this.clocks++;
 
     if (this.scanline === -1){
       if (this.cycles === 1){
         this.setStatusFlag(STATUSFlags.V, false);
+        this.setStatusFlag(STATUSFlags.O, false);
+        this.setStatusFlag(STATUSFlags.S, false);
+        for (let i = 0; i < 8; i++) {
+          this.spriteShifterPatternL[i] = 0x00;
+          this.spriteShifterPatternH[i] = 0x00;
+        }
       }
       else if ((this.isRendering()) && this.oddFrame && (this.cycles === 340)){
         // skip to 0, 0 when rendering enabled.
@@ -229,11 +242,109 @@ export class PPU2C02{
           this.transAddressY();
         }
       }
+      if ((this.scanline === 338) || (this.scanline === 340)) {
+        this.bgTileId = this.bus.readByte(0x2000 | (this.vramAddr.getloopy() & 0x0FFF));
+      }
+
+      /*********** Foreground rendering: Sprite *************/
+      // TODO: Rendering the sprites in a precise cycle.
+      if (this.cycles === 257 && this.scanline >=0){
+        this.scanSprite.fill(0xFF);
+        this.spriteCount = 0;
+        let OAMIndex = 0;
+        this.spriteZeroFound = false;
+        let spriteHight = (this.getCtrlFlag(CTRLFlags.H) ? 16 : 8);
+        this.spriteZeroFound = this.scanline - this.regs.OAMDATA[OAMINDEX.Y] >= 0;
+        this.spriteZeroFound &&= this.scanline - this.regs.OAMDATA[OAMINDEX.Y] < spriteHight;
+        while ((OAMIndex < 64) && (this.spriteCount < 9)) {
+          let diff = this.scanline - this.regs.OAMDATA[OAMIndex*OAMINDEX.SIZE + OAMINDEX.Y];
+          if ((diff >= 0) && (diff < spriteHight)){
+            if (this.spriteCount < 8){
+              for (let index = 0; index < OAMINDEX.SIZE; index++) {
+                this.scanSprite[this.spriteCount*OAMINDEX.SIZE + index] = this.regs.OAMDATA[OAMIndex*OAMINDEX.SIZE + index];
+              }
+              this.spriteCount++;
+            }
+            else {
+              this.setStatusFlag(STATUSFlags.O, true);
+            }
+          }
+          OAMIndex++;
+        }
+      }
+    }
+    if (this.cycles === 340) {
+      for (let i = 0; i < this.spriteCount*OAMINDEX.SIZE; i+=OAMINDEX.SIZE) {
+        let spritePatternBitsL: uint8  = 0x00;
+        let spritePatternBitsH: uint8  = 0x00;
+        let spritePatternAddrL: uint16 = 0x0000;
+        let spritePatternAddrH: uint16 = 0x0000;
+        if (!this.getCtrlFlag(CTRLFlags.H)) {
+          // 8*8 sprite
+          if (!(this.scanSprite[i + OAMINDEX.ATTRIBUTE] & 0x80)){
+            // Not flipped vertically
+            spritePatternAddrL = ((this.getCtrlFlag(CTRLFlags.S) ? 0x01 : 0x00) << 12)
+                                 |(this.scanSprite[i + OAMINDEX.ID] << 4)
+                                 |((this.scanline - this.scanSprite[i + OAMINDEX.Y]) & 0x07);
+          }
+          else {
+            // Filpped vertically
+            spritePatternAddrL = ((this.getCtrlFlag(CTRLFlags.S) ? 0x01 : 0x00) << 12)
+                                 |(this.scanSprite[i + OAMINDEX.ID] << 4)
+                                 |(7 - (this.scanline - this.scanSprite[i + OAMINDEX.Y]) & 0x07);
+          }
+        }
+        else {
+          // 8*16 sprite
+          if (!(this.scanSprite[i + OAMINDEX.ATTRIBUTE] & 0x80)){
+            // Not flipped vertically
+            if ((this.scanline - this.scanSprite[i + OAMINDEX.Y]) < 8) {
+              // Reading top half
+              spritePatternAddrL = ((this.scanSprite[i + OAMINDEX.ID] & 0x01) << 12)
+                                 | ((this.scanSprite[i + OAMINDEX.ID] & 0xFE) << 4)
+                                 | ((this.scanline - this.scanSprite[i + OAMINDEX.Y]) & 0x07);
+            }
+            else {
+              // Reading bottom half
+              spritePatternAddrL = ((this.scanSprite[i + OAMINDEX.ID] & 0x01) << 12)
+                                 | (((this.scanSprite[i + OAMINDEX.ID] & 0xFE) + 1) << 4)
+                                 | ((this.scanline - this.scanSprite[i + OAMINDEX.Y]) & 0x07);
+            }
+          }
+          else {
+            // Filpped vertically
+            if ((this.scanline - this.scanSprite[i + OAMINDEX.Y]) < 8) {
+              // Reading top half
+              spritePatternAddrL = ((this.scanSprite[i + OAMINDEX.ID] & 0x01) << 12)
+                                 | (((this.scanSprite[i + OAMINDEX.ID] & 0xFE) + 1) << 4)
+                                 | (7 - (this.scanline - this.scanSprite[i + OAMINDEX.Y] & 0x07));
+            }
+            else {
+              // Reading bottom half
+              spritePatternAddrL = ((this.scanSprite[i + OAMINDEX.ID] & 0x01) << 12)
+                                 | (((this.scanSprite[i + OAMINDEX.ID] & 0xFE)) << 4)
+                                 | (7 - (this.scanline - this.scanSprite[i + OAMINDEX.Y] & 0x07));
+            }
+          }
+        }
+        spritePatternAddrH = spritePatternAddrL + 8;
+        spritePatternBitsL = this.bus.readByte(spritePatternAddrL);
+        spritePatternBitsH = this.bus.readByte(spritePatternAddrH);
+
+        if (this.scanSprite[i + OAMINDEX.ATTRIBUTE] & 0x40) {
+          spritePatternBitsL = this.flipByte(spritePatternBitsL);
+          spritePatternBitsH = this.flipByte(spritePatternBitsH);
+        }
+
+        this.spriteShifterPatternL[i>>2] = spritePatternBitsL;
+        this.spriteShifterPatternH[i>>2] = spritePatternBitsH;
+      }
     }
 
+
+    /************ Rendering *********************/
     let bgPixel = 0x00;
     let bgPalette = 0x00;
-
     if (this.isRenderingBg()){
       let bitMux = 0x8000 >> this.fineX;
       let piex0 = (this.bgShifterPatternL & bitMux) > 0 ? 0x01 : 0x00;
@@ -244,15 +355,81 @@ export class PPU2C02{
       bgPalette = (palette1 << 1) | palette0;
     }
 
+    let fgPixel = 0x00;
+    let fgPalette = 0x00;
+    let fgPriority = 0x00;
+    if(this.isRenderingFg()) {
+      this.spriteZeroRendering = false;
+
+      for (let i = 0; i < this.spriteCount*OAMINDEX.SIZE; i+=OAMINDEX.SIZE){
+        if (this.scanSprite[i + OAMINDEX.X]  === 0){
+          let fgPixel0= (((this.spriteShifterPatternL[i>>2] & 0x80) > 0)? 0x01 : 0x00);
+          let fgPixel1= (((this.spriteShifterPatternH[i>>2] & 0x80) > 0)? 0x01 : 0x00);
+          fgPixel = (fgPixel1 << 1) | fgPixel0;
+
+          fgPalette = (this.scanSprite[i + OAMINDEX.ATTRIBUTE] & 0x03) + 0x04;
+          fgPriority = (this.scanSprite[i + OAMINDEX.ATTRIBUTE] & 0x20) === 0x00 ? 0x01 : 0x00;
+
+          if (fgPixel !== 0) {
+            if (i === 0) {
+              this.spriteZeroRendering = true;
+            }
+            break;
+          }
+        }
+      }
+    }
+
+    let pixel = 0x00;
+    let palette = 0x00;
+    if ((bgPixel === 0) && (fgPixel === 0)) {
+      pixel = 0;
+      palette = 0;
+    }
+    else if ((bgPixel > 0) && (fgPixel === 0)){
+      pixel = bgPixel;
+      palette = bgPalette;
+    }
+    else if ((bgPixel === 0) && (fgPixel > 0)){
+      pixel = fgPixel;
+      palette = fgPalette;
+    }
+    else if ((bgPixel > 0) && (fgPixel > 0)){
+      if (fgPriority > 0) {
+        pixel = fgPixel;
+        palette = fgPalette;
+      }
+      else {
+        pixel = bgPixel;
+        palette = bgPalette;
+      }
+
+      if (this.spriteZeroFound && this.spriteZeroRendering) {
+        if (this.isRendering() && this.cycles < 158) {
+          if (!(this.getMaskFlag(MASKFlags.M) || this.getMaskFlag(MASKFlags.m))) {
+            if ((this.cycles>=9)){
+              this.setStatusFlag(STATUSFlags.S, true);
+            }
+          }
+          else {
+            if ((this.cycles>=1)) {
+              this.setStatusFlag(STATUSFlags.S, true);
+            }
+          }
+        }
+      }
+    }
+
     if ( (this.scanline >= 0 && this.scanline < 240)
       && ((this.cycles > 0) && (this.cycles < 257))){
-      let colorIndex = 0x3F & this.bus.readByte(0x3F00 + bgPalette*4 + bgPixel);
+      let colorIndex = 0x3F & this.bus.readByte(0x3F00 + palette*4 + pixel);
       let outputIndex = (this.scanline*256 + this.cycles - 1)*4;
       this.displayOutput[outputIndex + 0] = 0xFF & (this.ColorTable[colorIndex]>>16);
       this.displayOutput[outputIndex + 1] = 0xFF & (this.ColorTable[colorIndex]>>8);
       this.displayOutput[outputIndex + 2] = 0xFF & (this.ColorTable[colorIndex]>>0);
       this.displayOutput[outputIndex + 3] = 0xFF;
     }
+    /************************************************/
 
     if (this.scanline === 241 && this.cycles === 1){
       this.setStatusFlag(STATUSFlags.V, true);
@@ -271,6 +448,15 @@ export class PPU2C02{
       this.oddFrame = !this.oddFrame;
       this.frameDone = true;
     }
+  }
+
+  // flips a byte
+  // https://stackoverflow.com/a/2602885
+  public flipByte(b: uint8) {
+    b = (b & 0xF0) >> 4 | (b & 0x0F) << 4;
+    b = (b & 0xCC) >> 2 | (b & 0x33) << 2;
+    b = (b & 0xAA) >> 1 | (b & 0x55) << 1;
+    return b;
   }
 
   public increaseScrollX(){
@@ -329,6 +515,17 @@ export class PPU2C02{
       this.bgShifterPatternH = 0xFFFF & (this.bgShifterPatternH << 1);
       this.bgShifterAttribL  = 0xFFFF & (this.bgShifterAttribL  << 1);
       this.bgShifterAttribH  = 0xFFFF & (this.bgShifterAttribH  << 1);
+    }
+    if (this.isRenderingFg() && (this.cycles >= 1) && (this.cycles < 258)){
+      for (let i = 0; i < this.spriteCount*4; i+=4) {
+        if (this.scanSprite[i + OAMINDEX.X] > 0) {
+          this.scanSprite[i + OAMINDEX.X]--;
+        }
+        else {
+          this.spriteShifterPatternL[i>>2] = 0xFF & (this.spriteShifterPatternL[i>>2] << 1);
+          this.spriteShifterPatternH[i>>2] = 0xFF & (this.spriteShifterPatternH[i>>2] << 1);
+        }
+      }
     }
   }
 
